@@ -36,3 +36,34 @@ model Note {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
 }
+
+model Person {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  firstName   String
+  lastName    String
+  gender      String
+  email       String?
+  age         String   @default("18+")
+  archived    Boolean  @default(false)
+  excluding   Person[] @relation("PersonExcluded")
+  excludedBy  Person[] @relation("PersonExcluded")
+  players     Player[] @relation("Player")
+  assignments Player[] @relation("Assigned")
+}
+
+model Draw {
+  year    Int      @id
+  players Player[]
+}
+
+model Player {
+  draw       Draw   @relation(fields: [drawYear], references: [year])
+  drawYear   Int
+  person     Person @relation("Player", fields: [personId], references: [id])
+  personId   String
+  assigned   Person @relation("Assigned", fields: [assignedId], references: [id])
+  assignedId String
+
+  @@id([drawYear, personId])
+}

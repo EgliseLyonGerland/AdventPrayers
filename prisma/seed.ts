@@ -1,19 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import personsData from "./seed/persons";
+import drawsData from "./seed/draws";
 
 const prisma = new PrismaClient();
 
 async function seed() {
-  const email = "rachel@remix.run";
+  const email = "oltodo@msn.com";
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {
     // no worries if it doesn't exist yet
   });
 
-  const hashedPassword = await bcrypt.hash("racheliscool", 10);
+  const hashedPassword = await bcrypt.hash("123456", 10);
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email,
       password: {
@@ -24,21 +26,33 @@ async function seed() {
     },
   });
 
-  await prisma.note.create({
-    data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+  const persons = await Promise.all(
+    personsData.map((data) => prisma.person.create({ data }))
+  );
 
-  await prisma.note.create({
-    data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
+  await Promise.all(
+    drawsData.map((draw) =>
+      prisma.draw.create({
+        data: {
+          year: draw.year,
+          players: {
+            create: Object.entries(draw.relations).map(([from, to]) => ({
+              person: {
+                connect: {
+                  id: persons.find((person) => person.slug === from)?.id,
+                },
+              },
+              assigned: {
+                connect: {
+                  id: persons.find((person) => person.slug === to)?.id,
+                },
+              },
+            })),
+          },
+        },
+      })
+    )
+  );
 
   console.log(`Database has been seeded. 🌱`);
 }
