@@ -46,6 +46,9 @@ export const action: ActionFunction = async ({ request }) => {
     case "create":
       await prisma.draw.create({ data: { year } });
       break;
+
+    case "delete":
+      await prisma.draw.delete({ where: { year } });
   }
 
   return redirect("/");
@@ -57,29 +60,37 @@ export default function Index() {
   return (
     <main className="container mx-auto py-8">
       <h1 className="text-4xl font-bold">En Avent la prière ! {year}</h1>
+      <Form method="post">
+        {draw ? (
+          <div className="mt-4 grid">
+            {draw?.players.length
+              ? draw.players.map(({ person, assigned }) => (
+                  <div key={person.id}>
+                    <b>
+                      {person.firstName} {person.lastName}
+                    </b>
+                    {"=>"} {assigned.firstName} {assigned.lastName}
+                  </div>
+                ))
+              : "Nobody"}
 
-      {draw ? (
-        <div className="mt-4 grid">
-          {draw?.players.length
-            ? draw.players.map(({ person, assigned }) => (
-                <div key={person.id}>
-                  <b>
-                    {person.firstName} {person.lastName}
-                  </b>{" "}
-                  {"=>"} {assigned.firstName} {assigned.lastName}
-                </div>
-              ))
-            : "Nobody"}
-        </div>
-      ) : (
-        <div className="mt-4">
-          <Form method="post">
+            <button
+              className="btn-error btn"
+              type="submit"
+              name="_action"
+              value="delete"
+            >
+              Delete
+            </button>
+          </div>
+        ) : (
+          <div className="mt-4">
             <button className="btn" type="submit" name="_action" value="create">
               Create the draw
             </button>
-          </Form>
-        </div>
-      )}
+          </div>
+        )}
+      </Form>
     </main>
   );
 }
