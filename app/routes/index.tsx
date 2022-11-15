@@ -1,6 +1,7 @@
 import { Form, useLoaderData } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/node";
 import { prisma } from "~/db.server";
 
 const year = new Date().getFullYear();
@@ -47,7 +48,7 @@ export const action: ActionFunction = async ({ request }) => {
       break;
   }
 
-  return json(await getDraw());
+  return redirect("/");
 };
 
 export default function Index() {
