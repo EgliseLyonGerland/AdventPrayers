@@ -35,18 +35,12 @@ async function seed() {
       prisma.draw.create({
         data: {
           year: draw.year,
+          drawn: true,
           players: {
             create: Object.entries(draw.relations).map(([from, to]) => ({
-              person: {
-                connect: {
-                  id: persons.find((person) => person.slug === from)?.id,
-                },
-              },
-              assigned: {
-                connect: {
-                  id: persons.find((person) => person.slug === to)?.id,
-                },
-              },
+              personId: persons.find((person) => person.slug === from)!.id,
+              assignedId: persons.find((person) => person.slug === to)!.id,
+              age: persons.find((person) => person.slug === from)!.age,
             })),
           },
         },

@@ -27,7 +27,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   switch (formData.get("_action")) {
     case "create":
-      await createDraw;
+      await createDraw({ year });
       break;
 
     case "delete":
@@ -35,15 +35,19 @@ export const action: ActionFunction = async ({ request }) => {
       break;
 
     case "addPerson":
-      addPerson({ year, id: `${formData.get("id")}` });
+      await addPerson({
+        year,
+        id: `${formData.get("id")}`,
+        age: `${formData.get("age")}`,
+      });
       break;
 
     case "makeDraw":
-      makeDraw({ year });
+      await makeDraw({ year });
       break;
 
     case "cancelDraw":
-      cancelDraw({ year });
+      await cancelDraw({ year });
       break;
   }
 
@@ -81,9 +85,11 @@ export default function Index() {
   return (
     <>
       <div className="navbar bg-neutral text-neutral-content">
-        <Link to="/" className="btn-ghost btn text-xl normal-case">
-          En Avent la prière !
-        </Link>
+        <div className="container mx-auto px-4">
+          <Link to="/" className="btn-ghost btn text-xl normal-case">
+            En Avent la prière !
+          </Link>
+        </div>
       </div>
       <main className="container mx-auto px-4">
         {draw ? (
@@ -104,6 +110,7 @@ export default function Index() {
 
                       const formData = new FormData(addPersonFormRef.current);
                       formData.set("id", person.id);
+                      formData.set("age", person.age);
 
                       submit(formData, { method: "post" });
                     }}

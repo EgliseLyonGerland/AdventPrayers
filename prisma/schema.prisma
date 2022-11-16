@@ -65,6 +65,7 @@ model Player {
   personId   String
   assigned   Person? @relation("Assigned", fields: [assignedId], references: [id])
   assignedId String?
+  age        String
 
   @@id([drawYear, personId])
 }

@@ -5,6 +5,8 @@ import type { User } from "~/models/user.server";
 
 const DEFAULT_REDIRECT = "/";
 
+export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+
 /**
  * This should be used any time the redirect path is user-provided
  * (Like the query string on our login/signup pages). This avoids

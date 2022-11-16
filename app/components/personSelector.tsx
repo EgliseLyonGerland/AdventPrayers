@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { Combobox } from "@headlessui/react";
+import type { Person } from "@prisma/client";
 
-type Data = {
-  id: string;
-  firstName: string;
-  lastName: string;
-};
+type Data = Pick<Person, "id" | "firstName" | "lastName" | "age">;
 
 type Props = {
   persons: Data[];
