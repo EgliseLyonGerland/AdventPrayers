@@ -1,53 +1,20 @@
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { prisma } from "~/db.server";
 import PersonSelector from "~/components/personSelector";
 import { useRef } from "react";
+import {
+  addPerson,
+  createDraw,
+  deleteDraw,
+  getDraw,
+  getPersons,
+} from "~/models/draw.server";
 
 const year = new Date().getFullYear();
 
-async function getDraw() {
-  return prisma.draw.findUnique({
-    where: {
-      year,
-    },
-    select: {
-      year: true,
-      players: {
-        select: {
-          person: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-          assigned: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-            },
-          },
-        },
-      },
-    },
-  });
-}
-
-async function getPersons() {
-  return prisma.person.findMany({
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-    },
-  });
-}
-
 export async function loader() {
-  const draw = await getDraw();
+  const draw = await getDraw({ year });
   const persons = await getPersons();
 
   return json({ draw, persons });
@@ -58,35 +25,15 @@ export const action: ActionFunction = async ({ request }) => {
 
   switch (formData.get("_action")) {
     case "create":
-      await prisma.draw.create({ data: { year } });
+      await createDraw;
       break;
 
     case "delete":
-      await prisma.draw.delete({ where: { year } });
+      await deleteDraw({ year });
       break;
 
     case "addPerson":
-      const draw = await prisma.draw.findUnique({
-        where: { year },
-        select: { players: { select: { person: { select: { id: true } } } } },
-      });
-
-      if (!draw) {
-        break;
-      }
-
-      const personId = `${formData.get("id")}`;
-
-      if (!personId) {
-        break;
-      }
-
-      await prisma.player.create({
-        data: {
-          drawYear: year,
-          personId,
-        },
-      });
+      addPerson({ year, id: `${formData.get("id")}` });
       break;
   }
 
