@@ -90,22 +90,20 @@ function Players({
               )}
             </td>
             <td className="text-right">
-              <div className="">
-                {!drawn && (
-                  <Form method="post">
-                    <input type="hidden" name="personId" value={person.id} />
+              {!drawn && (
+                <Form method="post">
+                  <input type="hidden" name="personId" value={person.id} />
 
-                    <button
-                      className="btn-ghost btn-sm btn-circle btn"
-                      type="submit"
-                      name="_action"
-                      value="deletePlayer"
-                    >
-                      <XMarkIcon height={24} />
-                    </button>
-                  </Form>
-                )}
-              </div>
+                  <button
+                    className="btn-ghost btn-sm btn-circle btn"
+                    type="submit"
+                    name="_action"
+                    value="deletePlayer"
+                  >
+                    <XMarkIcon height={24} />
+                  </button>
+                </Form>
+              )}
             </td>
           </tr>
         ))}
