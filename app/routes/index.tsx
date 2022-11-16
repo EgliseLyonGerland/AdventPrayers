@@ -1,9 +1,8 @@
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import PersonSelector from "~/components/personSelector";
 import { useRef } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   addPlayer,
   cancelDraw,
@@ -14,6 +13,7 @@ import {
   getPersons,
   makeDraw,
 } from "~/models/draw.server";
+import EntitySelector from "~/components/entitySelector";
 
 const year = new Date().getFullYear();
 
@@ -117,6 +117,10 @@ export default function Index() {
   const submit = useSubmit();
   const addPlayerFormRef = useRef<HTMLFormElement>(null);
 
+  const isSelected = (id: string) => {
+    return Boolean(draw?.players.find((player) => player.person.id === id));
+  };
+
   return (
     <>
       <div className="navbar bg-neutral text-neutral-content">
@@ -126,33 +130,49 @@ export default function Index() {
           </Link>
         </div>
       </div>
-      <main className="container mx-auto px-4">
+      <main className="container mx-auto mb-20 px-4">
         {draw ? (
           <div className="mt-8">
-            <Players draw={draw} />
+            <Form method="post" className="mb-4" ref={addPlayerFormRef}>
+              <input type="hidden" name="_action" value="addPlayer" />
 
-            <div className="mt-4">
-              <Form method="post" ref={addPlayerFormRef}>
-                <input type="hidden" name="_action" value="addPlayer" />
+              {!draw.drawn && (
+                <EntitySelector
+                  name="Ajouter une personne"
+                  items={persons}
+                  keyProp="id"
+                  filterBy={["firstName", "lastName"]}
+                  renderItem={(person) => (
+                    <div className="flex items-center justify-between whitespace-nowrap">
+                      <span>
+                        {person.firstName} {person.lastName}
+                      </span>
+                      <span>
+                        {isSelected(person.id) && <CheckIcon height={18} />}
+                      </span>
+                    </div>
+                  )}
+                  onSelect={(person) => {
+                    if (!addPlayerFormRef.current) {
+                      return;
+                    }
 
-                {!draw.drawn && (
-                  <PersonSelector
-                    persons={persons}
-                    onSelect={(person) => {
-                      if (!addPlayerFormRef.current) {
-                        return;
-                      }
+                    const formData = new FormData(addPlayerFormRef.current);
+                    formData.set("personId", person.id);
 
-                      const formData = new FormData(addPlayerFormRef.current);
-                      formData.set("personId", person.id);
+                    if (isSelected(person.id)) {
+                      formData.set("_action", "deletePlayer");
+                    } else {
                       formData.set("age", person.age);
+                    }
 
-                      submit(formData, { method: "post" });
-                    }}
-                  ></PersonSelector>
-                )}
-              </Form>
-            </div>
+                    submit(formData, { method: "post" });
+                  }}
+                />
+              )}
+            </Form>
+
+            <Players draw={draw} />
 
             <Form method="post">
               <div className="mt-20 flex gap-2">
