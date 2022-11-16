@@ -1,4 +1,4 @@
-import { Form, useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { prisma } from "~/db.server";
@@ -103,14 +103,18 @@ function Players({
   }
 
   return (
-    <div>
-      {players.map(({ person, assigned }) => (
-        <div key={person.id}>
-          <b>{`${person.firstName} ${person.lastName}`}</b>
-          {assigned && `=> ${assigned.firstName} ${assigned.lastName}`}
-        </div>
-      ))}
-    </div>
+    <table className="table w-full">
+      <tbody>
+        {players.map(({ person, assigned }) => (
+          <tr key={person.id}>
+            <td>
+              {`${person.firstName} ${person.lastName}`}
+              {assigned && `=> ${assigned.firstName} ${assigned.lastName}`}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -120,55 +124,65 @@ export default function Index() {
   const addPersonFormRef = useRef<HTMLFormElement>(null);
 
   return (
-    <main className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold">En Avent la prière ! {year}</h1>
+    <>
+      <div className="navbar bg-neutral text-neutral-content">
+        <Link to="/" className="btn-ghost btn text-xl normal-case">
+          En Avent la prière !
+        </Link>
+      </div>
+      <main className="container mx-auto px-4">
+        {draw ? (
+          <div className="mt-8">
+            <Players players={draw.players} />
 
-      {draw ? (
-        <div className="mt-4">
-          <Players players={draw.players} />
+            <div className="mt-4">
+              <Form method="post" ref={addPersonFormRef}>
+                <input type="hidden" name="_action" value="addPerson" />
 
-          <div className="mt-4">
-            <Form method="post" ref={addPersonFormRef}>
-              <input type="hidden" name="_action" value="addPerson" />
+                <PersonSelector
+                  persons={persons}
+                  onSelect={(person) => {
+                    if (!addPersonFormRef.current) {
+                      return;
+                    }
 
-              <PersonSelector
-                persons={persons}
-                onSelect={(person) => {
-                  if (!addPersonFormRef.current) {
-                    return;
-                  }
+                    const formData = new FormData(addPersonFormRef.current);
+                    formData.set("id", person.id);
 
-                  const formData = new FormData(addPersonFormRef.current);
-                  formData.set("id", person.id);
+                    submit(formData, { method: "post" });
+                  }}
+                ></PersonSelector>
+              </Form>
+            </div>
 
-                  submit(formData, { method: "post" });
-                }}
-              ></PersonSelector>
-            </Form>
+            <div className="mt-16 flex">
+              <Form method="post">
+                <button
+                  className="btn-error btn"
+                  type="submit"
+                  name="_action"
+                  value="delete"
+                >
+                  Delete the draw
+                </button>
+              </Form>
+            </div>
           </div>
-
-          <div className="mt-16 flex">
+        ) : (
+          <div className="mt-4">
             <Form method="post">
               <button
-                className="btn-error btn"
+                className="btn"
                 type="submit"
                 name="_action"
-                value="delete"
+                value="create"
               >
-                Delete the draw
+                Create the draw
               </button>
             </Form>
           </div>
-        </div>
-      ) : (
-        <div className="mt-4">
-          <Form method="post">
-            <button className="btn" type="submit" name="_action" value="create">
-              Create the draw
-            </button>
-          </Form>
-        </div>
-      )}
-    </main>
+        )}
+      </main>
+    </>
   );
 }
