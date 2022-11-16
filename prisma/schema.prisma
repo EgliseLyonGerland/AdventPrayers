@@ -54,6 +54,7 @@ model Person {
 
 model Draw {
   year    Int      @id
+  drawn   Boolean  @default(false)
   players Player[]
 }
 

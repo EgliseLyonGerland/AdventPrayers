@@ -5,10 +5,12 @@ import PersonSelector from "~/components/personSelector";
 import { useRef } from "react";
 import {
   addPerson,
+  cancelDraw,
   createDraw,
   deleteDraw,
   getDraw,
   getPersons,
+  makeDraw,
 } from "~/models/draw.server";
 
 const year = new Date().getFullYear();
@@ -35,6 +37,14 @@ export const action: ActionFunction = async ({ request }) => {
     case "addPerson":
       addPerson({ year, id: `${formData.get("id")}` });
       break;
+
+    case "makeDraw":
+      makeDraw({ year });
+      break;
+
+    case "cancelDraw":
+      cancelDraw({ year });
+      break;
   }
 
   return redirect("/");
@@ -54,10 +64,8 @@ function Players({
       <tbody>
         {players.map(({ person, assigned }) => (
           <tr key={person.id}>
-            <td>
-              {`${person.firstName} ${person.lastName}`}
-              {assigned && `=> ${assigned.firstName} ${assigned.lastName}`}
-            </td>
+            <td>{`${person.firstName} ${person.lastName}`}</td>
+            <td>{assigned && `${assigned.firstName} ${assigned.lastName}`}</td>
           </tr>
         ))}
       </tbody>
@@ -86,34 +94,64 @@ export default function Index() {
               <Form method="post" ref={addPersonFormRef}>
                 <input type="hidden" name="_action" value="addPerson" />
 
-                <PersonSelector
-                  persons={persons}
-                  onSelect={(person) => {
-                    if (!addPersonFormRef.current) {
-                      return;
-                    }
+                {!draw.drawn && (
+                  <PersonSelector
+                    persons={persons}
+                    onSelect={(person) => {
+                      if (!addPersonFormRef.current) {
+                        return;
+                      }
 
-                    const formData = new FormData(addPersonFormRef.current);
-                    formData.set("id", person.id);
+                      const formData = new FormData(addPersonFormRef.current);
+                      formData.set("id", person.id);
 
-                    submit(formData, { method: "post" });
-                  }}
-                ></PersonSelector>
+                      submit(formData, { method: "post" });
+                    }}
+                  ></PersonSelector>
+                )}
               </Form>
             </div>
 
-            <div className="mt-16 flex">
-              <Form method="post">
+            <Form method="post">
+              <div className="mt-20 flex gap-2">
+                {draw.drawn ? (
+                  <button
+                    className="btn"
+                    type="submit"
+                    name="_action"
+                    value="cancelDraw"
+                  >
+                    Annuler le tirage
+                  </button>
+                ) : (
+                  <button
+                    className="btn"
+                    type="submit"
+                    name="_action"
+                    value="makeDraw"
+                  >
+                    Lancer le tirage
+                  </button>
+                )}
                 <button
-                  className="btn-error btn"
+                  className="btn-outline btn-error btn ml-auto"
                   type="submit"
                   name="_action"
                   value="delete"
+                  onClick={(e) => {
+                    if (
+                      !window.confirm(
+                        "Es-tu sûr de vouloir supprimer le tirage ?"
+                      )
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 >
-                  Delete the draw
+                  Supprimer le tirage
                 </button>
-              </Form>
-            </div>
+              </div>
+            </Form>
           </div>
         ) : (
           <div className="mt-4">
@@ -124,7 +162,7 @@ export default function Index() {
                 name="_action"
                 value="create"
               >
-                Create the draw
+                Créer le tirage {year}
               </button>
             </Form>
           </div>

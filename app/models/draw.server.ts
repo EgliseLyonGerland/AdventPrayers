@@ -8,6 +8,7 @@ export function getDraw({ year }: Pick<Draw, "year">) {
     },
     select: {
       year: true,
+      drawn: true,
       players: {
         select: {
           person: {
@@ -61,6 +62,43 @@ export async function addPerson({
         },
       },
     },
-    include: { players: true },
+  });
+}
+
+export async function makeDraw({ year }: Pick<Draw, "year">) {
+  const draw = await getDraw({ year });
+
+  if (!draw) {
+    return;
+  }
+
+  return prisma.draw.update({
+    where: { year },
+    data: {
+      drawn: true,
+      players: {
+        updateMany: draw.players.map((player) => ({
+          where: { personId: player.person.id },
+          data: { assignedId: player.person.id },
+        })),
+      },
+    },
+  });
+}
+
+export async function cancelDraw({ year }: Pick<Draw, "year">) {
+  return prisma.draw.update({
+    where: { year },
+    data: {
+      drawn: false,
+      players: {
+        updateMany: {
+          where: {},
+          data: {
+            assignedId: null,
+          },
+        },
+      },
+    },
   });
 }
