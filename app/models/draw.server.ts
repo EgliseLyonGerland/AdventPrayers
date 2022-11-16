@@ -26,6 +26,7 @@ export function getDraw({ year }: Pick<Draw, "year">) {
               lastName: true,
             },
           },
+          age: true,
         },
       },
     },

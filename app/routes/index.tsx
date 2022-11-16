@@ -75,10 +75,20 @@ function Players({
   return (
     <table className=" table w-full">
       <tbody>
-        {players.map(({ person, assigned }) => (
+        {players.map(({ person, assigned, age }) => (
           <tr key={person.id}>
-            <td>{`${person.firstName} ${person.lastName}`}</td>
-            <td>{assigned && `${assigned.firstName} ${assigned.lastName}`}</td>
+            <td>
+              {`${person.firstName} ${person.lastName}`}{" "}
+              <span className="ml-2 opacity-50">{age}</span>
+            </td>
+            <td>
+              {assigned && (
+                <>
+                  {`${assigned.firstName} ${assigned.lastName}`}
+                  <span className="ml-2 opacity-50">{age}</span>
+                </>
+              )}
+            </td>
             <td className="text-right">
               <div className="">
                 {!drawn && (
