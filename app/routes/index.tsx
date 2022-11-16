@@ -3,11 +3,13 @@ import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import PersonSelector from "~/components/personSelector";
 import { useRef } from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
-  addPerson,
+  addPlayer,
   cancelDraw,
   createDraw,
   deleteDraw,
+  deletePlayer,
   getDraw,
   getPersons,
   makeDraw,
@@ -34,11 +36,18 @@ export const action: ActionFunction = async ({ request }) => {
       await deleteDraw({ year });
       break;
 
-    case "addPerson":
-      await addPerson({
+    case "addPlayer":
+      await addPlayer({
         year,
-        id: `${formData.get("id")}`,
+        id: `${formData.get("personId")}`,
         age: `${formData.get("age")}`,
+      });
+      break;
+
+    case "deletePlayer":
+      await deletePlayer({
+        year,
+        id: `${formData.get("personId")}`,
       });
       break;
 
@@ -55,21 +64,39 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 function Players({
-  players,
+  draw: { drawn, players },
 }: {
-  players: NonNullable<Awaited<ReturnType<typeof getDraw>>>["players"];
+  draw: NonNullable<Awaited<ReturnType<typeof getDraw>>>;
 }) {
   if (players.length === 0) {
     return <span> Nobody for now :(</span>;
   }
 
   return (
-    <table className="table w-full">
+    <table className=" table w-full">
       <tbody>
         {players.map(({ person, assigned }) => (
           <tr key={person.id}>
             <td>{`${person.firstName} ${person.lastName}`}</td>
             <td>{assigned && `${assigned.firstName} ${assigned.lastName}`}</td>
+            <td className="text-right">
+              <div className="">
+                {!drawn && (
+                  <Form method="post">
+                    <input type="hidden" name="personId" value={person.id} />
+
+                    <button
+                      className="btn-ghost btn-sm btn-circle btn"
+                      type="submit"
+                      name="_action"
+                      value="deletePlayer"
+                    >
+                      <XMarkIcon height={24} />
+                    </button>
+                  </Form>
+                )}
+              </div>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -80,7 +107,7 @@ function Players({
 export default function Index() {
   const { draw, persons } = useLoaderData<typeof loader>();
   const submit = useSubmit();
-  const addPersonFormRef = useRef<HTMLFormElement>(null);
+  const addPlayerFormRef = useRef<HTMLFormElement>(null);
 
   return (
     <>
@@ -94,22 +121,22 @@ export default function Index() {
       <main className="container mx-auto px-4">
         {draw ? (
           <div className="mt-8">
-            <Players players={draw.players} />
+            <Players draw={draw} />
 
             <div className="mt-4">
-              <Form method="post" ref={addPersonFormRef}>
-                <input type="hidden" name="_action" value="addPerson" />
+              <Form method="post" ref={addPlayerFormRef}>
+                <input type="hidden" name="_action" value="addPlayer" />
 
                 {!draw.drawn && (
                   <PersonSelector
                     persons={persons}
                     onSelect={(person) => {
-                      if (!addPersonFormRef.current) {
+                      if (!addPlayerFormRef.current) {
                         return;
                       }
 
-                      const formData = new FormData(addPersonFormRef.current);
-                      formData.set("id", person.id);
+                      const formData = new FormData(addPlayerFormRef.current);
+                      formData.set("personId", person.id);
                       formData.set("age", person.age);
 
                       submit(formData, { method: "post" });

@@ -51,7 +51,7 @@ export function deleteDraw({ year }: Pick<Draw, "year">) {
   return prisma.draw.delete({ where: { year } });
 }
 
-export async function addPerson({
+export async function addPlayer({
   year,
   id: personId,
   age,
@@ -63,6 +63,17 @@ export async function addPerson({
         create: { personId, age },
       },
     },
+  });
+}
+
+export async function deletePlayer({
+  year,
+  id: personId,
+}: Pick<Draw, "year"> & Pick<Person, "id">) {
+  console.log("deletePlayer", year, personId);
+
+  return prisma.player.delete({
+    where: { drawYear_personId: { drawYear: year, personId } },
   });
 }
 
