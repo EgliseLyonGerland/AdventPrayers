@@ -52,16 +52,15 @@ export async function addPerson({
   year,
   id,
 }: Pick<Draw, "year"> & Pick<Person, "id">) {
-  const draw = await getDraw({ year });
-
-  if (!draw) {
-    return;
-  }
-
-  await prisma.player.create({
+  return prisma.draw.update({
+    where: { year },
     data: {
-      drawYear: year,
-      personId: id,
+      players: {
+        create: {
+          personId: id,
+        },
+      },
     },
+    include: { players: true },
   });
 }
