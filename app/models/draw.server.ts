@@ -17,6 +17,9 @@ export function getDraw({ year }: Pick<Draw, "year">) {
               id: true,
               firstName: true,
               lastName: true,
+              gender: true,
+              email: true,
+              age: true,
             },
           },
           assigned: {
@@ -24,6 +27,9 @@ export function getDraw({ year }: Pick<Draw, "year">) {
               id: true,
               firstName: true,
               lastName: true,
+              gender: true,
+              email: true,
+              age: true,
             },
           },
           age: true,
@@ -39,6 +45,8 @@ export function getPersons() {
       id: true,
       firstName: true,
       lastName: true,
+      gender: true,
+      email: true,
       age: true,
     },
   });

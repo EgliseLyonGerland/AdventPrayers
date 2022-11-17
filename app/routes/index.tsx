@@ -100,14 +100,20 @@ function Players({
         {players.map(({ person, assigned, age }) => (
           <tr key={person.id}>
             <td>
-              {`${person.firstName} ${person.lastName}`}{" "}
-              <span className="ml-2 opacity-50">{age}</span>
+              <div>
+                {`${person.firstName} ${person.lastName}`}{" "}
+                <span className="ml-2 opacity-50">{age}</span>
+              </div>
+              <div className="opacity-30">{person.email}</div>
             </td>
             <td>
               {assigned && (
                 <>
-                  {`${assigned.firstName} ${assigned.lastName}`}
-                  <span className="ml-2 opacity-50">{age}</span>
+                  <div>
+                    {`${assigned.firstName} ${assigned.lastName}`}
+                    <span className="ml-2 opacity-50">{age}</span>
+                  </div>
+                  <div className="opacity-30">{person.email}</div>
                 </>
               )}
             </td>
