@@ -1,8 +1,16 @@
-import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  NavLink,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+  useSubmit,
+} from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useRef } from "react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   addPlayer,
   cancelDraw,
@@ -14,6 +22,8 @@ import {
   makeDraw,
 } from "~/models/draw.server";
 import EntitySelector from "~/components/entitySelector";
+import { createPerson } from "~/models/person.server";
+import NewPersonModalForm from "~/components/newPersonModalForm";
 
 const year = new Date().getFullYear();
 
@@ -57,6 +67,18 @@ export const action: ActionFunction = async ({ request }) => {
 
     case "cancelDraw":
       await cancelDraw({ year });
+      break;
+
+    case "createPerson":
+      const person = await createPerson({
+        firstName: `${formData.get("firstName")}`,
+        lastName: `${formData.get("lastName")}`,
+        email: `${formData.get("email")}`,
+        gender: `${formData.get("gender")}`,
+        age: `${formData.get("age")}`,
+      });
+
+      await addPlayer({ year, id: person.id, age: person.age });
       break;
   }
 
@@ -113,6 +135,8 @@ function Players({
 }
 
 export default function Index() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { draw, persons } = useLoaderData<typeof loader>();
   const submit = useSubmit();
   const addPlayerFormRef = useRef<HTMLFormElement>(null);
@@ -133,44 +157,55 @@ export default function Index() {
       <main className="container mx-auto mb-20 px-4">
         {draw ? (
           <div className="mt-8">
-            <Form method="post" className="mb-4" ref={addPlayerFormRef}>
-              <input type="hidden" name="_action" value="addPlayer" />
+            {!draw.drawn && (
+              <div className="align-items mb-4 flex gap-4">
+                <Form method="post" ref={addPlayerFormRef}>
+                  <input type="hidden" name="_action" value="addPlayer" />
 
-              {!draw.drawn && (
-                <EntitySelector
-                  name="Ajouter une personne"
-                  items={persons}
-                  keyProp="id"
-                  filterBy={["firstName", "lastName"]}
-                  renderItem={(person) => (
-                    <div className="flex items-center justify-between whitespace-nowrap">
-                      <span>
-                        {person.firstName} {person.lastName}
-                      </span>
-                      <span>
-                        {isSelected(person.id) && <CheckIcon height={18} />}
-                      </span>
-                    </div>
-                  )}
-                  onSelect={(person) => {
-                    if (!addPlayerFormRef.current) {
-                      return;
-                    }
+                  <EntitySelector
+                    name="Ajouter un participant"
+                    items={persons}
+                    keyProp="id"
+                    filterBy={["firstName", "lastName"]}
+                    renderItem={(person) => (
+                      <div className="flex items-center justify-between whitespace-nowrap">
+                        <span>
+                          {person.firstName} {person.lastName}
+                        </span>
+                        <span>
+                          {isSelected(person.id) && <CheckIcon height={18} />}
+                        </span>
+                      </div>
+                    )}
+                    onSelect={(person) => {
+                      if (!addPlayerFormRef.current) {
+                        return;
+                      }
 
-                    const formData = new FormData(addPlayerFormRef.current);
-                    formData.set("personId", person.id);
+                      const formData = new FormData(addPlayerFormRef.current);
+                      formData.set("personId", person.id);
 
-                    if (isSelected(person.id)) {
-                      formData.set("_action", "deletePlayer");
-                    } else {
-                      formData.set("age", person.age);
-                    }
+                      if (isSelected(person.id)) {
+                        formData.set("_action", "deletePlayer");
+                      } else {
+                        formData.set("age", person.age);
+                      }
 
-                    submit(formData, { method: "post" });
-                  }}
-                />
-              )}
-            </Form>
+                      submit(formData, { method: "post" });
+                    }}
+                  />
+                </Form>
+
+                <div
+                  className="tooltip tooltip-right"
+                  data-tip="Créer une nouvelle personne"
+                >
+                  <NavLink className="btn-circle btn" to="/?newPerson=true">
+                    <PlusIcon height={24} />
+                  </NavLink>
+                </div>
+              </div>
+            )}
 
             <Players draw={draw} />
 
@@ -230,6 +265,10 @@ export default function Index() {
           </div>
         )}
       </main>
+
+      {searchParams.get("newPerson") && (
+        <NewPersonModalForm onClose={() => navigate("/")} />
+      )}
     </>
   );
 }

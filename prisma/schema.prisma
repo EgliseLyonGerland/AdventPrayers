@@ -39,7 +39,7 @@ model Note {
 
 model Person {
   id          String   @id @default(cuid())
-  slug        String   @unique
+  slug        String?
   firstName   String
   lastName    String
   gender      String
