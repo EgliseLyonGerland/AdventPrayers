@@ -1,11 +1,21 @@
+import type { Person } from "@prisma/client";
 import { Form } from "@remix-run/react";
 import { Fragment } from "react";
 
 type Props = {
+  edit: boolean;
+  data?: Pick<
+    Person,
+    "id" | "firstName" | "lastName" | "email" | "gender" | "gender" | "age"
+  >;
   onClose?: () => void;
 };
 
-export default function NewPersonModalForm({ onClose }: Props) {
+export default function PersonModalForm({
+  edit = false,
+  data,
+  onClose,
+}: Props) {
   return (
     <>
       <input
@@ -25,7 +35,9 @@ export default function NewPersonModalForm({ onClose }: Props) {
 
           <h3 className="text-lg font-bold">Ajouter une nouvelle personne</h3>
 
-          <Form method="post" className="mt-8">
+          <Form method="post" className="mt-8" replace>
+            <input type="hidden" name="id" value={data?.id} />
+
             <div className="form-control mb-4 w-full max-w-xs">
               <label className="label">
                 <span className="label-text">Prénom</span>
@@ -34,6 +46,7 @@ export default function NewPersonModalForm({ onClose }: Props) {
                 type="text"
                 name="firstName"
                 className="input-bordered input w-full max-w-xs"
+                defaultValue={data?.firstName || ""}
               />
             </div>
             <div className="form-control mb-4 w-full max-w-xs">
@@ -44,6 +57,7 @@ export default function NewPersonModalForm({ onClose }: Props) {
                 type="text"
                 name="lastName"
                 className="input-bordered input w-full max-w-xs"
+                defaultValue={data?.lastName || ""}
               />
             </div>
             <div className="form-control mb-4 w-full max-w-xs">
@@ -54,6 +68,7 @@ export default function NewPersonModalForm({ onClose }: Props) {
                 type="email"
                 name="email"
                 className="input-bordered input w-full max-w-xs"
+                defaultValue={data?.email || ""}
               />
             </div>
             <div className="form-control mb-4">
@@ -67,7 +82,7 @@ export default function NewPersonModalForm({ onClose }: Props) {
                   name="gender"
                   value="male"
                   className="radio"
-                  defaultChecked
+                  defaultChecked={data?.gender === "male" || true}
                 />
                 <label className="-ml-2" htmlFor="genderMale">
                   Homme
@@ -78,6 +93,7 @@ export default function NewPersonModalForm({ onClose }: Props) {
                   name="gender"
                   value="female"
                   className="radio"
+                  defaultChecked={data?.gender === "female"}
                 />
                 <label className="-ml-2" htmlFor="genderFemale">
                   Femme
@@ -98,7 +114,7 @@ export default function NewPersonModalForm({ onClose }: Props) {
                       name="age"
                       value={value}
                       className="radio"
-                      defaultChecked={value === "18+"}
+                      defaultChecked={data?.age === value || value === "18+"}
                     />
                     <label className="-ml-2" htmlFor={`age${value}`}>
                       {value}
@@ -111,10 +127,10 @@ export default function NewPersonModalForm({ onClose }: Props) {
               <button
                 type="submit"
                 name="_action"
-                value="createPerson"
+                value={edit ? "editPerson" : "newPerson"}
                 className="btn"
               >
-                Ajouter
+                {edit ? "Modifier" : "Ajouter"}
               </button>
             </div>
           </Form>

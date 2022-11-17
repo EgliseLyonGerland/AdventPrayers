@@ -10,7 +10,12 @@ import {
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useRef } from "react";
-import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  CheckIcon,
+  PencilIcon,
+  PlusIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import {
   addPlayer,
   cancelDraw,
@@ -18,12 +23,11 @@ import {
   deleteDraw,
   deletePlayer,
   getDraw,
-  getPersons,
   makeDraw,
 } from "~/models/draw.server";
 import EntitySelector from "~/components/entitySelector";
-import { createPerson } from "~/models/person.server";
-import NewPersonModalForm from "~/components/newPersonModalForm";
+import { createPerson, getPersons, updatePerson } from "~/models/person.server";
+import PersonModalForm from "~/components/personModalForm";
 
 const year = new Date().getFullYear();
 
@@ -69,7 +73,7 @@ export const action: ActionFunction = async ({ request }) => {
       await cancelDraw({ year });
       break;
 
-    case "createPerson":
+    case "newPerson":
       const person = await createPerson({
         firstName: `${formData.get("firstName")}`,
         lastName: `${formData.get("lastName")}`,
@@ -79,6 +83,17 @@ export const action: ActionFunction = async ({ request }) => {
       });
 
       await addPlayer({ year, id: person.id, age: person.age });
+      break;
+
+    case "editPerson":
+      await updatePerson({
+        id: `${formData.get("id")}`,
+        firstName: `${formData.get("firstName")}`,
+        lastName: `${formData.get("lastName")}`,
+        email: `${formData.get("email")}`,
+        gender: `${formData.get("gender")}`,
+        age: `${formData.get("age")}`,
+      });
       break;
   }
 
@@ -98,13 +113,23 @@ function Players({
     <table className=" table w-full">
       <tbody>
         {players.map(({ person, assigned, age }) => (
-          <tr key={person.id}>
+          <tr key={person.id} className="group hover">
             <td>
-              <div>
-                {`${person.firstName} ${person.lastName}`}{" "}
-                <span className="ml-2 opacity-50">{age}</span>
+              <div className=" flex items-center gap-8">
+                <div>
+                  <div>
+                    {`${person.firstName} ${person.lastName}`}{" "}
+                    <span className="ml-2 opacity-50">{age}</span>
+                  </div>
+                  <div className="opacity-30">{person.email}</div>
+                </div>
+                <NavLink
+                  to={`/?showPersonForm=true&personId=${person.id}`}
+                  className="btn-ghost btn-circle btn invisible group-hover:visible"
+                >
+                  <PencilIcon height={16} />
+                </NavLink>
               </div>
-              <div className="opacity-30">{person.email}</div>
             </td>
             <td>
               {assigned && (
@@ -206,7 +231,7 @@ export default function Index() {
                   className="tooltip tooltip-right"
                   data-tip="Créer une nouvelle personne"
                 >
-                  <NavLink className="btn-circle btn" to="/?newPerson=true">
+                  <NavLink className="btn-circle btn" to="/?showPersonForm">
                     <PlusIcon height={24} />
                   </NavLink>
                 </div>
@@ -272,8 +297,18 @@ export default function Index() {
         )}
       </main>
 
-      {searchParams.get("newPerson") && (
-        <NewPersonModalForm onClose={() => navigate("/")} />
+      {searchParams.get("showPersonForm") && (
+        <PersonModalForm
+          edit={Boolean(searchParams.get("personId"))}
+          data={
+            searchParams.get("personId")
+              ? persons.find(
+                  (person) => person.id === searchParams.get("personId")
+                )
+              : undefined
+          }
+          onClose={() => navigate("/")}
+        />
       )}
     </>
   );

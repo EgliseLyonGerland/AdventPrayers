@@ -39,19 +39,6 @@ export function getDraw({ year }: Pick<Draw, "year">) {
   });
 }
 
-export function getPersons() {
-  return prisma.person.findMany({
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      gender: true,
-      email: true,
-      age: true,
-    },
-  });
-}
-
 export function createDraw({ year }: Pick<Draw, "year">) {
   return prisma.draw.create({ data: { year } });
 }
