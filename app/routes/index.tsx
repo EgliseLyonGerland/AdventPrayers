@@ -9,10 +9,11 @@ import {
 } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import {
   CheckIcon,
   ChevronDownIcon,
+  EllipsisVerticalIcon,
   PencilIcon,
   PlusIcon,
   XMarkIcon,
@@ -119,9 +120,11 @@ export const action: ActionFunction = async ({ request }) => {
 function Players({
   draw,
   sortBy,
+  groupByAge,
 }: {
   draw: NonNullable<Awaited<ReturnType<typeof getDraw>>>;
   sortBy: SortBy;
+  groupByAge: boolean;
 }) {
   const { drawn } = draw;
   let { players } = draw;
@@ -130,76 +133,105 @@ function Players({
     return <span> Nobody for now :(</span>;
   }
 
-  switch (sortBy) {
-    case "firstName": {
-      players = players.sort((a, b) =>
-        a.person.firstName.localeCompare(b.person.firstName)
-      );
-      break;
-    }
-    case "lastName": {
-      players = players.sort((a, b) =>
-        a.person.lastName.localeCompare(b.person.lastName)
-      );
-      break;
-    }
+  let groups: { name: string | null; players: typeof players }[] = [
+    { name: null, players },
+  ];
+
+  if (groupByAge) {
+    groups = players
+      .sort((a, b) => parseInt(a.age) - parseInt(b.age))
+      .reduce<typeof groups>((acc, player) => {
+        if (acc[acc.length - 1]?.name !== player.age) {
+          acc.push({ name: player.age, players: [] });
+        }
+
+        acc[acc.length - 1].players.push(player);
+
+        return acc;
+      }, []);
+  }
+
+  if (sortBy !== "date") {
+    groups = groups.map(({ name, players }) => ({
+      name,
+      players: players.sort((a, b) =>
+        a.person[sortBy].localeCompare(b.person[sortBy])
+      ),
+    }));
   }
 
   return (
-    <table className="z-0 table w-full">
-      <tbody>
-        {players.map(({ person, assigned, age }) => (
-          <tr key={person.id} className="group hover">
-            <td>
-              <div className="flex items-center gap-8">
-                <div>
-                  <div>
-                    {`${person.firstName} ${person.lastName}`}{" "}
-                    <span className="ml-2 text-sm opacity-50">{age}</span>
-                  </div>
-                  <div className="opacity-30">{person.email}</div>
-                </div>
-                <NavLink
-                  to={`/?showPersonForm=true&personId=${person.id}`}
-                  className="btn-ghost btn-circle btn invisible group-hover:visible"
-                >
-                  <PencilIcon height={16} />
-                </NavLink>
-              </div>
-            </td>
-            <td className="w-full">
-              {assigned && (
-                <span className="inline-block rounded-md bg-neutral px-4 py-2">
-                  {`${assigned.firstName} ${assigned.lastName}`}
-                  <span className="ml-2 text-sm opacity-50">{age}</span>
-                </span>
-              )}
-            </td>
-            <td className="text-right">
-              {!drawn && (
-                <Form method="post">
-                  <input type="hidden" name="personId" value={person.id} />
+    <>
+      {groups.map((group) => (
+        <Fragment key={group.name}>
+          {group.name && (
+            <h2 className="mb-4 mt-8 border-b-[1px] border-b-white/10 px-2 pb-4 text-2xl font-bold">
+              {group.name} ans
+            </h2>
+          )}
 
-                  <button
-                    className="btn-ghost btn-sm btn-circle btn"
-                    type="submit"
-                    name="_action"
-                    value="deletePlayer"
-                  >
-                    <XMarkIcon height={24} />
-                  </button>
-                </Form>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+          <table className="z-0 table w-full">
+            <tbody>
+              {group.players.map(({ person, assigned, age }) => (
+                <tr key={person.id} className="group hover">
+                  <td>
+                    <div className="flex items-center gap-8">
+                      <div>
+                        <div>
+                          {`${person.firstName} ${person.lastName}`}{" "}
+                          <span className="ml-2 text-sm opacity-50">{age}</span>
+                        </div>
+                        <div className="opacity-30">{person.email}</div>
+                      </div>
+                      <NavLink
+                        to={`/?showPersonForm=true&personId=${person.id}`}
+                        className="btn-ghost btn-circle btn invisible group-hover:visible"
+                      >
+                        <PencilIcon height={16} />
+                      </NavLink>
+                    </div>
+                  </td>
+                  <td className="w-full">
+                    {assigned && (
+                      <span className="inline-block rounded-md bg-neutral px-4 py-2">
+                        {`${assigned.firstName} ${assigned.lastName}`}
+                        <span className="ml-2 text-sm opacity-50">{age}</span>
+                      </span>
+                    )}
+                  </td>
+                  <td className="text-right">
+                    {!drawn && (
+                      <Form method="post">
+                        <input
+                          type="hidden"
+                          name="personId"
+                          value={person.id}
+                        />
+
+                        <button
+                          className="btn-ghost btn-sm btn-circle btn"
+                          type="submit"
+                          name="_action"
+                          value="deletePlayer"
+                        >
+                          <XMarkIcon height={24} />
+                        </button>
+                      </Form>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Fragment>
+      ))}
+    </>
   );
 }
 
 export default function Index() {
   const [sortBy, setSortBy] = useState<SortBy>("date");
+  const [groupByAge, setGroupByAge] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { draw, persons } = useLoaderData<typeof loader>();
@@ -313,10 +345,27 @@ export default function Index() {
                     ))}
                   </Listbox.Options>
                 </Listbox>
+
+                <div className="dropdown dropdown-left">
+                  <label tabIndex={0} className="btn-ghost btn-circle btn m-1">
+                    <EllipsisVerticalIcon height={24} />
+                  </label>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu rounded-box w-52  bg-base-300 p-2 shadow"
+                  >
+                    <li>
+                      <label onClick={() => setGroupByAge(!groupByAge)}>
+                        Grouper par age
+                        {groupByAge && <CheckIcon height={16} />}
+                      </label>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
 
-            <Players draw={draw} sortBy={sortBy} />
+            <Players draw={draw} sortBy={sortBy} groupByAge={groupByAge} />
 
             <Form method="post">
               <div className="mt-20 flex gap-2">
