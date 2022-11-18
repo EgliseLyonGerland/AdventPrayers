@@ -186,7 +186,7 @@ export default function Index() {
         {draw ? (
           <div className="mt-8">
             {!draw.drawn && (
-              <div className="align-items mb-4 flex gap-4">
+              <div className="align-items mb-4 flex items-center gap-4">
                 <Form method="post" ref={addPlayerFormRef}>
                   <input type="hidden" name="_action" value="addPlayer" />
 
@@ -231,6 +231,11 @@ export default function Index() {
                   <NavLink className="btn-circle btn" to="/?showPersonForm">
                     <PlusIcon height={24} />
                   </NavLink>
+                </div>
+
+                <div className="ml-auto opacity-50">
+                  {draw.players.length} participant
+                  {draw.players.length > 1 && "s"}
                 </div>
               </div>
             )}
