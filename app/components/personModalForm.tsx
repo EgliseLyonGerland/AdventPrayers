@@ -1,5 +1,4 @@
 import type { Person } from "@prisma/client";
-import { Form } from "@remix-run/react";
 import { Fragment } from "react";
 
 type Props = {
@@ -35,7 +34,7 @@ export default function PersonModalForm({
 
           <h3 className="text-lg font-bold">Ajouter une nouvelle personne</h3>
 
-          <Form method="post" className="mt-8" replace>
+          <div className="mt-8">
             <input type="hidden" name="id" value={data?.id} />
 
             <div className="form-control mb-4 w-full max-w-xs">
@@ -133,7 +132,7 @@ export default function PersonModalForm({
                 {edit ? "Modifier" : "Ajouter"}
               </button>
             </div>
-          </Form>
+          </div>
         </label>
       </label>
     </>

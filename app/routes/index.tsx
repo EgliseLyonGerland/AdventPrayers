@@ -9,7 +9,7 @@ import {
 } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Fragment, useRef, useState } from "react";
+import { Fragment } from "react";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -36,6 +36,13 @@ import { pluralize } from "~/utils";
 
 type SortBy = "date" | "firstName" | "lastName";
 
+type Params = {
+  showPersonForm: boolean;
+  personId: string | null;
+  sortBy: SortBy;
+  groupByAge: boolean;
+};
+
 const year = new Date().getFullYear();
 
 const sortByOptions: Record<SortBy, string> = {
@@ -44,6 +51,28 @@ const sortByOptions: Record<SortBy, string> = {
   lastName: "Nom",
 };
 
+const paramsDefaults: Params = {
+  showPersonForm: false,
+  personId: null,
+  sortBy: "date",
+  groupByAge: false,
+};
+
+function toQueryString(params: URLSearchParams, values: Partial<Params> = {}) {
+  const searchParams = new URLSearchParams(params);
+
+  let key: keyof Params;
+  for (key in values) {
+    if (paramsDefaults[key] === values[key]) {
+      searchParams.delete(key);
+    } else {
+      searchParams.set(key, `${values[key]}`);
+    }
+  }
+
+  return `${searchParams}`;
+}
+
 export async function loader() {
   const draw = await getDraw({ year });
   const persons = await getPersons();
@@ -51,7 +80,7 @@ export async function loader() {
   return json({ draw, persons });
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   let formData = await request.formData();
 
   switch (formData.get("_action")) {
@@ -115,17 +144,28 @@ export const action: ActionFunction = async ({ request }) => {
       break;
   }
 
-  return redirect("/");
+  const url = new URL(request.url);
+
+  return redirect(
+    `/?${toQueryString(url.searchParams, {
+      showPersonForm: false,
+      personId: null,
+    })}`
+  );
 };
 
 function Players({
   draw,
   sortBy,
   groupByAge,
+  onNewPersonClick,
+  onDeletePlayerClick,
 }: {
   draw: NonNullable<Awaited<ReturnType<typeof getDraw>>>;
   sortBy: SortBy;
   groupByAge: boolean;
+  onNewPersonClick: (id: string) => void;
+  onDeletePlayerClick: (id: string) => void;
 }) {
   const { drawn } = draw;
   let { players } = draw;
@@ -189,12 +229,12 @@ function Players({
                         </div>
                         <div className="opacity-30">{person.email}</div>
                       </div>
-                      <NavLink
-                        to={`/?showPersonForm=true&personId=${person.id}`}
+                      <div
+                        onClick={() => onNewPersonClick(person.id)}
                         className="btn-ghost btn-circle btn invisible group-hover:visible"
                       >
                         <PencilIcon height={16} />
-                      </NavLink>
+                      </div>
                     </div>
                   </td>
                   <td className="w-full">
@@ -205,26 +245,16 @@ function Players({
                       </span>
                     )}
                   </td>
-                  <td className="text-right">
-                    {!drawn && (
-                      <Form method="post">
-                        <input
-                          type="hidden"
-                          name="personId"
-                          value={person.id}
-                        />
-
-                        <button
-                          className="btn-ghost btn-sm btn-circle btn"
-                          type="submit"
-                          name="_action"
-                          value="deletePlayer"
-                        >
-                          <XMarkIcon height={24} />
-                        </button>
-                      </Form>
-                    )}
-                  </td>
+                  {!drawn && (
+                    <td className="text-right">
+                      <button
+                        className="btn-ghost btn-sm btn-circle btn"
+                        onClick={() => onDeletePlayerClick(person.id)}
+                      >
+                        <XMarkIcon height={24} />
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -236,16 +266,20 @@ function Players({
 }
 
 export default function Index() {
-  const [sortBy, setSortBy] = useState<SortBy>("date");
-  const [groupByAge, setGroupByAge] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { draw, persons } = useLoaderData<typeof loader>();
   const submit = useSubmit();
-  const addPlayerFormRef = useRef<HTMLFormElement>(null);
 
   const isSelected = (id: string) => {
     return Boolean(draw?.players.find((player) => player.person.id === id));
+  };
+
+  const params: Params = {
+    showPersonForm: searchParams.get("showPersonForm") === "true",
+    personId: searchParams.get("personId"),
+    sortBy: (searchParams.get("sortBy") as SortBy) || "date",
+    groupByAge: searchParams.get("groupByAge") === "true",
   };
 
   return (
@@ -263,47 +297,42 @@ export default function Index() {
             <div className="align-items mb-4 flex items-end gap-4">
               {!draw.drawn && (
                 <>
-                  <Form method="post" ref={addPlayerFormRef}>
-                    <input type="hidden" name="_action" value="addPlayer" />
-
-                    <EntitySelector
-                      name="Ajouter un participant"
-                      items={persons}
-                      keyProp="id"
-                      filterBy={["firstName", "lastName"]}
-                      renderItem={(person) => (
-                        <div className="flex items-center justify-between whitespace-nowrap">
-                          <span>
-                            {person.firstName} {person.lastName}
-                            <span className="ml-2 text-sm opacity-50">
-                              {person.age}
-                            </span>
-                            <br />
-                            <span className="opacity-30">{person.email}</span>
+                  <EntitySelector
+                    name="Ajouter un participant"
+                    items={persons}
+                    keyProp="id"
+                    filterBy={["firstName", "lastName"]}
+                    renderItem={(person) => (
+                      <div className="flex items-center justify-between whitespace-nowrap">
+                        <span>
+                          {person.firstName} {person.lastName}
+                          <span className="ml-2 text-sm opacity-50">
+                            {person.age}
                           </span>
-                          <span>
-                            {isSelected(person.id) && <CheckIcon height={18} />}
-                          </span>
-                        </div>
-                      )}
-                      onSelect={(person) => {
-                        if (!addPlayerFormRef.current) {
-                          return;
-                        }
+                          <br />
+                          <span className="opacity-30">{person.email}</span>
+                        </span>
+                        <span>
+                          {isSelected(person.id) && <CheckIcon height={18} />}
+                        </span>
+                      </div>
+                    )}
+                    onSelect={(person) => {
+                      const formData = new FormData();
+                      formData.set("personId", person.id);
 
-                        const formData = new FormData(addPlayerFormRef.current);
-                        formData.set("personId", person.id);
+                      if (isSelected(person.id)) {
+                        formData.set("_action", "deletePlayer");
+                      } else {
+                        formData.set("_action", "addPlayer");
+                        formData.set("age", person.age);
+                      }
 
-                        if (isSelected(person.id)) {
-                          formData.set("_action", "deletePlayer");
-                        } else {
-                          formData.set("age", person.age);
-                        }
-
-                        submit(formData, { method: "post" });
-                      }}
-                    />
-                  </Form>
+                      submit(formData, {
+                        method: "post",
+                      });
+                    }}
+                  />
 
                   <div
                     className="tooltip tooltip-right"
@@ -311,7 +340,9 @@ export default function Index() {
                   >
                     <NavLink
                       className="btn-circle btn"
-                      to="/?showPersonForm=true"
+                      to={`/?${toQueryString(searchParams, {
+                        showPersonForm: true,
+                      })}`}
                     >
                       <PlusIcon height={24} />
                     </NavLink>
@@ -326,8 +357,15 @@ export default function Index() {
                 </div>
 
                 <Listbox
-                  value={sortBy}
-                  onChange={setSortBy}
+                  value={params.sortBy}
+                  onChange={(value) =>
+                    navigate(
+                      {
+                        search: toQueryString(searchParams, { sortBy: value }),
+                      },
+                      { replace: true }
+                    )
+                  }
                   as="div"
                   className="dropdown-end dropdown"
                 >
@@ -336,7 +374,7 @@ export default function Index() {
                     className="btn-sm btn"
                     tabIndex={0}
                   >
-                    {sortByOptions[sortBy]}
+                    {sortByOptions[params.sortBy]}
                     <ChevronDownIcon height={16} className="ml-2" />
                   </Listbox.Button>
                   <Listbox.Options
@@ -352,26 +390,65 @@ export default function Index() {
                   </Listbox.Options>
                 </Listbox>
 
-                <div className="dropdown dropdown-left">
-                  <label tabIndex={0} className="btn-ghost btn-circle btn m-1">
-                    <EllipsisVerticalIcon height={24} />
-                  </label>
-                  <ul
+                <Listbox as="div" className="dropdown dropdown-left">
+                  <Listbox.Button
+                    as="button"
+                    className="btn-ghost btn-circle btn m-1"
                     tabIndex={0}
-                    className="dropdown-content menu rounded-box w-52  bg-base-300 p-2 shadow"
                   >
-                    <li>
-                      <label onClick={() => setGroupByAge(!groupByAge)}>
+                    <EllipsisVerticalIcon height={24} />
+                  </Listbox.Button>
+                  <Listbox.Options
+                    as="ul"
+                    className="dropdown-content menu rounded-box w-52  bg-base-300 p-2 shadow"
+                    tabIndex={0}
+                  >
+                    <Listbox.Option
+                      as="li"
+                      onClick={() =>
+                        navigate(
+                          {
+                            search: toQueryString(searchParams, {
+                              groupByAge: !params.groupByAge,
+                            }),
+                          },
+                          { replace: true }
+                        )
+                      }
+                      value="groupByAge"
+                    >
+                      <span>
                         Grouper par age
-                        {groupByAge && <CheckIcon height={16} />}
-                      </label>
-                    </li>
-                  </ul>
-                </div>
+                        {params.groupByAge && <CheckIcon height={16} />}
+                      </span>
+                    </Listbox.Option>
+                  </Listbox.Options>
+                </Listbox>
               </div>
             </div>
 
-            <Players draw={draw} sortBy={sortBy} groupByAge={groupByAge} />
+            <Players
+              draw={draw}
+              sortBy={params.sortBy}
+              groupByAge={params.groupByAge}
+              onNewPersonClick={(personId) => {
+                navigate({
+                  search: toQueryString(searchParams, {
+                    showPersonForm: true,
+                    personId,
+                  }),
+                });
+              }}
+              onDeletePlayerClick={(personId) => {
+                const formData = new FormData();
+                formData.set("_action", "deletePlayer");
+                formData.set("personId", personId);
+
+                submit(formData, {
+                  method: "post",
+                });
+              }}
+            />
 
             <Form method="post">
               <div className="mt-20 flex gap-2">
@@ -430,18 +507,28 @@ export default function Index() {
         )}
       </main>
 
-      {searchParams.get("showPersonForm") && (
-        <PersonModalForm
-          edit={Boolean(searchParams.get("personId"))}
-          data={
-            searchParams.get("personId")
-              ? persons.find(
-                  (person) => person.id === searchParams.get("personId")
-                )
-              : undefined
-          }
-          onClose={() => navigate("/")}
-        />
+      {params.showPersonForm && (
+        <Form method="post">
+          <PersonModalForm
+            edit={Boolean(params.personId)}
+            data={
+              params.personId
+                ? persons.find((person) => person.id === params.personId)
+                : undefined
+            }
+            onClose={() =>
+              navigate(
+                {
+                  search: toQueryString(searchParams, {
+                    showPersonForm: false,
+                    personId: null,
+                  }),
+                },
+                { replace: true }
+              )
+            }
+          />
+        </Form>
       )}
     </>
   );
