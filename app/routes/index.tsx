@@ -140,7 +140,7 @@ function Players({
   }
 
   return (
-    <table className="-z-10 table w-full">
+    <table className="z-0 table w-full">
       <tbody>
         {players.map(({ person, assigned, age }) => (
           <tr key={person.id} className="group hover">
@@ -282,7 +282,7 @@ export default function Index() {
                   value={sortBy}
                   onChange={setSortBy}
                   as="div"
-                  className="dropdown dropdown-end"
+                  className="dropdown-end dropdown"
                 >
                   <Listbox.Button
                     as="button"
