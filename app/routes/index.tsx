@@ -119,7 +119,7 @@ function Players({
                 <div>
                   <div>
                     {`${person.firstName} ${person.lastName}`}{" "}
-                    <span className="ml-2 opacity-50">{age}</span>
+                    <span className="ml-2 text-sm opacity-50">{age}</span>
                   </div>
                   <div className="opacity-30">{person.email}</div>
                 </div>
@@ -131,15 +131,12 @@ function Players({
                 </NavLink>
               </div>
             </td>
-            <td>
+            <td className="w-full">
               {assigned && (
-                <>
-                  <div>
-                    {`${assigned.firstName} ${assigned.lastName}`}
-                    <span className="ml-2 opacity-50">{age}</span>
-                  </div>
-                  <div className="opacity-30">{person.email}</div>
-                </>
+                <span className="inline-block rounded-md bg-neutral px-4 py-2">
+                  {`${assigned.firstName} ${assigned.lastName}`}
+                  <span className="ml-2 text-sm opacity-50">{age}</span>
+                </span>
               )}
             </td>
             <td className="text-right">
