@@ -32,6 +32,7 @@ import EntitySelector from "~/components/entitySelector";
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
 import PersonModalForm from "~/components/personModalForm";
 import { Listbox } from "@headlessui/react";
+import { pluralize } from "~/utils";
 
 type SortBy = "date" | "firstName" | "lastName";
 
@@ -165,9 +166,14 @@ function Players({
       {groups.map((group) => (
         <Fragment key={group.name}>
           {group.name && (
-            <h2 className="mb-4 mt-8 border-b-[1px] border-b-white/10 px-2 pb-4 text-2xl font-bold">
-              {group.name} ans
-            </h2>
+            <div className="mb-4 mt-8 flex justify-between border-b-[1px] border-b-white/10 px-2 pb-4">
+              <h2 className="inline text-xl font-bold">{group.name} ans</h2>
+
+              <span className="opacity-30">
+                {group.players.length}{" "}
+                {pluralize("participant", draw.players.length)}
+              </span>
+            </div>
           )}
 
           <table className="z-0 table w-full">
@@ -315,8 +321,8 @@ export default function Index() {
 
               <div className="ml-auto gap-4 flex-center">
                 <div className="opacity-50">
-                  {draw.players.length} participant
-                  {draw.players.length > 1 && "s"}
+                  {draw.players.length}{" "}
+                  {pluralize("participant", draw.players.length)}
                 </div>
 
                 <Listbox

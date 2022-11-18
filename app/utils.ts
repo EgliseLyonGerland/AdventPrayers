@@ -71,3 +71,15 @@ export function useUser(): User {
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
+
+export function pluralize(
+  word: string | [string, string],
+  count: number,
+  suffix: string = "s"
+): string {
+  if (Array.isArray(word)) {
+    return count > 1 ? word[1] : word[0];
+  }
+
+  return count > 1 ? word + suffix : word;
+}
