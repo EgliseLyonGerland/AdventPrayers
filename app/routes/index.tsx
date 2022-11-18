@@ -213,7 +213,7 @@ export default function Index() {
           </Link>
         </div>
       </div>
-      <main className="container mx-auto mb-20 px-4">
+      <main className="container mx-auto px-4">
         {draw ? (
           <div className="mt-8">
             <div className="align-items mb-4 flex items-end gap-4">
