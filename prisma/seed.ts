@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import personsData from "./seed/persons";
+
 import drawsData from "./seed/draws";
+import personsData from "./seed/persons";
 
 const prisma = new PrismaClient();
 

@@ -1,3 +1,14 @@
+import { Listbox } from "@headlessui/react";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  EllipsisVerticalIcon,
+  PencilIcon,
+  PlusIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import type { ActionFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -7,17 +18,10 @@ import {
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
-import type { ActionFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import { Fragment } from "react";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  EllipsisVerticalIcon,
-  PencilIcon,
-  PlusIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+
+import EntitySelector from "~/components/entitySelector";
+import PersonModalForm from "~/components/personModalForm";
 import {
   addPlayer,
   cancelDraw,
@@ -28,10 +32,7 @@ import {
   makeDraw,
   updatePlayerAge,
 } from "~/models/draw.server";
-import EntitySelector from "~/components/entitySelector";
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
-import PersonModalForm from "~/components/personModalForm";
-import { Listbox } from "@headlessui/react";
 import { pluralize } from "~/utils";
 
 type SortBy = "date" | "firstName" | "lastName";

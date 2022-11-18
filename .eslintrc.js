@@ -20,5 +20,23 @@ module.exports = {
   },
   rules: {
     "prefer-template": "error",
+    "import/order": [
+      "error",
+      {
+        groups: ["builtin", "external", "internal", ["parent", "sibling"]],
+        pathGroups: [
+          {
+            pattern: "react",
+            group: "external",
+            position: "before",
+          },
+        ],
+        "newlines-between": "always",
+        alphabetize: {
+          order: "asc",
+          caseInsensitive: true,
+        },
+      },
+    ],
   },
 };
