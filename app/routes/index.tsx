@@ -199,6 +199,11 @@ export default function Index() {
                       <div className="flex items-center justify-between whitespace-nowrap">
                         <span>
                           {person.firstName} {person.lastName}
+                          <span className="ml-2 text-sm opacity-50">
+                            {person.age}
+                          </span>
+                          <br />
+                          <span className="opacity-30">{person.email}</span>
                         </span>
                         <span>
                           {isSelected(person.id) && <CheckIcon height={18} />}
