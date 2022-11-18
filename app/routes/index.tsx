@@ -25,6 +25,7 @@ import {
   deletePlayer,
   getDraw,
   makeDraw,
+  updatePlayerAge,
 } from "~/models/draw.server";
 import EntitySelector from "~/components/entitySelector";
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
@@ -102,6 +103,11 @@ export const action: ActionFunction = async ({ request }) => {
         lastName: `${formData.get("lastName")}`,
         email: `${formData.get("email")}`,
         gender: `${formData.get("gender")}`,
+        age: `${formData.get("age")}`,
+      });
+      await updatePlayerAge({
+        year,
+        id: `${formData.get("id")}`,
         age: `${formData.get("age")}`,
       });
       break;

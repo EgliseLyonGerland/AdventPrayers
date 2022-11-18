@@ -68,6 +68,17 @@ export async function addPlayer({
   });
 }
 
+export async function updatePlayerAge({
+  year,
+  id: personId,
+  age,
+}: Pick<Draw, "year"> & Pick<Person, "id" | "age">) {
+  return prisma.player.update({
+    where: { drawYear_personId: { drawYear: year, personId } },
+    data: { age },
+  });
+}
+
 export async function deletePlayer({
   year,
   id: personId,
