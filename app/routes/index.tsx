@@ -9,9 +9,10 @@ import {
 } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   CheckIcon,
+  ChevronDownIcon,
   PencilIcon,
   PlusIcon,
   XMarkIcon,
@@ -28,8 +29,17 @@ import {
 import EntitySelector from "~/components/entitySelector";
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
 import PersonModalForm from "~/components/personModalForm";
+import { Listbox } from "@headlessui/react";
+
+type SortBy = "date" | "firstName" | "lastName";
 
 const year = new Date().getFullYear();
+
+const sortByOptions: Record<SortBy, string> = {
+  date: "Date d'ajout",
+  firstName: "Prénom",
+  lastName: "Nom",
+};
 
 export async function loader() {
   const draw = await getDraw({ year });
@@ -101,21 +111,41 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 function Players({
-  draw: { drawn, players },
+  draw,
+  sortBy,
 }: {
   draw: NonNullable<Awaited<ReturnType<typeof getDraw>>>;
+  sortBy: SortBy;
 }) {
+  const { drawn } = draw;
+  let { players } = draw;
+
   if (players.length === 0) {
     return <span> Nobody for now :(</span>;
   }
 
+  switch (sortBy) {
+    case "firstName": {
+      players = players.sort((a, b) =>
+        a.person.firstName.localeCompare(b.person.firstName)
+      );
+      break;
+    }
+    case "lastName": {
+      players = players.sort((a, b) =>
+        a.person.lastName.localeCompare(b.person.lastName)
+      );
+      break;
+    }
+  }
+
   return (
-    <table className=" table w-full">
+    <table className="-z-10 table w-full">
       <tbody>
         {players.map(({ person, assigned, age }) => (
           <tr key={person.id} className="group hover">
             <td>
-              <div className=" flex items-center gap-8">
+              <div className="flex items-center gap-8">
                 <div>
                   <div>
                     {`${person.firstName} ${person.lastName}`}{" "}
@@ -163,6 +193,7 @@ function Players({
 }
 
 export default function Index() {
+  const [sortBy, setSortBy] = useState<SortBy>("date");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { draw, persons } = useLoaderData<typeof loader>();
@@ -185,67 +216,98 @@ export default function Index() {
       <main className="container mx-auto mb-20 px-4">
         {draw ? (
           <div className="mt-8">
-            {!draw.drawn && (
-              <div className="align-items mb-4 flex items-center gap-4">
-                <Form method="post" ref={addPlayerFormRef}>
-                  <input type="hidden" name="_action" value="addPlayer" />
+            <div className="align-items mb-4 flex items-end gap-4">
+              {!draw.drawn && (
+                <>
+                  <Form method="post" ref={addPlayerFormRef}>
+                    <input type="hidden" name="_action" value="addPlayer" />
 
-                  <EntitySelector
-                    name="Ajouter un participant"
-                    items={persons}
-                    keyProp="id"
-                    filterBy={["firstName", "lastName"]}
-                    renderItem={(person) => (
-                      <div className="flex items-center justify-between whitespace-nowrap">
-                        <span>
-                          {person.firstName} {person.lastName}
-                          <span className="ml-2 text-sm opacity-50">
-                            {person.age}
+                    <EntitySelector
+                      name="Ajouter un participant"
+                      items={persons}
+                      keyProp="id"
+                      filterBy={["firstName", "lastName"]}
+                      renderItem={(person) => (
+                        <div className="flex items-center justify-between whitespace-nowrap">
+                          <span>
+                            {person.firstName} {person.lastName}
+                            <span className="ml-2 text-sm opacity-50">
+                              {person.age}
+                            </span>
+                            <br />
+                            <span className="opacity-30">{person.email}</span>
                           </span>
-                          <br />
-                          <span className="opacity-30">{person.email}</span>
-                        </span>
-                        <span>
-                          {isSelected(person.id) && <CheckIcon height={18} />}
-                        </span>
-                      </div>
-                    )}
-                    onSelect={(person) => {
-                      if (!addPlayerFormRef.current) {
-                        return;
-                      }
+                          <span>
+                            {isSelected(person.id) && <CheckIcon height={18} />}
+                          </span>
+                        </div>
+                      )}
+                      onSelect={(person) => {
+                        if (!addPlayerFormRef.current) {
+                          return;
+                        }
 
-                      const formData = new FormData(addPlayerFormRef.current);
-                      formData.set("personId", person.id);
+                        const formData = new FormData(addPlayerFormRef.current);
+                        formData.set("personId", person.id);
 
-                      if (isSelected(person.id)) {
-                        formData.set("_action", "deletePlayer");
-                      } else {
-                        formData.set("age", person.age);
-                      }
+                        if (isSelected(person.id)) {
+                          formData.set("_action", "deletePlayer");
+                        } else {
+                          formData.set("age", person.age);
+                        }
 
-                      submit(formData, { method: "post" });
-                    }}
-                  />
-                </Form>
+                        submit(formData, { method: "post" });
+                      }}
+                    />
+                  </Form>
 
-                <div
-                  className="tooltip tooltip-right"
-                  data-tip="Créer une nouvelle personne"
-                >
-                  <NavLink className="btn-circle btn" to="/?showPersonForm">
-                    <PlusIcon height={24} />
-                  </NavLink>
-                </div>
+                  <div
+                    className="tooltip tooltip-right"
+                    data-tip="Créer une nouvelle personne"
+                  >
+                    <NavLink className="btn-circle btn" to="/?showPersonForm">
+                      <PlusIcon height={24} />
+                    </NavLink>
+                  </div>
+                </>
+              )}
 
-                <div className="ml-auto opacity-50">
+              <div className="ml-auto gap-4 flex-center">
+                <div className="opacity-50">
                   {draw.players.length} participant
                   {draw.players.length > 1 && "s"}
                 </div>
-              </div>
-            )}
 
-            <Players draw={draw} />
+                <Listbox
+                  value={sortBy}
+                  onChange={setSortBy}
+                  as="div"
+                  className="dropdown dropdown-end"
+                >
+                  <Listbox.Button
+                    as="button"
+                    className="btn-sm btn"
+                    tabIndex={0}
+                  >
+                    {sortByOptions[sortBy]}
+                    <ChevronDownIcon height={16} className="ml-2" />
+                  </Listbox.Button>
+                  <Listbox.Options
+                    as="ul"
+                    className="dropdown-content menu mt-2 w-52 rounded-md bg-base-300 p-2 shadow"
+                    tabIndex={0}
+                  >
+                    {Object.entries(sortByOptions).map(([value, label]) => (
+                      <Listbox.Option as="li" key={value} value={value}>
+                        <span>{label}</span>
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Listbox>
+              </div>
+            </div>
+
+            <Players draw={draw} sortBy={sortBy} />
 
             <Form method="post">
               <div className="mt-20 flex gap-2">

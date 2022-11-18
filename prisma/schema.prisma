@@ -46,13 +46,14 @@ model Draw {
 }
 
 model Player {
-  draw       Draw    @relation(fields: [drawYear], references: [year])
-  drawYear   Int
-  person     Person  @relation("Player", fields: [personId], references: [id])
-  personId   String
-  assigned   Person? @relation("Assigned", fields: [assignedId], references: [id])
-  assignedId String?
-  age        String
+  draw         Draw     @relation(fields: [drawYear], references: [year])
+  drawYear     Int
+  person       Person   @relation("Player", fields: [personId], references: [id])
+  personId     String
+  assigned     Person?  @relation("Assigned", fields: [assignedId], references: [id])
+  assignedId   String?
+  age          String
+  registeredAt DateTime @default(now())
 
   @@id([drawYear, personId])
 }

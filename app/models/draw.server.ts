@@ -34,6 +34,9 @@ export function getDraw({ year }: Pick<Draw, "year">) {
           },
           age: true,
         },
+        orderBy: {
+          registeredAt: "desc",
+        },
       },
     },
   });
@@ -56,7 +59,10 @@ export async function addPlayer({
     where: { year },
     data: {
       players: {
-        create: { personId, age },
+        create: {
+          personId,
+          age,
+        },
       },
     },
   });

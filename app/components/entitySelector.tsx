@@ -35,7 +35,7 @@ function EntitySelector<T>({
   return (
     <Combobox as="div" className="dropdown relative" onChange={onSelect}>
       <Combobox.Input
-        className="input-bordered input-primary input input-md focus:outline-none"
+        className="input-ghost input-secondary input input-md focus:outline-none"
         onChange={(event) => setQuery(event.target.value)}
         placeholder={name}
         autoComplete="off"
