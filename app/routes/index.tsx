@@ -265,7 +265,10 @@ export default function Index() {
                     className="tooltip tooltip-right"
                     data-tip="Créer une nouvelle personne"
                   >
-                    <NavLink className="btn-circle btn" to="/?showPersonForm">
+                    <NavLink
+                      className="btn-circle btn"
+                      to="/?showPersonForm=true"
+                    >
                       <PlusIcon height={24} />
                     </NavLink>
                   </div>
