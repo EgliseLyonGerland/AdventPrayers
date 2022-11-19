@@ -1,6 +1,7 @@
 import type { Draw, Person } from "@prisma/client";
 
 import { prisma } from "~/db.server";
+import { notNullable } from "~/utils";
 import { letsDraw } from "~/utils/draw";
 
 export function getDraw({ year }: Pick<Draw, "year">) {
@@ -92,7 +93,7 @@ export async function deletePlayer({
 }
 
 export async function makeDraw({ year }: Pick<Draw, "year">) {
-  const persons = await prisma.person.findMany();
+  const persons = await prisma.person.findMany({ include: { exclude: true } });
 
   const currentDraw = await prisma.draw.findUnique({
     where: { year },
@@ -117,7 +118,7 @@ export async function makeDraw({ year }: Pick<Draw, "year">) {
       )
     )
   )
-    .filter(<T>(item: T): item is NonNullable<T> => item !== null)
+    .filter(notNullable)
     .map((item) => item.players);
 
   const draw = letsDraw(currentDraw.players, prevDraws, persons);

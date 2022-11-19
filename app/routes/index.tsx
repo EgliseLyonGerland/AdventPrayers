@@ -123,6 +123,7 @@ export const action: ActionFunction = async ({ request, params }) => {
         email: `${formData.get("email")}`,
         gender: `${formData.get("gender")}`,
         age: `${formData.get("age")}`,
+        exclude: formData.getAll("exclude[]").map(String),
       });
 
       await addPlayer({ year, id: person.id, age: person.age });
@@ -136,6 +137,7 @@ export const action: ActionFunction = async ({ request, params }) => {
         email: `${formData.get("email")}`,
         gender: `${formData.get("gender")}`,
         age: `${formData.get("age")}`,
+        exclude: formData.getAll("exclude[]").map(String),
       });
       await updatePlayerAge({
         year,
@@ -295,7 +297,7 @@ export default function Index() {
       <main className="container mx-auto px-4">
         {draw ? (
           <div className="mt-8">
-            <div className="align-items mb-4 flex items-end gap-4">
+            <div className="align-items mb-4 gap-4 flex-center">
               {!draw.drawn && (
                 <>
                   <EntitySelector
@@ -340,7 +342,7 @@ export default function Index() {
                     data-tip="Créer une nouvelle personne"
                   >
                     <NavLink
-                      className="btn-circle btn"
+                      className="btn-sm btn-circle btn"
                       to={`/?${toQueryString(searchParams, {
                         showPersonForm: true,
                       })}`}
@@ -351,81 +353,75 @@ export default function Index() {
                 </>
               )}
 
-              <div className="ml-auto gap-4 flex-center">
-                <div className="opacity-50">
-                  {draw.players.length}{" "}
-                  {pluralize("participant", draw.players.length)}
-                </div>
-
-                <Listbox
-                  value={params.sortBy}
-                  onChange={(value) =>
-                    navigate(
-                      {
-                        search: toQueryString(searchParams, { sortBy: value }),
-                      },
-                      { replace: true }
-                    )
-                  }
-                  as="div"
-                  className="dropdown-end dropdown"
-                >
-                  <Listbox.Button
-                    as="button"
-                    className="btn-sm btn"
-                    tabIndex={0}
-                  >
-                    {sortByOptions[params.sortBy]}
-                    <ChevronDownIcon height={16} className="ml-2" />
-                  </Listbox.Button>
-                  <Listbox.Options
-                    as="ul"
-                    className="dropdown-content menu mt-2 w-52 rounded-md bg-base-300 p-2 shadow"
-                    tabIndex={0}
-                  >
-                    {Object.entries(sortByOptions).map(([value, label]) => (
-                      <Listbox.Option as="li" key={value} value={value}>
-                        <span>{label}</span>
-                      </Listbox.Option>
-                    ))}
-                  </Listbox.Options>
-                </Listbox>
-
-                <Listbox as="div" className="dropdown dropdown-left">
-                  <Listbox.Button
-                    as="button"
-                    className="btn-ghost btn-circle btn m-1"
-                    tabIndex={0}
-                  >
-                    <EllipsisVerticalIcon height={24} />
-                  </Listbox.Button>
-                  <Listbox.Options
-                    as="ul"
-                    className="dropdown-content menu rounded-box w-52  bg-base-300 p-2 shadow"
-                    tabIndex={0}
-                  >
-                    <Listbox.Option
-                      as="li"
-                      onClick={() =>
-                        navigate(
-                          {
-                            search: toQueryString(searchParams, {
-                              groupByAge: !params.groupByAge,
-                            }),
-                          },
-                          { replace: true }
-                        )
-                      }
-                      value="groupByAge"
-                    >
-                      <span>
-                        Grouper par age
-                        {params.groupByAge && <CheckIcon height={16} />}
-                      </span>
-                    </Listbox.Option>
-                  </Listbox.Options>
-                </Listbox>
+              <div className="ml-auto opacity-50">
+                {draw.players.length}{" "}
+                {pluralize("participant", draw.players.length)}
               </div>
+
+              <Listbox
+                value={params.sortBy}
+                onChange={(value) =>
+                  navigate(
+                    {
+                      search: toQueryString(searchParams, { sortBy: value }),
+                    },
+                    { replace: true }
+                  )
+                }
+                as="div"
+                className="dropdown dropdown-end"
+              >
+                <Listbox.Button as="button" className="btn-sm btn" tabIndex={0}>
+                  {sortByOptions[params.sortBy]}
+                  <ChevronDownIcon height={16} className="ml-2" />
+                </Listbox.Button>
+                <Listbox.Options
+                  as="ul"
+                  className="dropdown-content menu mt-2 w-52 rounded-md bg-base-300 p-2 shadow"
+                  tabIndex={0}
+                >
+                  {Object.entries(sortByOptions).map(([value, label]) => (
+                    <Listbox.Option as="li" key={value} value={value}>
+                      <span>{label}</span>
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Listbox>
+
+              <Listbox as="div" className="dropdown dropdown-left">
+                <Listbox.Button
+                  as="button"
+                  className="btn-ghost btn-sm btn-circle btn "
+                  tabIndex={0}
+                >
+                  <EllipsisVerticalIcon height={24} />
+                </Listbox.Button>
+                <Listbox.Options
+                  as="ul"
+                  className="dropdown-content menu rounded-box w-52  bg-base-300 p-2 shadow"
+                  tabIndex={0}
+                >
+                  <Listbox.Option
+                    as="li"
+                    onClick={() =>
+                      navigate(
+                        {
+                          search: toQueryString(searchParams, {
+                            groupByAge: !params.groupByAge,
+                          }),
+                        },
+                        { replace: true }
+                      )
+                    }
+                    value="groupByAge"
+                  >
+                    <span>
+                      Grouper par age
+                      {params.groupByAge && <CheckIcon height={16} />}
+                    </span>
+                  </Listbox.Option>
+                </Listbox.Options>
+              </Listbox>
             </div>
 
             <Players
@@ -517,6 +513,7 @@ export default function Index() {
                 ? persons.find((person) => person.id === params.personId)
                 : undefined
             }
+            persons={persons}
             onClose={() =>
               navigate(
                 {

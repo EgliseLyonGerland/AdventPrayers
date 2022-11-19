@@ -33,7 +33,7 @@ model Person {
   email       String?
   age         String   @default("18+")
   archived    Boolean  @default(false)
-  excluding   Person[] @relation("PersonExcluded")
+  exclude     Person[] @relation("PersonExcluded")
   excludedBy  Person[] @relation("PersonExcluded")
   players     Player[] @relation("Player")
   assignments Player[] @relation("Assigned")

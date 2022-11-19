@@ -6,10 +6,12 @@ import type { WithRequired } from "~/utils";
 
 type Player = WithRequired<Partial<Client.Player>, "personId">;
 type Draw = Pick<Client.Player, "personId" | "assignedId" | "age">[];
-type Person = Client.Person;
+type Person = Client.Person & {
+  exclude: Pick<Person, "id">[];
+};
 
 type ComputedPlayer = Player & {
-  exclude: Client.Person["id"][];
+  exclude: string[];
 };
 
 function sample<T>(array: T[]): T {
@@ -26,7 +28,7 @@ export function resolveExclude(
       (person) => person.id === player.personId
     );
 
-    let exclude: Client.Person["id"][] = [];
+    let exclude: string[] = [];
 
     // It excludes persons of the same family
     exclude.push(
@@ -40,9 +42,9 @@ export function resolveExclude(
     );
 
     // It excludes persons with a different age
-    // player.exclude = player.exclude.concat(
-    //   players.filter((item) => item.age !== player.age).map((item) => item.id),
-    // );
+    if (currentPerson?.exclude?.length) {
+      exclude.push(...currentPerson.exclude.map((person) => person.id));
+    }
 
     // It excludes persons already prayed during the two past events
     prevDraws.forEach((draw) => {

@@ -3,19 +3,25 @@ import type { ReactNode } from "react";
 import { useState, memo } from "react";
 
 type Props<T> = {
+  className?: string;
   name: string;
   items: T[];
   keyProp: keyof T;
   filterBy: keyof T | (keyof T)[];
+  vertical?: "top" | "bottom";
+  horizontal?: "start" | "end";
   renderItem: (value: T) => ReactNode;
   onSelect: (value: T) => void;
 };
 
 function EntitySelector<T>({
+  className,
   name,
   items = [],
   keyProp,
   filterBy,
+  vertical = "bottom",
+  horizontal = "start",
   renderItem,
   onSelect,
 }: Props<T>) {
@@ -33,9 +39,13 @@ function EntitySelector<T>({
         });
 
   return (
-    <Combobox as="div" className="dropdown relative" onChange={onSelect}>
+    <Combobox
+      as="div"
+      className={`dropdown-ope dropdown relative dropdown-${horizontal} dropdown-${vertical} ${className}`}
+      onChange={onSelect}
+    >
       <Combobox.Input
-        className="input-ghost input-secondary input input-md focus:outline-none"
+        className="input-ghost input-secondary input input-sm focus:outline-none"
         onChange={(event) => setQuery(event.target.value)}
         placeholder={name}
         autoComplete="off"
@@ -43,7 +53,7 @@ function EntitySelector<T>({
       <Combobox.Options
         as="ul"
         static
-        className="dropdown-content mt-2 max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md bg-base-200 shadow-xl focus:outline-none"
+        className="dropdown-content max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md bg-base-200 shadow-xl focus:outline-none"
       >
         {filteredItems.length === 0 ? (
           <div className="cursor-default select-none py-3 px-4 italic">

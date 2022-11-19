@@ -83,3 +83,7 @@ export function pluralize(
 
   return count > 1 ? word + suffix : word;
 }
+
+export function notNullable<T>(item: T): item is NonNullable<T> {
+  return !!item;
+}
