@@ -228,7 +228,7 @@ function Players({
       {groups.map((group) => (
         <Fragment key={group.name}>
           {group.name && (
-            <div className="mb-4 mt-8 flex justify-between border-b-[1px] border-b-white/10 px-2 pb-4">
+            <div className="mb-4 mt-8 flex justify-between border-b-[1px] border-b-white/10 px-4 pb-4">
               <h2 className="inline text-xl font-bold">{group.name} ans</h2>
 
               <span className="opacity-30">
@@ -237,7 +237,7 @@ function Players({
             </div>
           )}
 
-          <table className="z-0 table w-full">
+          <table className="table-zebra z-0 table w-full">
             <tbody>
               {group.players.map(({ person, assigned, age }) => (
                 <tr key={person.id} className="group hover">
@@ -329,61 +329,11 @@ export default function Index() {
   return (
     <>
       <main className="container mx-auto px-4">
-        {draw ? (
-          <div className="mt-8">
-            <div className="align-items mb-4 gap-4 flex-center">
-              {!draw.drawn && (
-                <>
-                  <EntitySelector
-                    name="Ajouter un participant"
-                    items={persons}
-                    keyProp="id"
-                    filterBy={["firstName", "lastName"]}
-                    renderItem={(person) => (
-                      <div className="flex items-center justify-between whitespace-nowrap">
-                        <span>
-                          {person.firstName} {person.lastName}
-                          <span className="ml-2 text-sm opacity-50">
-                            {person.age}
-                          </span>
-                          <div className="opacity-30">{person.email}</div>
-                        </span>
-                        <span>
-                          {isSelected(person.id) && <CheckIcon height={18} />}
-                        </span>
-                      </div>
-                    )}
-                    onSelect={(person) => {
-                      const formData = new FormData();
-                      formData.set("personId", person.id);
+        <div className="my-12 flex items-center gap-4">
+          <h1 className="text-4xl">Tirage {year}</h1>
 
-                      if (isSelected(person.id)) {
-                        formData.set("_action", "deletePlayer");
-                      } else {
-                        formData.set("_action", "addPlayer");
-                        formData.set("age", person.age);
-                      }
-
-                      submit(formData, { method: "post" });
-                    }}
-                  />
-
-                  <div
-                    className="tooltip tooltip-right"
-                    data-tip="Créer une nouvelle personne"
-                  >
-                    <NavLink
-                      className="btn-sm btn-circle btn"
-                      to={`/?${toQueryString(searchParams, {
-                        showPersonForm: true,
-                      })}`}
-                    >
-                      <PlusIcon height={24} />
-                    </NavLink>
-                  </div>
-                </>
-              )}
-
+          {draw && (
+            <>
               <div className="ml-auto opacity-50">
                 {draw.players.length}{" "}
                 {pluralize("participant", draw.players.length)}
@@ -392,7 +342,7 @@ export default function Index() {
               <Listbox as="div" className="dropdown-left dropdown">
                 <Listbox.Button
                   as="button"
-                  className="btn-ghost btn-sm btn-circle btn "
+                  className="btn-ghost btn-circle btn"
                   tabIndex={0}
                 >
                   <EllipsisVerticalIcon height={24} />
@@ -492,6 +442,64 @@ export default function Index() {
                   </Listbox.Option>
                 </Listbox.Options>
               </Listbox>
+            </>
+          )}
+        </div>
+
+        {draw ? (
+          <>
+            <div className="mb-4 flex items-center gap-4">
+              {!draw.drawn && (
+                <>
+                  <EntitySelector
+                    name="Ajouter un participant"
+                    items={persons}
+                    keyProp="id"
+                    filterBy={["firstName", "lastName"]}
+                    renderItem={(person) => (
+                      <div className="flex items-center justify-between whitespace-nowrap">
+                        <span>
+                          {person.firstName} {person.lastName}
+                          <span className="ml-2 text-sm opacity-50">
+                            {person.age}
+                          </span>
+                          <div className="opacity-30">{person.email}</div>
+                        </span>
+                        <span>
+                          {isSelected(person.id) && <CheckIcon height={18} />}
+                        </span>
+                      </div>
+                    )}
+                    onSelect={(person) => {
+                      const formData = new FormData();
+                      formData.set("personId", person.id);
+
+                      if (isSelected(person.id)) {
+                        formData.set("_action", "deletePlayer");
+                      } else {
+                        formData.set("_action", "addPlayer");
+                        formData.set("age", person.age);
+                      }
+
+                      submit(formData, { method: "post" });
+                    }}
+                  />
+
+                  <div
+                    className="tooltip tooltip-right"
+                    data-tip="Créer une nouvelle personne"
+                  >
+                    <NavLink
+                      className="btn-sm btn-circle btn"
+                      to={`/?${toQueryString(searchParams, {
+                        showPersonForm: true,
+                      })}`}
+                    >
+                      <PlusIcon height={24} />
+                    </NavLink>
+                  </div>
+                </>
+              )}
             </div>
 
             <Players
@@ -529,7 +537,7 @@ export default function Index() {
                 </div>
               </Form>
             )}
-          </div>
+          </>
         ) : (
           <div className="mt-4">
             <Form method="post">
