@@ -85,11 +85,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   let formData = await request.formData();
 
   switch (formData.get("_action")) {
-    case "create":
+    case "createDraw":
       await createDraw({ year });
       break;
 
-    case "delete":
+    case "deleteDraw":
       await deleteDraw({ year });
       break;
 
@@ -350,9 +350,7 @@ export default function Index() {
                         formData.set("age", person.age);
                       }
 
-                      submit(formData, {
-                        method: "post",
-                      });
+                      submit(formData, { method: "post" });
                     }}
                   />
 
@@ -388,7 +386,7 @@ export default function Index() {
                   )
                 }
                 as="div"
-                className="dropdown dropdown-end"
+                className="dropdown-end dropdown"
               >
                 <Listbox.Button as="button" className="btn-sm btn" tabIndex={0}>
                   {sortByOptions[params.sortBy]}
@@ -439,6 +437,26 @@ export default function Index() {
                       {params.groupByAge && <CheckIcon height={16} />}
                     </span>
                   </Listbox.Option>
+                  <div className="divider"></div>
+                  <Listbox.Option
+                    as="li"
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Es-tu sûr de vouloir supprimer le tirage ?"
+                        )
+                      ) {
+                        const formData = new FormData();
+                        formData.set("_action", "deleteDraw");
+                        formData.set("year", `${year}`);
+
+                        submit(formData, { method: "post" });
+                      }
+                    }}
+                    value="deleteDraw"
+                  >
+                    <span className="text-error">Supprimer le tirage</span>
+                  </Listbox.Option>
                 </Listbox.Options>
               </Listbox>
             </div>
@@ -460,9 +478,7 @@ export default function Index() {
                 formData.set("_action", "deletePlayer");
                 formData.set("personId", personId);
 
-                submit(formData, {
-                  method: "post",
-                });
+                submit(formData, { method: "post" });
               }}
             />
 
@@ -487,23 +503,6 @@ export default function Index() {
                     Lancer le tirage
                   </button>
                 )}
-                <button
-                  className="btn-outline btn-error btn ml-auto"
-                  type="submit"
-                  name="_action"
-                  value="delete"
-                  onClick={(e) => {
-                    if (
-                      !window.confirm(
-                        "Es-tu sûr de vouloir supprimer le tirage ?"
-                      )
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                >
-                  Supprimer le tirage
-                </button>
               </div>
             </Form>
           </div>
@@ -514,7 +513,7 @@ export default function Index() {
                 className="btn"
                 type="submit"
                 name="_action"
-                value="create"
+                value="createDraw"
               >
                 Créer le tirage {year}
               </button>

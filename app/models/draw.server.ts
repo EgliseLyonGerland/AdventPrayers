@@ -44,11 +44,12 @@ export function getDraw({ year }: Pick<Draw, "year">) {
   });
 }
 
-export function createDraw({ year }: Pick<Draw, "year">) {
+export async function createDraw({ year }: Pick<Draw, "year">) {
   return prisma.draw.create({ data: { year } });
 }
 
-export function deleteDraw({ year }: Pick<Draw, "year">) {
+export async function deleteDraw({ year }: Pick<Draw, "year">) {
+  await prisma.player.deleteMany({ where: { drawYear: year } });
   return prisma.draw.delete({ where: { year } });
 }
 
