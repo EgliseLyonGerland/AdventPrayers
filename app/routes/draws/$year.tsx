@@ -29,6 +29,7 @@ import {
   createDraw,
   deleteDraw,
   deletePlayer,
+  getDefaultDraw,
   getDraw,
   makeDraw,
   updatePlayerAge,
@@ -39,6 +40,7 @@ import { pluralize } from "~/utils";
 type LoaderData = {
   draw: Awaited<ReturnType<typeof getDraw>>;
   persons: Awaited<ReturnType<typeof getPersons>>;
+  drawExists: boolean;
 };
 
 type SortBy = "date" | "firstName" | "lastName";
@@ -96,7 +98,15 @@ export const loader: LoaderFunction = async ({ params }) => {
   const draw = await getDraw({ year });
   const persons = await getPersons();
 
-  return json({ draw, persons });
+  if (!draw) {
+    return json({
+      draw: getDefaultDraw({ year }),
+      persons,
+      drawExists: false,
+    });
+  }
+
+  return json({ draw, persons, drawExists: true });
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -191,10 +201,6 @@ function Players({
 }) {
   const { drawn } = draw;
   let { players } = draw;
-
-  if (players.length === 0) {
-    return <span> Nobody for now :(</span>;
-  }
 
   let groups: { name: string | null; players: typeof players }[] = [
     { name: null, players },
@@ -331,7 +337,7 @@ function Players({
 export default function Index() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { draw, persons } = useLoaderData<LoaderData>();
+  const { draw, persons, drawExists } = useLoaderData<LoaderData>();
   const submit = useSubmit();
 
   const year = getYearParam(useParams());
@@ -445,6 +451,9 @@ export default function Index() {
                   </Listbox.Option>
                   <Listbox.Option
                     as="li"
+                    disabled={!drawExists}
+                    className={!drawExists ? "disabled" : ""}
+                    value="deleteDraw"
                     onClick={() => {
                       if (
                         window.confirm(
@@ -457,7 +466,6 @@ export default function Index() {
                         submit(formData, { method: "post" });
                       }
                     }}
-                    value="deleteDraw"
                   >
                     <span className="text-error">Supprimer le tirage</span>
                   </Listbox.Option>

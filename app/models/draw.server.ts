@@ -7,6 +7,16 @@ export function getDraws() {
   return prisma.draw.findMany({ orderBy: { year: "asc" } });
 }
 
+export function getDefaultDraw({
+  year,
+}: Pick<Draw, "year">): Awaited<ReturnType<typeof getDraw>> {
+  return {
+    year,
+    drawn: false,
+    players: [],
+  };
+}
+
 export function getDraw({ year }: Pick<Draw, "year">) {
   return prisma.draw.findUnique({
     where: {
@@ -62,15 +72,14 @@ export async function addPlayer({
   id: personId,
   age,
 }: Pick<Draw, "year"> & Pick<Person, "id" | "age">) {
-  return prisma.draw.update({
+  return prisma.draw.upsert({
     where: { year },
-    data: {
-      players: {
-        create: {
-          personId,
-          age,
-        },
-      },
+    create: {
+      year,
+      players: { create: { personId, age } },
+    },
+    update: {
+      players: { create: { personId, age } },
     },
   });
 }
