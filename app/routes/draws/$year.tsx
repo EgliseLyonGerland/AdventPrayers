@@ -223,6 +223,8 @@ function Players({
     }));
   }
 
+  const missing = 3 - players.length;
+
   return (
     <>
       {groups.map((group) => (
@@ -303,6 +305,25 @@ function Players({
           </table>
         </Fragment>
       ))}
+
+      {players.length < 3 && (
+        <div className="hero mt-4 bg-base-200 p-8">
+          <div className="hero-content text-center">
+            <div className="max-w-md">
+              <h1 className="text-2xl font-bold">
+                C'est {missing < 3 && "toujours"} un peu vide ici !
+              </h1>
+              <p className="py-6 text-lg opacity-70">
+                Ajoute
+                {missing === 3
+                  ? " au moins 3 participants "
+                  : ` encore ${missing} ${pluralize("participant", missing)} `}
+                pour pouvoir lancer le tirage.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
