@@ -349,7 +349,7 @@ export default function Index() {
                 </Listbox.Button>
                 <Listbox.Options
                   as="ul"
-                  className="dropdown-content menu rounded-box w-52  bg-base-300 p-2 shadow"
+                  className="dropdown-content menu rounded-box w-52 bg-base-300 p-2 shadow"
                   tabIndex={0}
                 >
                   <li className="menu-title">

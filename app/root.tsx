@@ -7,10 +7,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 
 import Header from "./components/hearder";
-import { getUser } from "./session.server";
+import { getDraws } from "./models/draw.server";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 
 export const links: LinksFunction = () => {
@@ -24,12 +25,14 @@ export const meta: MetaFunction = () => ({
 });
 
 export async function loader({ request }: LoaderArgs) {
-  return json({
-    user: await getUser(request),
-  });
+  const draws = await getDraws();
+
+  return json({ draws });
 }
 
 export default function App() {
+  const { draws } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -37,7 +40,7 @@ export default function App() {
         <Links />
       </head>
       <body className="pb-10">
-        <Header />
+        <Header draws={draws} />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
