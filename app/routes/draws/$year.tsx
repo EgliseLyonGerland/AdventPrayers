@@ -523,11 +523,11 @@ export default function Index() {
               }}
             />
 
-            {!draw.drawn && (
+            {!draw.drawn && draw.players.length > 2 && (
               <Form method="post">
                 <div className="mt-20 gap-2 flex-center">
                   <button
-                    className="btn-accent btn-lg btn"
+                    className="btn-accent btn"
                     type="submit"
                     name="_action"
                     value="makeDraw"
