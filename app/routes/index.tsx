@@ -418,6 +418,9 @@ export default function Index() {
                   className="dropdown-content menu rounded-box w-52  bg-base-300 p-2 shadow"
                   tabIndex={0}
                 >
+                  <li className="menu-title">
+                    <span>Affichage</span>
+                  </li>
                   <Listbox.Option
                     as="li"
                     onClick={() =>
@@ -438,6 +441,24 @@ export default function Index() {
                     </span>
                   </Listbox.Option>
                   <div className="divider"></div>
+                  <li className="menu-title">
+                    <span>Actions</span>
+                  </li>
+                  <Listbox.Option
+                    as="li"
+                    onClick={() => {
+                      const formData = new FormData();
+                      formData.set("_action", "cancelDraw");
+                      formData.set("year", `${year}`);
+
+                      submit(formData, { method: "post" });
+                    }}
+                    disabled={!draw.drawn}
+                    value="cancelDraw"
+                    className={!draw.drawn ? "disabled" : ""}
+                  >
+                    <span>Annuler le tirage</span>
+                  </Listbox.Option>
                   <Listbox.Option
                     as="li"
                     onClick={() => {
@@ -482,29 +503,20 @@ export default function Index() {
               }}
             />
 
-            <Form method="post">
-              <div className="mt-20 flex gap-2">
-                {draw.drawn ? (
+            {!draw.drawn && (
+              <Form method="post">
+                <div className="mt-20 gap-2 flex-center">
                   <button
-                    className="btn"
-                    type="submit"
-                    name="_action"
-                    value="cancelDraw"
-                  >
-                    Annuler le tirage
-                  </button>
-                ) : (
-                  <button
-                    className="btn"
+                    className="btn-accent btn-lg btn"
                     type="submit"
                     name="_action"
                     value="makeDraw"
                   >
                     Lancer le tirage
                   </button>
-                )}
-              </div>
-            </Form>
+                </div>
+              </Form>
+            )}
           </div>
         ) : (
           <div className="mt-4">
