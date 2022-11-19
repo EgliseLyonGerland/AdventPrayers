@@ -9,6 +9,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import Header from "./components/hearder";
 import { getUser } from "./session.server";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 
@@ -36,6 +37,7 @@ export default function App() {
         <Links />
       </head>
       <body className="pb-10">
+        <Header />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

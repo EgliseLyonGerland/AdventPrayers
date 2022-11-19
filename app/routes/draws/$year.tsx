@@ -11,7 +11,6 @@ import { json, redirect } from "@remix-run/node";
 import type { Params } from "@remix-run/react";
 import {
   Form,
-  Link,
   NavLink,
   useLoaderData,
   useNavigate,
@@ -329,13 +328,6 @@ export default function Index() {
 
   return (
     <>
-      <div className="navbar bg-neutral text-neutral-content">
-        <div className="container mx-auto px-4">
-          <Link to="/" className="btn-ghost btn text-xl normal-case">
-            En Avent la prière !
-          </Link>
-        </div>
-      </div>
       <main className="container mx-auto px-4">
         {draw ? (
           <div className="mt-8">
