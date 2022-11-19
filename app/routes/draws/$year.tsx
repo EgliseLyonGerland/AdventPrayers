@@ -258,7 +258,7 @@ function Players({
                             {age}
                           </span>
                         </div>
-                        <div className="gap-2 text-sm text-white/30 flex-center">
+                        <div className="flex gap-2 text-sm text-white/30">
                           <span>{person.email}</span>
                           {person.exclude.length > 0 && (
                             <>
