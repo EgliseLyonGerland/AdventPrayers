@@ -1,7 +1,6 @@
 import type { Draw, Person } from "@prisma/client";
 
 import { prisma } from "~/db.server";
-import { notNullable } from "~/utils";
 import { letsDraw } from "~/utils/draw";
 
 export function getDraw({ year }: Pick<Draw, "year">) {
@@ -105,21 +104,20 @@ export async function makeDraw({ year }: Pick<Draw, "year">) {
   }
 
   const prevDraws = (
-    await Promise.all(
-      [year - 1, year - 2].map((item) =>
-        prisma.draw.findUnique({
-          where: { year: item },
-          select: {
-            players: {
-              select: { personId: true, assignedId: true, age: true },
-            },
-          },
-        })
-      )
-    )
-  )
-    .filter(notNullable)
-    .map((item) => item.players);
+    await prisma.draw.findMany({
+      where: {
+        year: {
+          lt: year,
+        },
+      },
+      select: {
+        players: {
+          select: { personId: true, assignedId: true, age: true },
+        },
+      },
+      take: 2,
+    })
+  ).map((item) => item.players);
 
   const draw = letsDraw(currentDraw.players, prevDraws, persons);
 
