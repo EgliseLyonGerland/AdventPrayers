@@ -233,19 +233,28 @@ function Players({
 
   return (
     <>
-      {groups.map((group) => (
-        <Fragment key={group.name}>
-          {group.name && (
-            <div className="mb-4 mt-8 flex justify-between border-b-[1px] border-b-white/10 px-4 pb-4">
-              <h2 className="inline text-xl font-bold">{group.name} ans</h2>
+      <table className="table-zebra z-0 table w-full">
+        {groups.map((group) => (
+          <Fragment key={group.name}>
+            {group.name && (
+              <tbody className="group">
+                <tr>
+                  <td colSpan={3}>
+                    <div className="flex justify-between border-b-[1px] border-b-white/10 pb-4 pt-8 group-first:pt-0">
+                      <h2 className="inline text-xl font-bold">
+                        {group.name} ans
+                      </h2>
 
-              <span className="opacity-30">
-                {group.players.length} {pluralize("participant", draw.players)}
-              </span>
-            </div>
-          )}
+                      <span className="opacity-30">
+                        {group.players.length}{" "}
+                        {pluralize("participant", draw.players)}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            )}
 
-          <table className="table-zebra z-0 table w-full">
             <tbody>
               {group.players.map(({ person, assigned, age }) => (
                 <tr key={person.id} className="group hover">
@@ -308,9 +317,9 @@ function Players({
                 </tr>
               ))}
             </tbody>
-          </table>
-        </Fragment>
-      ))}
+          </Fragment>
+        ))}
+      </table>
 
       {players.length < 3 && (
         <div className="hero mt-4 bg-base-200 p-8">
@@ -477,59 +486,57 @@ export default function Index() {
 
         {draw ? (
           <>
-            <div className="mb-4 flex items-center gap-4">
-              {!draw.drawn && (
-                <>
-                  <EntitySelector
-                    name="Ajouter un participant"
-                    items={persons}
-                    keyProp="id"
-                    filterBy={["firstName", "lastName"]}
-                    renderItem={(person) => (
-                      <div className="flex items-center justify-between whitespace-nowrap">
-                        <span>
-                          {person.firstName} {person.lastName}
-                          <span className="ml-2 text-sm opacity-50">
-                            {person.age}
-                          </span>
-                          <div className="opacity-30">{person.email}</div>
+            {!draw.drawn && (
+              <div className="mb-4 flex items-center gap-4">
+                <EntitySelector
+                  name="Ajouter un participant"
+                  items={persons}
+                  keyProp="id"
+                  filterBy={["firstName", "lastName"]}
+                  renderItem={(person) => (
+                    <div className="flex items-center justify-between whitespace-nowrap">
+                      <span>
+                        {person.firstName} {person.lastName}
+                        <span className="ml-2 text-sm opacity-50">
+                          {person.age}
                         </span>
-                        <span>
-                          {isSelected(person.id) && <CheckIcon height={18} />}
-                        </span>
-                      </div>
-                    )}
-                    onSelect={(person) => {
-                      const formData = new FormData();
-                      formData.set("personId", person.id);
+                        <div className="opacity-30">{person.email}</div>
+                      </span>
+                      <span>
+                        {isSelected(person.id) && <CheckIcon height={18} />}
+                      </span>
+                    </div>
+                  )}
+                  onSelect={(person) => {
+                    const formData = new FormData();
+                    formData.set("personId", person.id);
 
-                      if (isSelected(person.id)) {
-                        formData.set("_action", "deletePlayer");
-                      } else {
-                        formData.set("_action", "addPlayer");
-                        formData.set("age", person.age);
-                      }
+                    if (isSelected(person.id)) {
+                      formData.set("_action", "deletePlayer");
+                    } else {
+                      formData.set("_action", "addPlayer");
+                      formData.set("age", person.age);
+                    }
 
-                      submit(formData, { method: "post" });
-                    }}
-                  />
+                    submit(formData, { method: "post" });
+                  }}
+                />
 
-                  <div
-                    className="tooltip tooltip-right"
-                    data-tip="Créer une nouvelle personne"
+                <div
+                  className="tooltip tooltip-right"
+                  data-tip="Créer une nouvelle personne"
+                >
+                  <NavLink
+                    className="btn-sm btn-circle btn"
+                    to={`/?${toQueryString(searchParams, {
+                      showPersonForm: true,
+                    })}`}
                   >
-                    <NavLink
-                      className="btn-sm btn-circle btn"
-                      to={`/?${toQueryString(searchParams, {
-                        showPersonForm: true,
-                      })}`}
-                    >
-                      <PlusIcon height={24} />
-                    </NavLink>
-                  </div>
-                </>
-              )}
-            </div>
+                    <PlusIcon height={24} />
+                  </NavLink>
+                </div>
+              </div>
+            )}
 
             <Players
               draw={draw}
