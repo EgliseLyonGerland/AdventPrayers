@@ -1,7 +1,6 @@
 import { Listbox } from "@headlessui/react";
 import {
   CheckIcon,
-  ChevronDownIcon,
   EllipsisVerticalIcon,
   PencilIcon,
   PlusIcon,
@@ -46,10 +45,12 @@ type Params = {
 
 const year = new Date().getFullYear();
 
-const sortByOptions: Record<SortBy, string> = {
-  date: "Date d'ajout",
-  firstName: "Prénom",
-  lastName: "Nom",
+const sortByOptions: SortBy[] = ["date", "firstName", "lastName"];
+
+const sortByLabels: Record<SortBy, string> = {
+  date: "Par date d'ajout",
+  firstName: "Par prénom",
+  lastName: "Par nom",
 };
 
 const paramsDefaults: Params = {
@@ -375,37 +376,7 @@ export default function Index() {
                 {pluralize("participant", draw.players.length)}
               </div>
 
-              <Listbox
-                value={params.sortBy}
-                onChange={(value) =>
-                  navigate(
-                    {
-                      search: toQueryString(searchParams, { sortBy: value }),
-                    },
-                    { replace: true }
-                  )
-                }
-                as="div"
-                className="dropdown-end dropdown"
-              >
-                <Listbox.Button as="button" className="btn-sm btn" tabIndex={0}>
-                  {sortByOptions[params.sortBy]}
-                  <ChevronDownIcon height={16} className="ml-2" />
-                </Listbox.Button>
-                <Listbox.Options
-                  as="ul"
-                  className="dropdown-content menu mt-2 w-52 rounded-md bg-base-300 p-2 shadow"
-                  tabIndex={0}
-                >
-                  {Object.entries(sortByOptions).map(([value, label]) => (
-                    <Listbox.Option as="li" key={value} value={value}>
-                      <span>{label}</span>
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Listbox>
-
-              <Listbox as="div" className="dropdown dropdown-left">
+              <Listbox as="div" className="dropdown-left dropdown">
                 <Listbox.Button
                   as="button"
                   className="btn-ghost btn-sm btn-circle btn "
@@ -440,6 +411,36 @@ export default function Index() {
                       {params.groupByAge && <CheckIcon height={16} />}
                     </span>
                   </Listbox.Option>
+
+                  <div className="divider"></div>
+                  <li className="menu-title">
+                    <span>Ordonner</span>
+                  </li>
+                  {sortByOptions.map((value) => (
+                    <Listbox.Option
+                      as="li"
+                      key={value}
+                      value={value}
+                      disabled={params.sortBy === value}
+                      className={params.sortBy === value ? "disabled" : ""}
+                      onClick={() => {
+                        navigate(
+                          {
+                            search: toQueryString(searchParams, {
+                              sortBy: value,
+                            }),
+                          },
+                          { replace: true }
+                        );
+                      }}
+                    >
+                      <span className="flex justify-between">
+                        {sortByLabels[value]}
+                        {params.sortBy === value && <CheckIcon height={18} />}
+                      </span>
+                    </Listbox.Option>
+                  ))}
+
                   <div className="divider"></div>
                   <li className="menu-title">
                     <span>Actions</span>
