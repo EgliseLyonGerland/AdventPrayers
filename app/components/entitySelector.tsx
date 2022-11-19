@@ -42,7 +42,7 @@ function EntitySelector<T>({
     <Combobox
       as="div"
       className={`dropdown-ope dropdown relative dropdown-${horizontal} dropdown-${vertical} ${className}`}
-      onChange={onSelect}
+      onChange={(item: T) => onSelect(item)}
     >
       <Combobox.Input
         className="input-ghost input-secondary input input-sm focus:outline-none"

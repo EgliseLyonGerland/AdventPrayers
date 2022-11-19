@@ -213,8 +213,7 @@ function Players({
               <h2 className="inline text-xl font-bold">{group.name} ans</h2>
 
               <span className="opacity-30">
-                {group.players.length}{" "}
-                {pluralize("participant", draw.players.length)}
+                {group.players.length} {pluralize("participant", draw.players)}
               </span>
             </div>
           )}
@@ -228,9 +227,30 @@ function Players({
                       <div>
                         <div>
                           {`${person.firstName} ${person.lastName}`}{" "}
-                          <span className="ml-2 text-sm opacity-50">{age}</span>
+                          <span className="ml-2 text-sm text-white/50">
+                            {age}
+                          </span>
                         </div>
-                        <div className="opacity-30">{person.email}</div>
+                        <div className="gap-2 text-sm text-white/30 flex-center">
+                          <span>{person.email}</span>
+                          {person.exclude.length > 0 && (
+                            <>
+                              <span>•</span>
+                              <span
+                                className="tooltip tooltip-accent"
+                                data-tip={person.exclude
+                                  .map(
+                                    (item) =>
+                                      `${item.firstName} ${item.lastName}`
+                                  )
+                                  .join(`, `)}
+                              >
+                                {person.exclude.length}{" "}
+                                {pluralize("exclusion", person.exclude)}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <div
                         onClick={() => onNewPersonClick(person.id)}
@@ -312,8 +332,7 @@ export default function Index() {
                           <span className="ml-2 text-sm opacity-50">
                             {person.age}
                           </span>
-                          <br />
-                          <span className="opacity-30">{person.email}</span>
+                          <div className="opacity-30">{person.email}</div>
                         </span>
                         <span>
                           {isSelected(person.id) && <CheckIcon height={18} />}

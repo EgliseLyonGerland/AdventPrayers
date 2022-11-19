@@ -21,6 +21,7 @@ export function getDraw({ year }: Pick<Draw, "year">) {
               gender: true,
               email: true,
               age: true,
+              exclude: true,
             },
           },
           assigned: {

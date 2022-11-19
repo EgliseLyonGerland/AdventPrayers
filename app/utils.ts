@@ -74,14 +74,16 @@ export function validateEmail(email: unknown): email is string {
 
 export function pluralize(
   word: string | [string, string],
-  count: number,
+  count: number | any[],
   suffix: string = "s"
 ): string {
+  const total = Array.isArray(count) ? count.length : count;
+
   if (Array.isArray(word)) {
-    return count > 1 ? word[1] : word[0];
+    return total > 1 ? word[1] : word[0];
   }
 
-  return count > 1 ? word + suffix : word;
+  return total > 1 ? word + suffix : word;
 }
 
 export function notNullable<T>(item: T): item is NonNullable<T> {
