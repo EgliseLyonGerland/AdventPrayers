@@ -535,6 +535,19 @@ export default function Index() {
                     <PlusIcon height={24} />
                   </NavLink>
                 </div>
+
+                {draw.players.length > 2 && (
+                  <Form method="post" className="ml-auto">
+                    <button
+                      className="btn-accent btn-sm btn"
+                      type="submit"
+                      name="_action"
+                      value="makeDraw"
+                    >
+                      Lancer le tirage
+                    </button>
+                  </Form>
+                )}
               </div>
             )}
 
@@ -558,21 +571,6 @@ export default function Index() {
                 submit(formData, { method: "post" });
               }}
             />
-
-            {!draw.drawn && draw.players.length > 2 && (
-              <Form method="post">
-                <div className="mt-20 gap-2 flex-center">
-                  <button
-                    className="btn-accent btn"
-                    type="submit"
-                    name="_action"
-                    value="makeDraw"
-                  >
-                    Lancer le tirage
-                  </button>
-                </div>
-              </Form>
-            )}
           </>
         ) : (
           <div className="mt-4">
