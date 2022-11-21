@@ -530,7 +530,7 @@ export default function Index() {
                 >
                   <NavLink
                     className="btn-sm btn-circle btn"
-                    to={`/?${toQueryString(searchParams, {
+                    to={`?${toQueryString(searchParams, {
                       showPersonForm: true,
                     })}`}
                   >
