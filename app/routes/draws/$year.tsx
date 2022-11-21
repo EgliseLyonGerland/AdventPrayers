@@ -300,7 +300,9 @@ function Players({
                     {assigned && (
                       <span className="inline-block rounded-md bg-neutral px-4 py-2">
                         {`${assigned.firstName} ${assigned.lastName}`}
-                        <span className="ml-2 text-sm opacity-50">{age}</span>
+                        <span className="ml-2 text-sm opacity-50">
+                          {assigned.age}
+                        </span>
                       </span>
                     )}
                   </td>
