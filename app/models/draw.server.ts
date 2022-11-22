@@ -126,6 +126,9 @@ export async function makeDraw({ year }: Pick<Draw, "year">) {
         lt: year,
       },
     },
+    orderBy: {
+      year: "desc",
+    },
     include: {
       players: {
         select: { personId: true, assignedId: true, age: true },
