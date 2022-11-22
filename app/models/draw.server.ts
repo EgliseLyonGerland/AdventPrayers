@@ -71,6 +71,17 @@ export async function deleteDraw({ year }: Pick<Draw, "year">) {
   return prisma.draw.delete({ where: { year } });
 }
 
+export async function updateDraw({
+  year,
+  ages,
+  groups,
+}: Pick<Draw, "year" | "ages" | "groups">) {
+  return prisma.draw.update({
+    where: { year },
+    data: { ages, groups },
+  });
+}
+
 export async function addPlayer({
   year,
   id: personId,

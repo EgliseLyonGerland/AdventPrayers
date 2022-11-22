@@ -53,7 +53,7 @@ export default function PersonModalForm({
             htmlFor="addPersonModal"
             className="btn-sm btn-circle btn absolute right-4 top-4"
           >
-            ✕
+            <XMarkIcon height={16} />
           </label>
 
           <h3 className="mb-4 text-lg font-bold">

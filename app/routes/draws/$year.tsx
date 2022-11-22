@@ -1,6 +1,7 @@
-import { Listbox } from "@headlessui/react";
+import { Dialog, Listbox } from "@headlessui/react";
 import {
   CheckIcon,
+  Cog6ToothIcon,
   EllipsisVerticalIcon,
   PencilIcon,
   PlusIcon,
@@ -32,6 +33,7 @@ import {
   getDefaultDraw,
   getDraw,
   makeDraw,
+  updateDraw,
   updatePlayerAge,
 } from "~/models/draw.server";
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
@@ -49,6 +51,7 @@ type GroupBy = "player" | "age" | "group";
 
 type SearchParams = {
   showPersonForm: boolean;
+  showSettings: boolean;
   personId: string | null;
   sortBy: SortBy;
   groupBy: GroupBy;
@@ -72,6 +75,7 @@ const groupByLabels: Record<GroupBy, string> = {
 
 const searchParamsDefaults: SearchParams = {
   showPersonForm: false,
+  showSettings: false,
   personId: null,
   sortBy: "date",
   groupBy: "player",
@@ -184,6 +188,13 @@ export const action: ActionFunction = async ({ request, params }) => {
         age: `${formData.get("age")}`,
       });
       break;
+
+    case "saveSettings":
+      await updateDraw({
+        year,
+        ages: `${formData.get("ages")}`,
+        groups: `${formData.get("groups")}`,
+      });
   }
 
   const url = new URL(request.url);
@@ -191,6 +202,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return redirect(
     `/draws/${year}?${toQueryString(url.searchParams, {
       showPersonForm: false,
+      showSettings: false,
       personId: null,
     })}`
   );
@@ -371,6 +383,7 @@ export default function Index() {
 
   const settings: SearchParams = {
     showPersonForm: searchParams.get("showPersonForm") === "true",
+    showSettings: searchParams.get("showSettings") === "true",
     personId: searchParams.get("personId"),
     sortBy: (searchParams.get("sortBy") as SortBy) || "date",
     groupBy: (searchParams.get("groupBy") as GroupBy) || null,
@@ -547,16 +560,28 @@ export default function Index() {
                 </div>
 
                 {draw.players.length > 2 && (
-                  <Form method="post" className="ml-auto">
-                    <button
-                      className="btn-accent btn-sm btn"
-                      type="submit"
-                      name="_action"
-                      value="makeDraw"
-                    >
-                      Lancer le tirage
-                    </button>
-                  </Form>
+                  <>
+                    <Form method="post" className="ml-auto">
+                      <button
+                        className="btn-accent btn-sm btn"
+                        type="submit"
+                        name="_action"
+                        value="makeDraw"
+                      >
+                        Lancer le tirage
+                      </button>
+                    </Form>
+                    <div className="tooltip" data-tip="Configurer le tirage">
+                      <NavLink
+                        to={`?${toQueryString(searchParams, {
+                          showSettings: true,
+                        })}`}
+                        className="btn-ghost btn-circle btn"
+                      >
+                        <Cog6ToothIcon height={24} />
+                      </NavLink>
+                    </div>
+                  </>
                 )}
               </div>
             )}
@@ -592,6 +617,69 @@ export default function Index() {
           </div>
         )}
       </main>
+
+      {settings.showSettings && (
+        <Dialog
+          as="div"
+          className="modal-open modal"
+          open={true}
+          onClose={() => {
+            go({ showSettings: false });
+          }}
+        >
+          <Dialog.Panel as="div" className="modal-box">
+            <Dialog.Title as="h3" className="mb-4 text-lg font-bold">
+              Paramètres du tirage
+            </Dialog.Title>
+
+            <button
+              className="btn-sm btn-circle btn absolute right-4 top-4"
+              onClick={() => {
+                go({ showSettings: false });
+              }}
+            >
+              <XMarkIcon height={16} />
+            </button>
+
+            <Form method="post">
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text font-bold">Tranches d'age</span>
+                </label>
+                <input
+                  type="text"
+                  name="ages"
+                  className="input-bordered input"
+                  defaultValue={draw?.ages}
+                />
+              </div>
+
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text font-bold">Groupes d'age</span>
+                </label>
+                <input
+                  type="text"
+                  name="groups"
+                  className="input-bordered input"
+                  defaultValue={draw?.groups}
+                />
+              </div>
+
+              <div className="modal-action mt-8">
+                <button
+                  type="submit"
+                  name="_action"
+                  value={"saveSettings"}
+                  className="btn"
+                >
+                  Enregistrer
+                </button>
+              </div>
+            </Form>
+          </Dialog.Panel>
+        </Dialog>
+      )}
 
       {settings.showPersonForm && (
         <Form method="post">
