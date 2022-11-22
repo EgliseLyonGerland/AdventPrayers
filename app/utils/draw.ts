@@ -1,99 +1,119 @@
 import type * as Client from "@prisma/client";
+import { shuffle } from "lodash";
 
 import type { WithRequired } from "~/utils";
 
-type Player = WithRequired<Partial<Client.Player>, "personId">;
-type Draw = Pick<Client.Player, "personId" | "assignedId" | "age">[];
+import HamiltonianCycle from "./HamiltonianCycle";
+
+type Player = WithRequired<Partial<Client.Player>, "personId" | "age">;
+type Draw = Client.Draw & { players: Player[] };
 type Person = Client.Person & {
   exclude: Pick<Person, "id">[];
 };
 
-type ComputedPlayer = Player & {
-  exclude: string[];
-};
-
-function sample<T>(array: T[]): T {
-  return array[Math.floor(Math.random() * array.length)];
+function findPerson(id: string, persons: Person[]) {
+  return persons.find((person) => person.id === id) as Person;
 }
 
-export function resolveExclude(
-  players: Player[],
-  prevDraws: Draw[],
-  persons: Person[]
-): ComputedPlayer[] {
-  return players.map((player) => {
-    const currentPerson = persons.find(
-      (person) => person.id === player.personId
-    );
+function itExcludes(person: Person, other: Person) {
+  return !!person.exclude.find((person) => person.id === other.id);
+}
 
-    let exclude: string[] = [];
+function hasAlreadyPrayedForCandidate(
+  person: Person,
+  candidate: Person,
+  pastDraws: Draw[]
+) {
+  for (const draw of pastDraws) {
+    const row = draw.players.find((player) => player.personId === person.id);
 
-    // It excludes persons of the same family
-    exclude.push(
-      ...persons
-        .filter(
-          (person) =>
-            person.id !== currentPerson!.id &&
-            person.lastName === currentPerson!.lastName
-        )
-        .map((person) => person.id)
-    );
+    if (row?.assignedId === candidate.id) {
+      return true;
+    }
+  }
 
-    // It excludes persons with a different age
-    if (currentPerson?.exclude?.length) {
-      exclude.push(...currentPerson.exclude.map((person) => person.id));
+  return false;
+}
+
+function getGroup(age: string, groups: number[]): number {
+  const parsedAge = parseInt(age);
+
+  let index = 0;
+  for (const group of groups) {
+    if (group >= parsedAge) {
+      break;
     }
 
-    // It excludes persons already prayed during the two past events
-    prevDraws.forEach((draw) => {
-      const row = draw.find((item) => item.personId === player.personId);
+    index += 1;
+  }
 
-      if (row && row.assignedId) {
-        exclude.push(row.assignedId);
-      }
-    });
-
-    return { ...player, exclude: [...new Set(exclude)] };
-  });
+  return groups[index];
 }
 
-export function getCandidates(
-  currentPlayer: ComputedPlayer,
-  players: Player[],
-  currentDraw: Record<string, string>
-): string[] {
-  return players
-    .filter(
-      (player) =>
-        // The current player cannot pray for himself
-        currentPlayer.personId !== player.personId &&
-        // The current player cannot pray for someone with a different age
-        currentPlayer.age === player.age &&
-        // The current player cannot pray for a player praying for him
-        currentDraw[player.personId] !== currentPlayer.personId &&
-        // The current player cannot pray for someone already selected
-        !Object.values(currentDraw).includes(player.personId) &&
-        // The current player cannot pray for someone he excluded
-        !currentPlayer.exclude.includes(player.personId)
-    )
-    .map((player) => player.personId);
+function parseGroups(groups: string) {
+  return groups.split(",").map(Number);
+}
+
+function isCandidate(person1: Person, person2: Person, pastDraws: Draw[]) {
+  // The player and the candidate must be different
+  if (person1.id === person2.id) {
+    return false;
+  }
+
+  // The player and the candidate must not be in the same family
+  if (person1.lastName === person2.lastName) {
+    return false;
+  }
+  // The player and the candidate must not exclude each other
+  if (itExcludes(person1, person2)) {
+    return false;
+  }
+  // The player must not have prayed for the candidates in past draws
+  if (hasAlreadyPrayedForCandidate(person1, person2, pastDraws)) {
+    return false;
+  }
+
+  return true;
 }
 
 export function letsDraw(
-  players: Player[],
+  draw: Draw,
   pastDraws: Draw[],
   persons: Person[]
-) {
-  const result: Record<string, string> = {};
+): Record<string, string> {
+  const groups = parseGroups(draw.groups);
 
-  resolveExclude(players, pastDraws, persons)
-    .sort((a, b) => b.exclude.length - a.exclude.length)
-    .forEach((computedPlayer) => {
-      const candidates = getCandidates(computedPlayer, players, result);
-      const candidate = sample(candidates);
+  return groups.reduce<Record<string, string>>((acc, group) => {
+    const players = shuffle(
+      draw.players.filter((player) => getGroup(player.age, groups) === group)
+    );
 
-      result[computedPlayer.personId] = candidate || "";
+    if (players.length === 0) {
+      return acc;
+    }
+
+    const graph = players.map((player1) => {
+      const person1 = findPerson(player1.personId, persons);
+
+      return players.map((player2) => {
+        const person2 = findPerson(player2.personId, persons);
+
+        return isCandidate(person1, person2, pastDraws) ? 1 : 0;
+      });
     });
 
-  return result;
+    const ham = new HamiltonianCycle(graph);
+    const chain = ham.run().map((index) => players[index].personId);
+
+    return {
+      ...acc,
+      ...chain.reduce(
+        (acc, curr, index) => ({
+          ...acc,
+          [curr]: chain[index + 1] || chain[0],
+        }),
+        {}
+      ),
+    };
+  }, {});
 }

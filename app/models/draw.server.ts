@@ -13,6 +13,8 @@ export function getDefaultDraw({
   return {
     year,
     drawn: false,
+    ages: "6,10,14,18",
+    groups: "6,10,14,18",
     players: [],
   };
 }
@@ -25,6 +27,8 @@ export function getDraw({ year }: Pick<Draw, "year">) {
     select: {
       year: true,
       drawn: true,
+      ages: true,
+      groups: true,
       players: {
         select: {
           person: {
@@ -99,8 +103,6 @@ export async function deletePlayer({
   year,
   id: personId,
 }: Pick<Draw, "year"> & Pick<Person, "id">) {
-  console.log("deletePlayer", year, personId);
-
   return prisma.player.delete({
     where: { drawYear_personId: { drawYear: year, personId } },
   });
@@ -111,30 +113,28 @@ export async function makeDraw({ year }: Pick<Draw, "year">) {
 
   const currentDraw = await prisma.draw.findUnique({
     where: { year },
-    select: { players: { select: { personId: true } } },
+    include: { players: true },
   });
 
   if (!currentDraw || !persons) {
     return;
   }
 
-  const prevDraws = (
-    await prisma.draw.findMany({
-      where: {
-        year: {
-          lt: year,
-        },
+  const prevDraws = await prisma.draw.findMany({
+    where: {
+      year: {
+        lt: year,
       },
-      select: {
-        players: {
-          select: { personId: true, assignedId: true, age: true },
-        },
+    },
+    include: {
+      players: {
+        select: { personId: true, assignedId: true, age: true },
       },
-      take: 2,
-    })
-  ).map((item) => item.players);
+    },
+    take: 2,
+  });
 
-  const draw = letsDraw(currentDraw.players, prevDraws, persons);
+  const draw = letsDraw(currentDraw, prevDraws, persons);
 
   return prisma.draw.update({
     where: { year },
