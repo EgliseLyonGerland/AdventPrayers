@@ -6,10 +6,14 @@ import type { WithRequired } from "~/utils";
 import { inGroup, parseGroups } from "./groups";
 import HamiltonianCycle from "./HamiltonianCycle";
 
-type Player = WithRequired<Partial<Client.Player>, "personId" | "age">;
-type Draw = Client.Draw & { players: Player[] };
-type Person = Client.Person & {
-  exclude: Pick<Person, "id">[];
+export type Player = WithRequired<Partial<Client.Player>, "personId" | "age">;
+
+export type Draw = WithRequired<Partial<Client.Draw>, "groups"> & {
+  players: Player[];
+};
+
+export type Person = WithRequired<Partial<Client.Person>, "id" | "lastName"> & {
+  exclude: Pick<Client.Person, "id">[];
 };
 
 function findPerson(id: string, persons: Person[]) {
