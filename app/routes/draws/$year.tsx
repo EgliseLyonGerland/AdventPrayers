@@ -36,6 +36,7 @@ import {
 } from "~/models/draw.server";
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
 import { pluralize } from "~/utils";
+import { resolveGroup } from "~/utils/groups";
 
 type LoaderData = {
   draw: Awaited<ReturnType<typeof getDraw>>;
@@ -44,12 +45,13 @@ type LoaderData = {
 };
 
 type SortBy = "date" | "firstName" | "lastName";
+type GroupBy = "player" | "age" | "group";
 
 type SearchParams = {
   showPersonForm: boolean;
   personId: string | null;
   sortBy: SortBy;
-  groupByAge: boolean;
+  groupBy: GroupBy;
 };
 
 const sortByOptions: SortBy[] = ["date", "firstName", "lastName"];
@@ -60,11 +62,19 @@ const sortByLabels: Record<SortBy, string> = {
   lastName: "Par nom",
 };
 
+const groupByOptions: GroupBy[] = ["player", "age", "group"];
+
+const groupByLabels: Record<GroupBy, string> = {
+  player: "Par participant",
+  age: "Par tranche d'age",
+  group: "Par groupe d'age",
+};
+
 const searchParamsDefaults: SearchParams = {
   showPersonForm: false,
   personId: null,
   sortBy: "date",
-  groupByAge: false,
+  groupBy: "player",
 };
 
 function toQueryString(
@@ -189,44 +199,46 @@ export const action: ActionFunction = async ({ request, params }) => {
 function Players({
   draw,
   sortBy,
-  groupByAge,
+  groupBy,
   onNewPersonClick,
   onDeletePlayerClick,
 }: {
   draw: NonNullable<Awaited<ReturnType<typeof getDraw>>>;
   sortBy: SortBy;
-  groupByAge: boolean;
+  groupBy: GroupBy;
   onNewPersonClick: (id: string) => void;
   onDeletePlayerClick: (id: string) => void;
 }) {
   const { drawn } = draw;
   let { players } = draw;
 
+  if (sortBy !== "date") {
+    players = players.sort((a, b) =>
+      a.person[sortBy].localeCompare(b.person[sortBy])
+    );
+  }
+
   let groups: { name: string | null; players: typeof players }[] = [
     { name: null, players },
   ];
 
-  if (groupByAge) {
+  if (groupBy === "age" || groupBy === "group") {
     groups = players
       .sort((a, b) => parseInt(a.age) - parseInt(b.age))
       .reduce<typeof groups>((acc, player) => {
-        if (acc[acc.length - 1]?.name !== player.age) {
-          acc.push({ name: player.age, players: [] });
+        const name =
+          groupBy === "age"
+            ? player.age
+            : resolveGroup(player.age, draw.groups).label;
+
+        if (acc[acc.length - 1]?.name !== name) {
+          acc.push({ name, players: [] });
         }
 
         acc[acc.length - 1].players.push(player);
 
         return acc;
       }, []);
-  }
-
-  if (sortBy !== "date") {
-    groups = groups.map(({ name, players }) => ({
-      name,
-      players: players.sort((a, b) =>
-        a.person[sortBy].localeCompare(b.person[sortBy])
-      ),
-    }));
   }
 
   const missing = 3 - players.length;
@@ -361,7 +373,14 @@ export default function Index() {
     showPersonForm: searchParams.get("showPersonForm") === "true",
     personId: searchParams.get("personId"),
     sortBy: (searchParams.get("sortBy") as SortBy) || "date",
-    groupByAge: searchParams.get("groupByAge") === "true",
+    groupBy: (searchParams.get("groupBy") as GroupBy) || null,
+  };
+
+  const go = (params: Partial<SearchParams>) => {
+    navigate(
+      { search: toQueryString(searchParams, params) },
+      { replace: true }
+    );
   };
 
   return (
@@ -391,27 +410,27 @@ export default function Index() {
                   tabIndex={0}
                 >
                   <li className="menu-title">
-                    <span>Affichage</span>
+                    <span>Organiser</span>
                   </li>
-                  <Listbox.Option
-                    as="li"
-                    onClick={() =>
-                      navigate(
-                        {
-                          search: toQueryString(searchParams, {
-                            groupByAge: !settings.groupByAge,
-                          }),
-                        },
-                        { replace: true }
-                      )
-                    }
-                    value="groupByAge"
-                  >
-                    <span>
-                      Grouper par age
-                      {settings.groupByAge && <CheckIcon height={16} />}
-                    </span>
-                  </Listbox.Option>
+
+                  {groupByOptions.map((value) => (
+                    <Listbox.Option
+                      as="li"
+                      key={value}
+                      value={value}
+                      disabled={settings.groupBy === value}
+                      onClick={() => {
+                        go({ groupBy: value });
+                      }}
+                    >
+                      <span className="flex justify-between">
+                        {groupByLabels[value]}
+                        {settings.groupBy === value && (
+                          <CheckIcon height={18} />
+                        )}
+                      </span>
+                    </Listbox.Option>
+                  ))}
 
                   <div className="divider"></div>
                   <li className="menu-title">
@@ -423,16 +442,8 @@ export default function Index() {
                       key={value}
                       value={value}
                       disabled={settings.sortBy === value}
-                      className={settings.sortBy === value ? "disabled" : ""}
                       onClick={() => {
-                        navigate(
-                          {
-                            search: toQueryString(searchParams, {
-                              sortBy: value,
-                            }),
-                          },
-                          { replace: true }
-                        );
+                        go({ sortBy: value });
                       }}
                     >
                       <span className="flex justify-between">
@@ -524,10 +535,7 @@ export default function Index() {
                   }}
                 />
 
-                <div
-                  className="tooltip tooltip-right"
-                  data-tip="Créer une nouvelle personne"
-                >
+                <div className="tooltip" data-tip="Créer une nouvelle personne">
                   <NavLink
                     className="btn-sm btn-circle btn"
                     to={`?${toQueryString(searchParams, {
@@ -556,14 +564,9 @@ export default function Index() {
             <Players
               draw={draw}
               sortBy={settings.sortBy}
-              groupByAge={settings.groupByAge}
+              groupBy={settings.groupBy}
               onNewPersonClick={(personId) => {
-                navigate({
-                  search: toQueryString(searchParams, {
-                    showPersonForm: true,
-                    personId,
-                  }),
-                });
+                go({ showPersonForm: true, personId });
               }}
               onDeletePlayerClick={(personId) => {
                 const formData = new FormData();
@@ -600,17 +603,9 @@ export default function Index() {
                 : undefined
             }
             persons={persons}
-            onClose={() =>
-              navigate(
-                {
-                  search: toQueryString(searchParams, {
-                    showPersonForm: false,
-                    personId: null,
-                  }),
-                },
-                { replace: true }
-              )
-            }
+            onClose={() => {
+              go({ showPersonForm: false, personId: null });
+            }}
           />
         </Form>
       )}

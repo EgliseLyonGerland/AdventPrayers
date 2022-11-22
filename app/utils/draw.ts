@@ -3,6 +3,7 @@ import { shuffle } from "lodash";
 
 import type { WithRequired } from "~/utils";
 
+import { inGroup, parseGroups } from "./groups";
 import HamiltonianCycle from "./HamiltonianCycle";
 
 type Player = WithRequired<Partial<Client.Player>, "personId" | "age">;
@@ -33,25 +34,6 @@ function hasAlreadyPrayedForCandidate(
   }
 
   return false;
-}
-
-function getGroup(age: string, groups: number[]): number {
-  const parsedAge = parseInt(age);
-
-  let index = 0;
-  for (const group of groups) {
-    if (group >= parsedAge) {
-      break;
-    }
-
-    index += 1;
-  }
-
-  return groups[index];
-}
-
-function parseGroups(groups: string) {
-  return groups.split(",").map(Number);
 }
 
 function isCandidate(person1: Person, person2: Person, pastDraws: Draw[]) {
@@ -85,7 +67,7 @@ export function letsDraw(
 
   return groups.reduce<Record<string, string>>((acc, group) => {
     const players = shuffle(
-      draw.players.filter((player) => getGroup(player.age, groups) === group)
+      draw.players.filter((player) => inGroup(player.age, group))
     );
 
     if (players.length === 0) {
