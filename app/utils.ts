@@ -1,5 +1,7 @@
+import type { Params } from "@remix-run/react";
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
+import invariant from "tiny-invariant";
 
 import type { User } from "~/models/user.server";
 
@@ -88,4 +90,12 @@ export function pluralize(
 
 export function notNullable<T>(item: T): item is NonNullable<T> {
   return !!item;
+}
+
+export function getYearParam(params: Params): number {
+  invariant(params.year, `Year is required`);
+  const year = Number(params.year);
+  invariant(Number.isInteger(year), "Year must be a integer");
+
+  return year;
 }
