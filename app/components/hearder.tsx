@@ -19,7 +19,7 @@ function Header({ draws }: Props) {
   }
 
   return (
-    <div className="navbar bg-neutral text-neutral-content">
+    <div className="navbar sticky top-0 z-[1000] mb-12 bg-neutral text-neutral-content">
       <div className="container mx-auto px-4">
         <div className="mr-8">
           <Link to="/" className="text-xl normal-case">

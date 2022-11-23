@@ -27,8 +27,8 @@ export default function Index() {
   ];
 
   return (
-    <main className="container mx-auto px-4">
-      <div className="my-12 flex">
+    <main className="container mx-auto flex flex-1 flex-col px-4">
+      <div className="mb-12 flex">
         <h1 className="mr-8 text-4xl">Tirage {year}</h1>
 
         <div className="tabs">
