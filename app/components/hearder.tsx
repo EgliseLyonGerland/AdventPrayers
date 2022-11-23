@@ -29,7 +29,7 @@ function Header({ draws }: Props) {
 
         <Menu as="div" className="relative">
           <Menu.Button as="label" className="btn">
-            Tirages
+            Éditions
             <ChevronDownIcon height={16} className="ml-2" />
           </Menu.Button>
           <Transition

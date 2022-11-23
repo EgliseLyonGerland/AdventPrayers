@@ -29,7 +29,7 @@ export default function Index() {
   return (
     <main className="container mx-auto flex flex-1 flex-col px-4">
       <div className="mb-12 flex">
-        <h1 className="mr-8 text-4xl">Tirage {year}</h1>
+        <h1 className="mr-8 text-3xl font-bold">Édition {year}</h1>
 
         <div className="tabs">
           {routes.map((route) => (
