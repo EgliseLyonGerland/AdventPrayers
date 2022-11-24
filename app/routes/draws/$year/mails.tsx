@@ -2,7 +2,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { getDraw } from "~/models/draw.server";
@@ -63,6 +63,16 @@ const Mails = () => {
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const submit = useSubmit();
+  const checker = useRef<HTMLInputElement | null>(null);
+
+  let checkerStatus: "indeterminate" | "checked" | "unchecked";
+  if (recipients.length === 0) {
+    checkerStatus = "unchecked";
+  } else if (recipients.length === draw?.players.length) {
+    checkerStatus = "checked";
+  } else {
+    checkerStatus = "indeterminate";
+  }
 
   const handleSend = () => {
     const formData = new FormData();
@@ -77,6 +87,32 @@ const Mails = () => {
     submit(formData, { method: "post" });
   };
 
+  useEffect(() => {
+    if (!checker.current) {
+      return;
+    }
+
+    switch (checkerStatus) {
+      case "checked":
+        checker.current.checked = true;
+        checker.current.indeterminate = false;
+        break;
+
+      case "unchecked":
+        checker.current.checked = false;
+        checker.current.indeterminate = false;
+        break;
+
+      case "indeterminate":
+        checker.current.checked = true;
+        checker.current.indeterminate = true;
+    }
+  }, [checkerStatus]);
+
+  if (!draw) {
+    return;
+  }
+
   return (
     <>
       <div className="container mx-auto mb-4 flex items-center gap-4">
@@ -87,46 +123,70 @@ const Mails = () => {
       <div className="relative mx-auto w-full flex-1 overflow-hidden 2xl:container">
         <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200">
           <div className="flex h-full w-full min-w-[1400px]">
-            <ul className="menu menu-compact menu-vertical h-full flex-nowrap divide-y divide-white/10 overflow-y-auto bg-base-300">
-              {draw?.players.map(({ person, age }) => (
-                <li key={person.id}>
-                  <label htmlFor={`player${person.id}`} className="flex gap-4">
-                    <input
-                      id={`player${person.id}`}
-                      type="checkbox"
-                      className="checkbox checkbox-sm"
-                      checked={
-                        !!recipients.find(
-                          (recipient) => recipient.id === person.id
-                        )
-                      }
-                      onChange={(event) => {
-                        if (event.target.checked) {
-                          setRecipients(recipients.concat([person]));
-                        } else {
-                          setRecipients(
-                            recipients.filter(
-                              (recipient) => recipient.id !== person.id
-                            )
-                          );
+            <div className="flex flex-col overflow-hidden">
+              <label className="flex h-14 items-center gap-4 px-4 text-white/60">
+                <input
+                  ref={checker}
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  onChange={(event) => {
+                    if (event.target.checked) {
+                      setRecipients(
+                        draw.players.map((player) => player.person)
+                      );
+                    } else {
+                      setRecipients([]);
+                    }
+                  }}
+                />
+                {checkerStatus === "unchecked"
+                  ? "Tout cocher"
+                  : "Tout décocher"}
+              </label>
+              <ul className="menu menu-compact menu-vertical flex-1 flex-nowrap divide-y divide-white/10 overflow-y-auto bg-base-300">
+                {draw.players.map(({ person, age }) => (
+                  <li key={person.id}>
+                    <label
+                      htmlFor={`player${person.id}`}
+                      className="flex gap-4"
+                    >
+                      <input
+                        id={`player${person.id}`}
+                        type="checkbox"
+                        className="checkbox checkbox-sm"
+                        checked={
+                          !!recipients.find(
+                            (recipient) => recipient.id === person.id
+                          )
                         }
-                      }}
-                    />
-                    <div>
+                        onChange={(event) => {
+                          if (event.target.checked) {
+                            setRecipients(recipients.concat([person]));
+                          } else {
+                            setRecipients(
+                              recipients.filter(
+                                (recipient) => recipient.id !== person.id
+                              )
+                            );
+                          }
+                        }}
+                      />
                       <div>
-                        {`${person.firstName} ${person.lastName}`}
-                        <span className="ml-2 text-sm text-white/50">
-                          {age}
-                        </span>
+                        <div>
+                          {`${person.firstName} ${person.lastName}`}
+                          <span className="ml-2 text-sm text-white/50">
+                            {age}
+                          </span>
+                        </div>
+                        <div className="flex gap-2 text-sm text-white/30">
+                          <span>{person.email}</span>
+                        </div>
                       </div>
-                      <div className="flex gap-2 text-sm text-white/30">
-                        <span>{person.email}</span>
-                      </div>
-                    </div>
-                  </label>
-                </li>
-              ))}
-            </ul>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
             <div className="flex flex-1 flex-col">
               <div className="divide-y divide-white/10 border-b border-white/10 bg-base-200">
                 <div className="flex p-4">
