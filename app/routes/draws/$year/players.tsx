@@ -454,18 +454,16 @@ export default function Index() {
                   </div>
 
                   {draw.players.length > 2 && (
-                    <>
-                      <Form method="post">
-                        <button
-                          className="btn-accent btn-sm btn"
-                          type="submit"
-                          name="_action"
-                          value="makeDraw"
-                        >
-                          Lancer le tirage
-                        </button>
-                      </Form>
-                    </>
+                    <Form method="post">
+                      <button
+                        className="btn-accent btn-sm btn"
+                        type="submit"
+                        name="_action"
+                        value="makeDraw"
+                      >
+                        Lancer le tirage
+                      </button>
+                    </Form>
                   )}
 
                   <Listbox as="div" className="dropdown-left dropdown">
