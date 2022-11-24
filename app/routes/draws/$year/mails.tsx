@@ -2,6 +2,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
+import { kebabCase } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -61,9 +62,17 @@ const Mails = () => {
   const { draw } = useLoaderData<LoaderData>();
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [subject, setSubject] = useState("");
+  const [search, setSearch] = useState("");
   const [body, setBody] = useState("");
   const submit = useSubmit();
   const checker = useRef<HTMLInputElement | null>(null);
+
+  let players = draw?.players || [];
+  if (search) {
+    players = players.filter(({ person }) =>
+      kebabCase(`${person.firstName} ${person.lastName}`).includes(search)
+    );
+  }
 
   let checkerStatus: "indeterminate" | "checked" | "unchecked";
   if (recipients.length === 0) {
@@ -116,6 +125,14 @@ const Mails = () => {
   return (
     <>
       <div className="container mx-auto mb-4 flex items-center gap-4">
+        <input
+          type="text"
+          value={search}
+          className="input-bordered input-secondary input input-sm"
+          onChange={(event) => {
+            setSearch(kebabCase(event.target.value));
+          }}
+        />
         <button className="btn-accent btn-sm btn ml-auto" onClick={handleSend}>
           Envoyer
         </button>
@@ -131,9 +148,7 @@ const Mails = () => {
                   className="checkbox checkbox-sm"
                   onChange={(event) => {
                     if (event.target.checked) {
-                      setRecipients(
-                        draw.players.map((player) => player.person)
-                      );
+                      setRecipients(players.map((player) => player.person));
                     } else {
                       setRecipients([]);
                     }
@@ -143,12 +158,12 @@ const Mails = () => {
                   ? "Tout cocher"
                   : "Tout décocher"}
               </label>
-              <ul className="menu menu-compact menu-vertical flex-1 flex-nowrap divide-y divide-white/10 overflow-y-auto bg-base-300">
-                {draw.players.map(({ person, age }) => (
+              <ul className="menu menu-compact menu-vertical w-72 flex-1 flex-nowrap divide-y divide-white/10 overflow-y-auto bg-base-300">
+                {players.map(({ person, age }) => (
                   <li key={person.id}>
                     <label
                       htmlFor={`player${person.id}`}
-                      className="flex gap-4"
+                      className="flex w-full gap-4"
                     >
                       <input
                         id={`player${person.id}`}
@@ -171,15 +186,15 @@ const Mails = () => {
                           }
                         }}
                       />
-                      <div>
-                        <div>
-                          {`${person.firstName} ${person.lastName}`}
-                          <span className="ml-2 text-sm text-white/50">
+                      <div className="w-full overflow-hidden">
+                        <div className="flex w-full gap-2">
+                          <span className="overflow-auto overflow-ellipsis whitespace-nowrap">{`${person.firstName} ${person.lastName}`}</span>
+                          <span className="flex-shrink-0 text-sm text-white/50">
                             {age}
                           </span>
                         </div>
-                        <div className="flex gap-2 text-sm text-white/30">
-                          <span>{person.email}</span>
+                        <div className="overflow-auto overflow-ellipsis whitespace-nowrap text-sm text-white/30">
+                          {person.email}
                         </div>
                       </div>
                     </label>
