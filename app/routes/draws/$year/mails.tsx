@@ -241,17 +241,14 @@ const Mails = () => {
                   <span className="mr-2 whitespace-nowrap font-bold opacity-50">
                     À :
                   </span>
-                  <div className="flex flex-wrap gap-1">
-                    {recipients.map((recipient) => (
+                  <div className="flex flex-wrap items-center gap-1">
+                    {recipients.slice(0, 10).map((recipient) => (
                       <span
                         className="rounded-md bg-neutral pl-2 text-sm flex-center"
                         data-tip={recipient.email}
                         key={recipient.id}
                       >
-                        <span
-                          className="tooltip tooltip-bottom tooltip-accent cursor-default"
-                          data-tip={recipient.email}
-                        >{`${recipient.firstName} ${recipient.lastName}`}</span>
+                        <span className="cursor-default">{`${recipient.firstName} ${recipient.lastName}`}</span>
 
                         <button
                           className="btn-ghost btn-xs btn-circle btn ml-1"
@@ -267,6 +264,22 @@ const Mails = () => {
                         </button>
                       </span>
                     ))}
+                    {recipients.length > 10 && (
+                      <span
+                        className="tooltip tooltip-bottom tooltip-accent cursor-default px-2"
+                        data-tip={recipients
+                          .slice(10)
+                          .map(
+                            (recipient) =>
+                              `${recipient.firstName} ${recipient.lastName}`
+                          )
+                          .join(", ")}
+                      >
+                        <span className="text-sm opacity-50">
+                          {recipients.length - 10} de plus
+                        </span>
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center p-4">
