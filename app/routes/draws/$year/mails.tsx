@@ -156,6 +156,7 @@ const Mails = () => {
           onChange={(event) => {
             setSearch(kebabCase(event.target.value));
           }}
+          placeholder="Recherche"
           type="text"
           value={search}
         />
