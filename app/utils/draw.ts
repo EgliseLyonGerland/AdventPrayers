@@ -6,13 +6,13 @@ import type { WithRequired } from "~/utils";
 import { inGroup, parseGroups } from "./groups";
 import HamiltonianCycle from "./HamiltonianCycle";
 
-export type Player = WithRequired<Partial<Client.Player>, "personId" | "age">;
+export type Player = WithRequired<Client.Player, "personId" | "age">;
 
-export type Draw = WithRequired<Partial<Client.Draw>, "groups"> & {
+export type Draw = WithRequired<Client.Draw, "groups"> & {
   players: Player[];
 };
 
-export type Person = WithRequired<Partial<Client.Person>, "id" | "lastName"> & {
+export type Person = WithRequired<Client.Person, "id" | "lastName"> & {
   exclude: Pick<Client.Person, "id">[];
 };
 

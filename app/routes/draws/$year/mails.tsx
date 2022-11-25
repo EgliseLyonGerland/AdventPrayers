@@ -8,6 +8,7 @@ import invariant from "tiny-invariant";
 
 import { getDraw } from "~/models/draw.server";
 import { getPersons } from "~/models/person.server";
+import type { WithRequired } from "~/utils";
 import { getYearParam } from "~/utils";
 import type { Address } from "~/utils/email";
 import { sendEmail } from "~/utils/email";
@@ -16,7 +17,18 @@ type LoaderData = {
   draw: Awaited<ReturnType<typeof getDraw>>;
 };
 
-type Recipient = NonNullable<LoaderData["draw"]>["players"][number]["person"];
+type Player = WithRequired<
+  NonNullable<LoaderData["draw"]>["players"][number],
+  "person"
+>;
+type Person = WithRequired<
+  Player["person"],
+  "id" | "firstName" | "lastName" | "email"
+>;
+type Recipient = WithRequired<
+  Person,
+  "id" | "firstName" | "lastName" | "email"
+>;
 
 export const loader: LoaderFunction = async ({ params }) => {
   const year = getYearParam(params);
@@ -57,6 +69,26 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   return json({});
 };
+function getCheckerStatus(players: Player[], recipients: Recipient[]) {
+  return players.reduce<"indeterminate" | "checked" | "unchecked">(
+    (acc, curr, index) => {
+      if (acc === "indeterminate") {
+        return acc;
+      }
+
+      const found = !!recipients.find(
+        (recipient) => curr.person.id === recipient.id
+      );
+
+      if (found) {
+        return index > 0 && acc === "unchecked" ? "indeterminate" : "checked";
+      }
+
+      return acc === "checked" ? "indeterminate" : acc;
+    },
+    "unchecked"
+  );
+}
 
 const Mails = () => {
   const { draw } = useLoaderData<LoaderData>();
@@ -68,20 +100,14 @@ const Mails = () => {
   const checker = useRef<HTMLInputElement | null>(null);
 
   let players = draw?.players || [];
+
   if (search) {
     players = players.filter(({ person }) =>
       kebabCase(`${person.firstName} ${person.lastName}`).includes(search)
     );
   }
 
-  let checkerStatus: "indeterminate" | "checked" | "unchecked";
-  if (recipients.length === 0) {
-    checkerStatus = "unchecked";
-  } else if (recipients.length === draw?.players.length) {
-    checkerStatus = "checked";
-  } else {
-    checkerStatus = "indeterminate";
-  }
+  let checkerStatus = getCheckerStatus(players, recipients);
 
   const handleSend = () => {
     const formData = new FormData();

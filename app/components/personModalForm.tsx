@@ -9,7 +9,7 @@ import { notNullable } from "~/utils";
 import EntitySelector from "./entitySelector";
 
 type Data = WithRequired<
-  Partial<Person>,
+  Person,
   "id" | "firstName" | "lastName" | "email" | "gender" | "gender" | "age"
 >;
 
