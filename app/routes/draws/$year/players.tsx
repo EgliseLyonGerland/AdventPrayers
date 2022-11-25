@@ -470,7 +470,7 @@ export default function Index() {
             <Listbox as="div" className="dropdown-left dropdown">
               <Listbox.Button
                 as="button"
-                className="btn-ghost btn-circle btn"
+                className="btn-ghost btn-sm btn-circle btn"
                 tabIndex={0}
               >
                 <EllipsisVerticalIcon height={24} />

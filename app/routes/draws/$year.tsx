@@ -24,6 +24,7 @@ export default function Index() {
   const routes = [
     { path: `/draws/${year}/players`, label: "Participants" },
     { path: `/draws/${year}/mails`, label: "Messages" },
+    { path: `/draws/${year}/print`, label: "Impression" },
   ];
 
   return (
