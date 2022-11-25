@@ -144,6 +144,8 @@ const Mails = () => {
     }
   }, [checkerStatus]);
 
+  const ready = recipients.length > 0 && subject.trim() && body.trim();
+
   if (!draw) {
     return;
   }
@@ -160,7 +162,11 @@ const Mails = () => {
           type="text"
           value={search}
         />
-        <button className="btn-accent btn-sm btn ml-auto" onClick={handleSend}>
+        <button
+          className="btn-accent btn-sm btn ml-auto"
+          disabled={!ready}
+          onClick={handleSend}
+        >
           Envoyer
         </button>
       </div>
