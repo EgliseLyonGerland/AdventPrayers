@@ -152,12 +152,12 @@ const Mails = () => {
     <>
       <div className="container mx-auto mb-4 flex items-center gap-4">
         <input
-          type="text"
-          value={search}
           className="input-bordered input-secondary input input-sm"
           onChange={(event) => {
             setSearch(kebabCase(event.target.value));
           }}
+          type="text"
+          value={search}
         />
         <button className="btn-accent btn-sm btn ml-auto" onClick={handleSend}>
           Envoyer
@@ -169,8 +169,6 @@ const Mails = () => {
             <div className="flex flex-col overflow-hidden">
               <label className="flex h-14 items-center gap-4 px-4 text-white/60">
                 <input
-                  ref={checker}
-                  type="checkbox"
                   className="checkbox checkbox-sm"
                   onChange={(event) => {
                     if (event.target.checked) {
@@ -179,6 +177,8 @@ const Mails = () => {
                       setRecipients([]);
                     }
                   }}
+                  ref={checker}
+                  type="checkbox"
                 />
                 {checkerStatus === "unchecked"
                   ? "Tout cocher"
@@ -188,18 +188,17 @@ const Mails = () => {
                 {players.map(({ person, age }) => (
                   <li key={person.id}>
                     <label
-                      htmlFor={`player${person.id}`}
                       className="flex w-full gap-4"
+                      htmlFor={`player${person.id}`}
                     >
                       <input
-                        id={`player${person.id}`}
-                        type="checkbox"
-                        className="checkbox checkbox-sm"
                         checked={
                           !!recipients.find(
                             (recipient) => recipient.id === person.id
                           )
                         }
+                        className="checkbox checkbox-sm"
+                        id={`player${person.id}`}
                         onChange={(event) => {
                           if (event.target.checked) {
                             setRecipients(recipients.concat([person]));
@@ -211,6 +210,7 @@ const Mails = () => {
                             );
                           }
                         }}
+                        type="checkbox"
                       />
                       <div className="w-full overflow-hidden">
                         <div className="flex w-full gap-2">
@@ -237,9 +237,9 @@ const Mails = () => {
                   <div className="flex flex-wrap gap-1">
                     {recipients.map((recipient) => (
                       <span
-                        key={recipient.id}
                         className="rounded-md bg-neutral pl-2 text-sm flex-center"
                         data-tip={recipient.email}
+                        key={recipient.id}
                       >
                         <span
                           className="tooltip tooltip-bottom tooltip-accent cursor-default"
@@ -267,20 +267,20 @@ const Mails = () => {
                     Sujet :
                   </span>
                   <input
-                    type="text"
                     className="input input-sm w-full"
                     onChange={(event) => {
                       setSubject(event.target.value);
                     }}
+                    type="text"
                   />
                 </div>
               </div>
               <textarea
                 className="text-md h-full w-full resize-none bg-transparent p-4 font-mono text-white/60 outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
-                placeholder="Écris ton message..."
                 onChange={(event) => {
                   setBody(event.target.value);
                 }}
+                placeholder="Écris ton message..."
               ></textarea>
             </div>
             <div className="h-full flex-1 overflow-y-auto bg-white p-4 text-black">

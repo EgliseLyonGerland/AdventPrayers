@@ -22,7 +22,7 @@ function Header({ draws }: Props) {
     <div className="navbar sticky top-0 z-[1000] mb-12 bg-neutral text-neutral-content">
       <div className="container mx-auto px-4">
         <div className="mr-8">
-          <Link to="/" className="text-xl normal-case">
+          <Link className="text-xl normal-case" to="/">
             En Avent la prière !
           </Link>
         </div>
@@ -30,7 +30,7 @@ function Header({ draws }: Props) {
         <Menu as="div" className="relative">
           <Menu.Button as="label" className="btn">
             Éditions
-            <ChevronDownIcon height={16} className="ml-2" />
+            <ChevronDownIcon className="ml-2" height={16} />
           </Menu.Button>
           <Transition
             as={Fragment}
@@ -43,8 +43,8 @@ function Header({ draws }: Props) {
           >
             <Menu.Items
               as="ul"
-              tabIndex={0}
               className="menu absolute left-0 z-[1000] mt-2 origin-top-right rounded-md bg-base-300 shadow-md outline-none focus:outline-none"
+              tabIndex={0}
             >
               {years.map((year) => (
                 <Menu.Item

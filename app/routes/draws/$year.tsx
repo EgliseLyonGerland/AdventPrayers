@@ -34,11 +34,11 @@ export default function Index() {
         <div className="tabs">
           {routes.map((route) => (
             <NavLink
-              key={route.path}
-              to={route.path}
               className={clsx("tab tab-bordered", {
                 "tab-active": currentRoute.pathname === route.path,
               })}
+              key={route.path}
+              to={route.path}
             >
               {route.label}
             </NavLink>

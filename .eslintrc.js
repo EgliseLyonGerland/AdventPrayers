@@ -38,5 +38,7 @@ module.exports = {
         },
       },
     ],
+    "react/jsx-sort-props": 1,
+    "react/jsx-sort-default-props": 1,
   },
 };

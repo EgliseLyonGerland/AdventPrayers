@@ -34,7 +34,7 @@ export default function App() {
   const { draws } = useLoaderData<typeof loader>();
 
   return (
-    <html lang="en" className="h-full">
+    <html className="h-full" lang="en">
       <head>
         <Meta />
         <Links />

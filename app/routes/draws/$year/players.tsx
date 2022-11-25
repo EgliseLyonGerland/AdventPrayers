@@ -280,7 +280,7 @@ function Players({
 
             <tbody>
               {group.players.map(({ person, assigned, age }) => (
-                <tr key={person.id} className="group hover">
+                <tr className="group hover" key={person.id}>
                   <td>
                     <div className="flex items-center gap-8">
                       <div>
@@ -312,8 +312,8 @@ function Players({
                         </div>
                       </div>
                       <div
-                        onClick={() => onNewPersonClick(person.id)}
                         className="btn-ghost btn-circle btn invisible group-hover:visible"
+                        onClick={() => onNewPersonClick(person.id)}
                       >
                         <PencilIcon height={16} />
                       </div>
@@ -402,10 +402,23 @@ export default function Index() {
           {!draw.drawn && (
             <div className="mb-4 flex items-center gap-4">
               <EntitySelector
-                name="Ajouter un participant"
+                filterBy={["firstName", "lastName"]}
                 items={persons}
                 keyProp="id"
-                filterBy={["firstName", "lastName"]}
+                name="Ajouter un participant"
+                onSelect={(person) => {
+                  const formData = new FormData();
+                  formData.set("personId", person.id);
+
+                  if (isSelected(person.id)) {
+                    formData.set("_action", "deletePlayer");
+                  } else {
+                    formData.set("_action", "addPlayer");
+                    formData.set("age", person.age);
+                  }
+
+                  submit(formData, { method: "post" });
+                }}
                 renderItem={(person) => (
                   <div className="flex items-center justify-between whitespace-nowrap">
                     <span>
@@ -420,19 +433,6 @@ export default function Index() {
                     </span>
                   </div>
                 )}
-                onSelect={(person) => {
-                  const formData = new FormData();
-                  formData.set("personId", person.id);
-
-                  if (isSelected(person.id)) {
-                    formData.set("_action", "deletePlayer");
-                  } else {
-                    formData.set("_action", "addPlayer");
-                    formData.set("age", person.age);
-                  }
-
-                  submit(formData, { method: "post" });
-                }}
               />
 
               <div className="tooltip" data-tip="Créer une nouvelle personne">
@@ -457,8 +457,8 @@ export default function Index() {
                     <Form method="post">
                       <button
                         className="btn-accent btn-sm btn"
-                        type="submit"
                         name="_action"
+                        type="submit"
                         value="makeDraw"
                       >
                         Lancer le tirage
@@ -466,7 +466,7 @@ export default function Index() {
                     </Form>
                   )}
 
-                  <Listbox as="div" className="dropdown-left dropdown">
+                  <Listbox as="div" className="dropdown dropdown-left">
                     <Listbox.Button
                       as="button"
                       className="btn-ghost btn-circle btn"
@@ -486,12 +486,12 @@ export default function Index() {
                       {groupByOptions.map((value) => (
                         <Listbox.Option
                           as="li"
-                          key={value}
-                          value={value}
                           disabled={settings.groupBy === value}
+                          key={value}
                           onClick={() => {
                             go({ groupBy: value });
                           }}
+                          value={value}
                         >
                           <span className="flex justify-between">
                             {groupByLabels[value]}
@@ -509,12 +509,12 @@ export default function Index() {
                       {sortByOptions.map((value) => (
                         <Listbox.Option
                           as="li"
-                          key={value}
-                          value={value}
                           disabled={settings.sortBy === value}
+                          key={value}
                           onClick={() => {
                             go({ sortBy: value });
                           }}
+                          value={value}
                         >
                           <span className="flex justify-between">
                             {sortByLabels[value]}
@@ -531,32 +531,31 @@ export default function Index() {
                       </li>
                       <Listbox.Option
                         as="li"
-                        value="showSettings"
                         onClick={() => {
                           go({ showSettings: true });
                         }}
+                        value="showSettings"
                       >
                         <span>Configurer</span>
                       </Listbox.Option>
                       <Listbox.Option
                         as="li"
-                        value="cancelDraw"
-                        disabled={!draw.drawn}
                         className={!draw.drawn ? "disabled" : ""}
+                        disabled={!draw.drawn}
                         onClick={() => {
                           const formData = new FormData();
                           formData.set("_action", "cancelDraw");
 
                           submit(formData, { method: "post" });
                         }}
+                        value="cancelDraw"
                       >
                         <span>Annuler</span>
                       </Listbox.Option>
                       <Listbox.Option
                         as="li"
-                        disabled={!drawExists}
                         className={!drawExists ? "disabled" : ""}
-                        value="deleteDraw"
+                        disabled={!drawExists}
                         onClick={() => {
                           if (
                             window.confirm(
@@ -569,6 +568,7 @@ export default function Index() {
                             submit(formData, { method: "post" });
                           }
                         }}
+                        value="deleteDraw"
                       >
                         <span className="text-error">Supprimer</span>
                       </Listbox.Option>
@@ -581,11 +581,7 @@ export default function Index() {
 
           <Players
             draw={draw}
-            sortBy={settings.sortBy}
             groupBy={settings.groupBy}
-            onNewPersonClick={(personId) => {
-              go({ showPersonForm: true, personId });
-            }}
             onDeletePlayerClick={(personId) => {
               const formData = new FormData();
               formData.set("_action", "deletePlayer");
@@ -593,6 +589,10 @@ export default function Index() {
 
               submit(formData, { method: "post" });
             }}
+            onNewPersonClick={(personId) => {
+              go({ showPersonForm: true, personId });
+            }}
+            sortBy={settings.sortBy}
           />
         </>
       ) : (
@@ -600,8 +600,8 @@ export default function Index() {
           <Form method="post">
             <button
               className="btn"
-              type="submit"
               name="_action"
+              type="submit"
               value="createDraw"
             >
               Créer le tirage {year}
@@ -614,10 +614,10 @@ export default function Index() {
         <Dialog
           as="div"
           className="modal-open modal"
-          open={true}
           onClose={() => {
             go({ showSettings: false });
           }}
+          open={true}
         >
           <Dialog.Panel as="div" className="modal-box">
             <Dialog.Title as="h3" className="mb-4 text-lg font-bold">
@@ -639,10 +639,10 @@ export default function Index() {
                   <span className="label-text font-bold">Tranches d'age</span>
                 </label>
                 <input
-                  type="text"
-                  name="ages"
                   className="input-bordered input"
                   defaultValue={draw?.ages}
+                  name="ages"
+                  type="text"
                 />
               </div>
 
@@ -651,19 +651,19 @@ export default function Index() {
                   <span className="label-text font-bold">Groupes d'age</span>
                 </label>
                 <input
-                  type="text"
-                  name="groups"
                   className="input-bordered input"
                   defaultValue={draw?.groups}
+                  name="groups"
+                  type="text"
                 />
               </div>
 
               <div className="modal-action mt-8">
                 <button
-                  type="submit"
-                  name="_action"
-                  value={"saveSettings"}
                   className="btn"
+                  name="_action"
+                  type="submit"
+                  value={"saveSettings"}
                 >
                   Enregistrer
                 </button>
@@ -676,16 +676,16 @@ export default function Index() {
       {settings.showPersonForm && (
         <Form method="post">
           <PersonModalForm
-            edit={Boolean(settings.personId)}
             data={
               settings.personId
                 ? persons.find((person) => person.id === settings.personId)
                 : undefined
             }
-            persons={persons}
+            edit={Boolean(settings.personId)}
             onClose={() => {
               go({ showPersonForm: false, personId: null });
             }}
+            persons={persons}
           />
         </Form>
       )}

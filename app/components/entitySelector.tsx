@@ -45,15 +45,15 @@ function EntitySelector<T>({
       onChange={(item: T) => onSelect(item)}
     >
       <Combobox.Input
+        autoComplete="off"
         className="input-ghost input-secondary input input-sm focus:outline-none"
         onChange={(event) => setQuery(event.target.value)}
         placeholder={name}
-        autoComplete="off"
       />
       <Combobox.Options
         as="ul"
-        static
         className="dropdown-content max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md bg-base-200 shadow-xl focus:outline-none"
+        static
       >
         {filteredItems.length === 0 ? (
           <div className="cursor-default select-none py-3 px-4 italic">
