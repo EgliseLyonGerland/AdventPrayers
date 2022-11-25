@@ -1,11 +1,12 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
+import { useLoaderData, useParams, useSubmit } from "@remix-run/react";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 import { kebabCase } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
+import { useLocalStorage } from "usehooks-ts";
 
 import { getDraw } from "~/models/draw.server";
 import { getPersons } from "~/models/person.server";
@@ -114,11 +115,18 @@ function getCheckerStatus(players: Player[], recipients: Recipient[]) {
 }
 
 const Mails = () => {
+  const year = getYearParam(useParams());
   const { draw } = useLoaderData<LoaderData>();
-  const [recipients, setRecipients] = useState<Recipient[]>([]);
-  const [subject, setSubject] = useState("");
   const [search, setSearch] = useState("");
-  const [body, setBody] = useState("");
+  const [recipients, setRecipients] = useLocalStorage<Recipient[]>(
+    `draws.${year}.mails.draft.recipients`,
+    []
+  );
+  const [subject, setSubject] = useLocalStorage(
+    `draws.${year}.mails.draft.subject`,
+    ""
+  );
+  const [body, setBody] = useLocalStorage(`draws.${year}.mails.draft.body`, "");
   const submit = useSubmit();
   const checker = useRef<HTMLInputElement | null>(null);
 
@@ -322,6 +330,7 @@ const Mails = () => {
                   </span>
                   <input
                     className="input input-sm w-full"
+                    defaultValue={subject}
                     onChange={(event) => {
                       setSubject(event.target.value);
                     }}
@@ -332,6 +341,7 @@ const Mails = () => {
               <ReactTextareaAutocomplete
                 className="text-md h-full w-full resize-none bg-transparent p-4 font-mono text-white/60 outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
                 containerClassName="h-full w-full relative"
+                defaultValue={body}
                 dropdownClassName="absolute"
                 listClassName="menu menu-compact bg-neutral mt-6"
                 loadingComponent={({ data }) => <div>Loading</div>}
