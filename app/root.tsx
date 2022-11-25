@@ -12,10 +12,14 @@ import {
 
 import Header from "./components/hearder";
 import { getDraws } from "./models/draw.server";
+import baseStylesheetUrl from "./styles/base.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
+  return [
+    { rel: "stylesheet", href: tailwindStylesheetUrl },
+    { rel: "stylesheet", href: baseStylesheetUrl },
+  ];
 };
 
 export const meta: MetaFunction = () => ({

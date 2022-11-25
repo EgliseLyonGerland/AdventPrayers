@@ -1,39 +1,74 @@
-import nodemailer from "nodemailer";
+import { get } from "lodash";
 
-export type Address = {
-  name: string;
-  address: string;
+import type { Nullable } from "~/types";
+
+import type { Draw, Person } from "./draw.server";
+
+type VariableGenerator = (
+  draw: Draw,
+  person: Person,
+  assigned: Nullable<Person>
+) => string | number | undefined | null;
+
+interface VariableGenerators {
+  [n: string]: VariableGenerator | VariableGenerators;
+}
+
+const variableGenerators: VariableGenerators = {
+  year: (draw) => draw.year,
+  nextYear: (draw) => (draw.year ? draw.year + 1 : null),
+  src: {
+    firstName: (_, person) => person.firstName,
+    lastName: (_, person) => person.lastName,
+    pronoun: (_, person) => (person.gender === "male" ? "lui" : "elle"),
+  },
+  dst: {
+    firstName: (_, __, assigned) => assigned?.firstName,
+    lastName: (_, __, assigned) => assigned?.lastName,
+    pronoun: (_, __, assigned) =>
+      assigned ? (assigned.gender === "male" ? "lui" : "elle") : null,
+  },
 };
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
-  secure: false,
-  auth: {
-    user: process.env.GMAIL_USERNAME,
-    pass: process.env.GMAIL_PASSWORD,
-  },
-});
+function getVariables(
+  generators: VariableGenerators,
+  prefix: string = ""
+): string[] {
+  return Object.entries(generators).reduce<string[]>(
+    (acc, [key, generator]) => {
+      if (typeof generator === "function") {
+        return acc.concat(`${prefix}${key}`);
+      }
 
-export function sendEmail({
-  subject,
-  body,
-  recipients,
-}: {
-  subject: string;
-  body: string;
-  recipients: Address[];
-}) {
-  return transporter.sendMail({
-    from: {
-      name: "En Avent la prière !",
-      address: `${process.env.GMAIL_USERNAME}`,
+      return acc.concat(getVariables(generator, `${prefix}${key}.`));
     },
-    to:
-      process.env.NODE_ENV === "production"
-        ? recipients
-        : { name: "Nicolas Bazille", address: "oltodo@msn.com" },
-    subject,
-    html: body,
+    []
+  );
+}
+
+export const variables = getVariables(variableGenerators);
+
+export function generate(
+  text: string,
+  draw: Draw,
+  person: Person,
+  assigned?: Nullable<Person>
+): string {
+  return text.replace(/%([\w.]+)%/g, (match, variableName) => {
+    const generator = get(variableGenerators, variableName) as
+      | VariableGenerator
+      | undefined;
+
+    if (typeof generator !== "function") {
+      return match;
+    }
+
+    const result = generator(draw, person, assigned);
+
+    if (!result) {
+      return match;
+    }
+
+    return `${result}`;
   });
 }

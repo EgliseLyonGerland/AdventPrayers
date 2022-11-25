@@ -2,6 +2,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
+import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 import { kebabCase } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
@@ -10,8 +11,9 @@ import { getDraw } from "~/models/draw.server";
 import { getPersons } from "~/models/person.server";
 import type { WithRequired } from "~/utils";
 import { getYearParam } from "~/utils";
-import type { Address } from "~/utils/email";
-import { sendEmail } from "~/utils/email";
+import { generate, variables } from "~/utils/email";
+import type { Address } from "~/utils/email.server";
+import { sendEmail } from "~/utils/email.server";
 
 type LoaderData = {
   draw: Awaited<ReturnType<typeof getDraw>>;
@@ -38,6 +40,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const year = getYearParam(params);
   const formData = await request.formData();
 
   switch (formData.get("_action")) {
@@ -51,24 +54,44 @@ export const action: ActionFunction = async ({ request, params }) => {
       invariant(body, "You must provide a body");
       invariant(recipients.length, "You must provide at least one recipient");
 
-      await sendEmail({
-        subject,
-        body,
-        recipients: persons.reduce<Address[]>((acc, person) => {
-          if (recipients.includes(person.id) && person.email) {
-            acc.push({
-              name: `${person.firstName} ${person.lastName}`,
-              address: person.email,
-            });
+      const draw = await getDraw({ year });
+
+      if (!draw) {
+        break;
+      }
+
+      await Promise.all(
+        recipients.map((recipient) => {
+          const player = draw.players.find(
+            (player) => player.personId === recipient
+          );
+
+          if (!player) {
+            return null;
           }
-          return acc;
-        }, []),
-      });
+
+          return sendEmail({
+            subject: generate(subject, draw, player.person, player.assigned),
+            body: generate(body, draw, player.person, player.assigned),
+            recipients: persons.reduce<Address[]>((acc, person) => {
+              if (recipients.includes(person.id) && person.email) {
+                acc.push({
+                  name: `${person.firstName} ${person.lastName}`,
+                  address: person.email,
+                });
+              }
+              return acc;
+            }, []),
+          });
+        })
+      );
+
       break;
   }
 
   return json({});
 };
+
 function getCheckerStatus(players: Player[], recipients: Recipient[]) {
   return players.reduce<"indeterminate" | "checked" | "unchecked">(
     (acc, curr, index) => {
@@ -149,6 +172,17 @@ const Mails = () => {
   if (!draw) {
     return;
   }
+
+  const generatePreview = (text: string) => {
+    let example = draw.players[0];
+    if (recipients.length) {
+      example =
+        draw.players.find((player) => player.personId === recipients[0].id) ||
+        example;
+    }
+
+    return generate(text, draw, example.person, example.assigned || undefined);
+  };
 
   return (
     <>
@@ -295,19 +329,31 @@ const Mails = () => {
                   />
                 </div>
               </div>
-              <textarea
+              <ReactTextareaAutocomplete
                 className="text-md h-full w-full resize-none bg-transparent p-4 font-mono text-white/60 outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
+                containerClassName="h-full w-full relative"
+                dropdownClassName="absolute"
+                listClassName="menu menu-compact bg-neutral mt-6"
+                loadingComponent={({ data }) => <div>Loading</div>}
+                minChar={0}
                 onChange={(event) => {
                   setBody(event.target.value);
                 }}
                 placeholder="Écris ton message..."
-              ></textarea>
+                trigger={{
+                  "%": {
+                    dataProvider: () => variables,
+                    component: ({ entity }) => <span>{`${entity}`}</span>,
+                    output: (item) => `%${item}%`,
+                  },
+                }}
+              ></ReactTextareaAutocomplete>
             </div>
             <div className="h-full flex-1 overflow-y-auto bg-white p-4 text-black">
               <p className="mb-4 border-b pb-4 text-2xl font-bold">
-                {subject || "Aucun titre"}
+                {subject ? generatePreview(subject) : "Aucun titre"}
               </p>
-              <p className="whitespace-pre-wrap">{body}</p>
+              <p className="whitespace-pre-wrap">{generatePreview(body)}</p>
             </div>
           </div>
         </div>

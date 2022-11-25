@@ -1,0 +1,3 @@
+.rta__entity--selected {
+  @apply active;
+}

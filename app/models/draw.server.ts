@@ -50,8 +50,11 @@ export function getDraw({ year }: Pick<Draw, "year">) {
               gender: true,
               email: true,
               age: true,
+              exclude: true,
             },
           },
+          personId: true,
+          assignedId: true,
           age: true,
         },
         orderBy: {
