@@ -1,7 +1,7 @@
 import type { Draw, Person } from "@prisma/client";
 
 import { prisma } from "~/db.server";
-import { letsDraw } from "~/utils/draw";
+import { letsDraw } from "~/utils/draw.server";
 
 export function getDraws() {
   return prisma.draw.findMany({ orderBy: { year: "asc" } });

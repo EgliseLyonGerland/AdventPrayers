@@ -1,5 +1,5 @@
-import type { Draw, Person } from "../draw";
-import { letsDraw } from "../draw";
+import type { Draw, Person } from "../draw.server";
+import { letsDraw } from "../draw.server";
 
 vi.mock("lodash", () => {
   return {
