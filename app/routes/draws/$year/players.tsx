@@ -399,185 +399,179 @@ export default function Index() {
     <div className="container mx-auto">
       {draw ? (
         <>
-          {!draw.drawn && (
-            <div className="mb-4 flex items-center gap-4">
-              <EntitySelector
-                filterBy={["firstName", "lastName"]}
-                items={persons}
-                keyProp="id"
-                name="Ajouter un participant"
-                onSelect={(person) => {
-                  const formData = new FormData();
-                  formData.set("personId", person.id);
+          <div className="mb-4 flex items-center gap-4">
+            {!draw.drawn && (
+              <>
+                <EntitySelector
+                  filterBy={["firstName", "lastName"]}
+                  items={persons}
+                  keyProp="id"
+                  name="Ajouter un participant"
+                  onSelect={(person) => {
+                    const formData = new FormData();
+                    formData.set("personId", person.id);
 
-                  if (isSelected(person.id)) {
-                    formData.set("_action", "deletePlayer");
-                  } else {
-                    formData.set("_action", "addPlayer");
-                    formData.set("age", person.age);
-                  }
+                    if (isSelected(person.id)) {
+                      formData.set("_action", "deletePlayer");
+                    } else {
+                      formData.set("_action", "addPlayer");
+                      formData.set("age", person.age);
+                    }
 
-                  submit(formData, { method: "post" });
-                }}
-                renderItem={(person) => (
-                  <div className="flex items-center justify-between whitespace-nowrap">
-                    <span>
-                      {person.firstName} {person.lastName}
-                      <span className="ml-2 text-sm opacity-50">
-                        {person.age}
+                    submit(formData, { method: "post" });
+                  }}
+                  renderItem={(person) => (
+                    <div className="flex items-center justify-between whitespace-nowrap">
+                      <span>
+                        {person.firstName} {person.lastName}
+                        <span className="ml-2 text-sm opacity-50">
+                          {person.age}
+                        </span>
+                        <div className="opacity-30">{person.email}</div>
                       </span>
-                      <div className="opacity-30">{person.email}</div>
-                    </span>
-                    <span>
-                      {isSelected(person.id) && <CheckIcon height={18} />}
-                    </span>
-                  </div>
-                )}
-              />
-
-              <div className="tooltip" data-tip="Créer une nouvelle personne">
-                <NavLink
-                  className="btn-sm btn-circle btn"
-                  to={`?${toQueryString(searchParams, {
-                    showPersonForm: true,
-                  })}`}
-                >
-                  <PlusIcon height={24} />
-                </NavLink>
-              </div>
-
-              {draw && (
-                <>
-                  <div className="ml-auto opacity-50">
-                    {draw.players.length}{" "}
-                    {pluralize("participant", draw.players.length)}
-                  </div>
-
-                  {draw.players.length > 2 && (
-                    <Form method="post">
-                      <button
-                        className="btn-accent btn-sm btn"
-                        name="_action"
-                        type="submit"
-                        value="makeDraw"
-                      >
-                        Lancer le tirage
-                      </button>
-                    </Form>
+                      <span>
+                        {isSelected(person.id) && <CheckIcon height={18} />}
+                      </span>
+                    </div>
                   )}
+                />
 
-                  <Listbox as="div" className="dropdown dropdown-left">
-                    <Listbox.Button
-                      as="button"
-                      className="btn-ghost btn-circle btn"
-                      tabIndex={0}
-                    >
-                      <EllipsisVerticalIcon height={24} />
-                    </Listbox.Button>
-                    <Listbox.Options
-                      as="ul"
-                      className="dropdown-content menu rounded-box w-52 bg-base-300 p-2 shadow"
-                      tabIndex={0}
-                    >
-                      <li className="menu-title">
-                        <span>Organiser</span>
-                      </li>
+                <div className="tooltip" data-tip="Créer une nouvelle personne">
+                  <NavLink
+                    className="btn-sm btn-circle btn"
+                    to={`?${toQueryString(searchParams, {
+                      showPersonForm: true,
+                    })}`}
+                  >
+                    <PlusIcon height={24} />
+                  </NavLink>
+                </div>
+              </>
+            )}
 
-                      {groupByOptions.map((value) => (
-                        <Listbox.Option
-                          as="li"
-                          disabled={settings.groupBy === value}
-                          key={value}
-                          onClick={() => {
-                            go({ groupBy: value });
-                          }}
-                          value={value}
-                        >
-                          <span className="flex justify-between">
-                            {groupByLabels[value]}
-                            {settings.groupBy === value && (
-                              <CheckIcon height={18} />
-                            )}
-                          </span>
-                        </Listbox.Option>
-                      ))}
-
-                      <div className="divider"></div>
-                      <li className="menu-title">
-                        <span>Ordonner</span>
-                      </li>
-                      {sortByOptions.map((value) => (
-                        <Listbox.Option
-                          as="li"
-                          disabled={settings.sortBy === value}
-                          key={value}
-                          onClick={() => {
-                            go({ sortBy: value });
-                          }}
-                          value={value}
-                        >
-                          <span className="flex justify-between">
-                            {sortByLabels[value]}
-                            {settings.sortBy === value && (
-                              <CheckIcon height={18} />
-                            )}
-                          </span>
-                        </Listbox.Option>
-                      ))}
-
-                      <div className="divider"></div>
-                      <li className="menu-title">
-                        <span>Tirage</span>
-                      </li>
-                      <Listbox.Option
-                        as="li"
-                        onClick={() => {
-                          go({ showSettings: true });
-                        }}
-                        value="showSettings"
-                      >
-                        <span>Configurer</span>
-                      </Listbox.Option>
-                      <Listbox.Option
-                        as="li"
-                        className={!draw.drawn ? "disabled" : ""}
-                        disabled={!draw.drawn}
-                        onClick={() => {
-                          const formData = new FormData();
-                          formData.set("_action", "cancelDraw");
-
-                          submit(formData, { method: "post" });
-                        }}
-                        value="cancelDraw"
-                      >
-                        <span>Annuler</span>
-                      </Listbox.Option>
-                      <Listbox.Option
-                        as="li"
-                        className={!drawExists ? "disabled" : ""}
-                        disabled={!drawExists}
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              "Es-tu sûr de vouloir supprimer le tirage ?"
-                            )
-                          ) {
-                            const formData = new FormData();
-                            formData.set("_action", "deleteDraw");
-
-                            submit(formData, { method: "post" });
-                          }
-                        }}
-                        value="deleteDraw"
-                      >
-                        <span className="text-error">Supprimer</span>
-                      </Listbox.Option>
-                    </Listbox.Options>
-                  </Listbox>
-                </>
-              )}
+            <div className="ml-auto opacity-50">
+              {draw.players.length}{" "}
+              {pluralize("participant", draw.players.length)}
             </div>
-          )}
+
+            {!draw.drawn && draw.players.length > 2 && (
+              <Form method="post">
+                <button
+                  className="btn-accent btn-sm btn"
+                  name="_action"
+                  type="submit"
+                  value="makeDraw"
+                >
+                  Lancer le tirage
+                </button>
+              </Form>
+            )}
+
+            <Listbox as="div" className="dropdown-left dropdown">
+              <Listbox.Button
+                as="button"
+                className="btn-ghost btn-circle btn"
+                tabIndex={0}
+              >
+                <EllipsisVerticalIcon height={24} />
+              </Listbox.Button>
+              <Listbox.Options
+                as="ul"
+                className="dropdown-content menu rounded-box w-52 bg-base-300 p-2 shadow"
+                tabIndex={0}
+              >
+                <li className="menu-title">
+                  <span>Organiser</span>
+                </li>
+
+                {groupByOptions.map((value) => (
+                  <Listbox.Option
+                    as="li"
+                    disabled={settings.groupBy === value}
+                    key={value}
+                    onClick={() => {
+                      go({ groupBy: value });
+                    }}
+                    value={value}
+                  >
+                    <span className="flex justify-between">
+                      {groupByLabels[value]}
+                      {settings.groupBy === value && <CheckIcon height={18} />}
+                    </span>
+                  </Listbox.Option>
+                ))}
+
+                <div className="divider"></div>
+                <li className="menu-title">
+                  <span>Ordonner</span>
+                </li>
+                {sortByOptions.map((value) => (
+                  <Listbox.Option
+                    as="li"
+                    disabled={settings.sortBy === value}
+                    key={value}
+                    onClick={() => {
+                      go({ sortBy: value });
+                    }}
+                    value={value}
+                  >
+                    <span className="flex justify-between">
+                      {sortByLabels[value]}
+                      {settings.sortBy === value && <CheckIcon height={18} />}
+                    </span>
+                  </Listbox.Option>
+                ))}
+
+                <div className="divider"></div>
+                <li className="menu-title">
+                  <span>Tirage</span>
+                </li>
+                <Listbox.Option
+                  as="li"
+                  onClick={() => {
+                    go({ showSettings: true });
+                  }}
+                  value="showSettings"
+                >
+                  <span>Configurer</span>
+                </Listbox.Option>
+                <Listbox.Option
+                  as="li"
+                  className={!draw.drawn ? "disabled" : ""}
+                  disabled={!draw.drawn}
+                  onClick={() => {
+                    const formData = new FormData();
+                    formData.set("_action", "cancelDraw");
+
+                    submit(formData, { method: "post" });
+                  }}
+                  value="cancelDraw"
+                >
+                  <span>Annuler</span>
+                </Listbox.Option>
+                <Listbox.Option
+                  as="li"
+                  className={!drawExists ? "disabled" : ""}
+                  disabled={!drawExists}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Es-tu sûr de vouloir supprimer le tirage ?"
+                      )
+                    ) {
+                      const formData = new FormData();
+                      formData.set("_action", "deleteDraw");
+
+                      submit(formData, { method: "post" });
+                    }
+                  }}
+                  value="deleteDraw"
+                >
+                  <span className="text-error">Supprimer</span>
+                </Listbox.Option>
+              </Listbox.Options>
+            </Listbox>
+          </div>
 
           <Players
             draw={draw}
