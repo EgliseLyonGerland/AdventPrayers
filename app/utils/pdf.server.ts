@@ -10,7 +10,7 @@ type Doc = typeof PDFDocument;
 
 const width = 2480;
 const height = 3508;
-const paddings = [12, 76];
+const paddings = [105, 14];
 const topMargin = 350;
 const contentWidth = width - paddings[0] * 2;
 const contentHeight = height - paddings[1] * 2;
@@ -39,14 +39,14 @@ function addVersoPage(doc: Doc, year: number) {
     const columnIndex = Math.floor(index % 2);
 
     const x = (contentWidth / 2) * columnIndex + paddings[0];
-    const y = (contentHeight / 4) * rowIndex + 210 + paddings[1];
+    const y = (contentHeight / 4) * rowIndex + 280 + paddings[1];
 
     doc
       .save()
       .font(`${publicPath}/assets/fonts/Iowan.ttf`)
       .fontSize(32)
       .fill("#000000")
-      .opacity(0.5)
+      .opacity(0.8)
       .text(`~ Édition ${year} ~`, x, y, {
         width: contentWidth / 2,
         align: "center",
@@ -99,7 +99,7 @@ export async function generate(draw: NonNullable<Draw>) {
       .font(`${publicPath}/assets/fonts/Zapfino.ttf`)
       .fontSize(56)
       .fill("#32251C")
-      .text(`${firstName} ${lastName}`, x, y, {
+      .text(`${firstName} ${lastName}`, x - 10, y, {
         width: contentWidth / 2,
         align: "center",
       })
