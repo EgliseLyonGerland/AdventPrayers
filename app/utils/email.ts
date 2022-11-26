@@ -6,7 +6,7 @@ import type { Draw, Person } from "./draw.server";
 
 type VariableGenerator = (
   draw: Draw,
-  person: Person,
+  person: Nullable<Person>,
   assigned: Nullable<Person>
 ) => string | number | undefined | null;
 
@@ -18,9 +18,10 @@ const variableGenerators: VariableGenerators = {
   year: (draw) => draw.year,
   nextYear: (draw) => (draw.year ? draw.year + 1 : null),
   src: {
-    firstName: (_, person) => person.firstName,
-    lastName: (_, person) => person.lastName,
-    pronoun: (_, person) => (person.gender === "male" ? "lui" : "elle"),
+    firstName: (_, person) => person?.firstName,
+    lastName: (_, person) => person?.lastName,
+    pronoun: (_, person) =>
+      person ? (person?.gender === "male" ? "lui" : "elle") : null,
   },
   dst: {
     firstName: (_, __, assigned) => assigned?.firstName,
@@ -51,7 +52,7 @@ export const variables = getVariables(variableGenerators);
 export function generate(
   text: string,
   draw: Draw,
-  person: Person,
+  person?: Person,
   assigned?: Nullable<Person>
 ): string {
   return text.replace(/%([\w.]+)%/g, (match, variableName) => {

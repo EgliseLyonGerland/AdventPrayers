@@ -9,31 +9,56 @@ const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
   secure: false,
+  pool: true,
   auth: {
     user: process.env.GMAIL_USERNAME,
     pass: process.env.GMAIL_PASSWORD,
   },
 });
 
-export function sendEmail({
-  subject,
-  body,
-  recipients,
-}: {
+const devAddresses = [
+  "oltodo@msn.com",
+  "nicolas@bazille.fr",
+  "nbazille@synthesio.com",
+  "nicolas.bazille@ipsos.com",
+  "nicolas.bazille@egliselyongerland.org",
+];
+
+export function sendEmail(options: {
   subject: string;
   body: string;
-  recipients: Address[];
+  to: Address | Address[];
+  grouped?: boolean;
 }) {
-  return transporter.sendMail({
-    from: {
-      name: "En Avent la prière !",
-      address: `${process.env.GMAIL_USERNAME}`,
-    },
-    to:
-      process.env.NODE_ENV === "production"
-        ? recipients
-        : { name: "Nicolas Bazille", address: "oltodo@msn.com" },
+  const { subject, body, grouped = true } = options;
+
+  let { to } = options;
+
+  if (process.env.NODE_ENV !== "production") {
+    to = Array.isArray(to)
+      ? devAddresses
+          .slice(0, to.length)
+          .map((address) => ({ name: "Nicolas Bazille", address }))
+      : {
+          name: "Nicolas Bazille",
+          address: devAddresses[0],
+        };
+  }
+
+  const config: Parameters<typeof transporter.sendMail>[0] = {
     subject,
     html: body,
-  });
+    from: {
+      name: "En Avent la prière !",
+      address: `nicolas.bazille+ealp@egliselyongerland.org`,
+    },
+  };
+
+  if (grouped) {
+    config.bcc = to;
+  } else {
+    config.to = to;
+  }
+
+  return transporter.sendMail(config);
 }

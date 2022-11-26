@@ -8,30 +8,23 @@ import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 import { useLocalStorage } from "usehooks-ts";
 
+import type { DrawModel } from "~/models/draw.server";
 import { getDraw } from "~/models/draw.server";
-import { getPersons } from "~/models/person.server";
 import type { WithRequired } from "~/utils";
 import { getYearParam } from "~/utils";
 import { generate, variables } from "~/utils/email";
-import type { Address } from "~/utils/email.server";
 import { sendEmail } from "~/utils/email.server";
 
 type LoaderData = {
-  draw: Awaited<ReturnType<typeof getDraw>>;
+  draw: DrawModel.GetDraw;
 };
 
-type Player = WithRequired<
-  NonNullable<LoaderData["draw"]>["players"][number],
-  "person"
->;
+type Player = WithRequired<DrawModel.GetDrawPlayer, "person">;
 type Person = WithRequired<
-  Player["person"],
+  DrawModel.GetDrawPlayerPerson,
   "id" | "firstName" | "lastName" | "email"
 >;
-type Recipient = WithRequired<
-  Person,
-  "id" | "firstName" | "lastName" | "email"
->;
+type Recipient = Person;
 
 export const loader: LoaderFunction = async ({ params }) => {
   const year = getYearParam(params);
@@ -46,9 +39,9 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   switch (formData.get("_action")) {
     case "send":
-      const persons = await getPersons();
       const subject = `${formData.get("subject")}`;
       const body = `${formData.get("body")}`;
+      const grouped = formData.get("grouped") === "true";
       const recipients = formData.getAll("recipients[]");
 
       invariant(subject, "You must provide a subject");
@@ -57,34 +50,49 @@ export const action: ActionFunction = async ({ request, params }) => {
 
       const draw = await getDraw({ year });
 
-      if (!draw) {
-        break;
-      }
+      invariant(draw, `Unable to find draw ${year}`);
 
-      await Promise.all(
-        recipients.map((recipient) => {
+      const persons = recipients.reduce<DrawModel.GetDrawPlayer[]>(
+        (acc, recipient) => {
           const player = draw.players.find(
             (player) => player.personId === recipient
           );
 
-          if (!player) {
-            return null;
+          if (!player || player.person.email === null) {
+            return acc;
           }
 
-          return sendEmail({
-            subject: generate(subject, draw, player.person, player.assigned),
-            body: generate(body, draw, player.person, player.assigned),
-            recipients: persons.reduce<Address[]>((acc, person) => {
-              if (recipients.includes(person.id) && person.email) {
-                acc.push({
-                  name: `${person.firstName} ${person.lastName}`,
-                  address: person.email,
-                });
-              }
-              return acc;
-            }, []),
-          });
-        })
+          return acc.concat([player]);
+        },
+        []
+      );
+
+      if (grouped) {
+        await sendEmail({
+          subject: generate(subject, draw),
+          body: generate(body, draw),
+          to: persons.map(({ person }) => ({
+            name: `${person.firstName} ${person.lastName}`,
+            address: person.email!,
+          })),
+        });
+
+        break;
+      }
+
+      const emails = persons.map(({ person, assigned }) => ({
+        subject: generate(subject, draw, person, assigned),
+        body: generate(body, draw, person, assigned),
+        to: {
+          name: `${person.firstName} ${person.lastName}`,
+          address: person.email!,
+        },
+        grouped: false,
+      }));
+
+      await emails.reduce<Promise<any>>(
+        (chain, email) => chain.then(() => sendEmail(email)),
+        Promise.resolve()
       );
 
       break;
@@ -126,6 +134,11 @@ const Mails = () => {
     `draws.${year}.mails.draft.subject`,
     ""
   );
+  const [grouped, setGrouped] = useLocalStorage(
+    `draws.${year}.mails.draft.groupe`,
+    true
+  );
+
   const [body, setBody] = useLocalStorage(`draws.${year}.mails.draft.body`, "");
   const submit = useSubmit();
   const checker = useRef<HTMLInputElement | null>(null);
@@ -145,6 +158,7 @@ const Mails = () => {
     formData.set("_action", "send");
     formData.set("subject", subject);
     formData.set("body", body);
+    formData.set("grouped", `${grouped}`);
 
     recipients.forEach((recipient) => {
       formData.append("recipients[]", recipient.id);
@@ -204,8 +218,21 @@ const Mails = () => {
           type="text"
           value={search}
         />
+        <div className="form-control ml-auto">
+          <label className="label cursor-pointer">
+            <input
+              checked={grouped}
+              className="checkbox checkbox-sm"
+              onChange={(event) => {
+                setGrouped(event.target.checked);
+              }}
+              type="checkbox"
+            />
+            <span className="label-text ml-2">Grouper</span>
+          </label>
+        </div>
         <button
-          className="btn-accent btn-sm btn ml-auto"
+          className="btn-accent btn-sm btn"
           disabled={!ready}
           onClick={handleSend}
         >
@@ -341,7 +368,6 @@ const Mails = () => {
               <ReactTextareaAutocomplete
                 className="text-md h-full w-full resize-none bg-transparent p-4 font-mono text-white/60 outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
                 containerClassName="h-full w-full relative"
-                defaultValue={body}
                 dropdownClassName="absolute"
                 listClassName="menu menu-compact bg-neutral mt-6"
                 loadingComponent={({ data }) => <div>Loading</div>}
@@ -357,6 +383,7 @@ const Mails = () => {
                     output: (item) => `%${item}%`,
                   },
                 }}
+                value={body}
               ></ReactTextareaAutocomplete>
             </div>
             <div className="h-full flex-1 overflow-y-auto bg-white p-4 text-black">
