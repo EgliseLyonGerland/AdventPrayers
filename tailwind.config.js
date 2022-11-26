@@ -8,6 +8,7 @@ module.exports = {
   },
   plugins: [
     require("@headlessui/tailwindcss")({ prefix: "ui" }),
+    require("@tailwindcss/typography"),
     require("daisyui"),
     plugin(function ({ addUtilities }) {
       addUtilities({

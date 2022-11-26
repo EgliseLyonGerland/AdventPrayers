@@ -12,7 +12,7 @@ import type { DrawModel } from "~/models/draw.server";
 import { getDraw } from "~/models/draw.server";
 import type { WithRequired } from "~/utils";
 import { getYearParam } from "~/utils";
-import { generate, variables } from "~/utils/email";
+import { generate, toMarkdown, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
 
 type LoaderData = {
@@ -70,7 +70,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       if (grouped) {
         await sendEmail({
           subject: generate(subject, draw),
-          body: generate(body, draw),
+          body: toMarkdown(generate(body, draw)),
           to: persons.map(({ person }) => ({
             name: `${person.firstName} ${person.lastName}`,
             address: person.email!,
@@ -82,7 +82,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
       const emails = persons.map(({ person, assigned }) => ({
         subject: generate(subject, draw, person, assigned),
-        body: generate(body, draw, person, assigned),
+        body: toMarkdown(generate(body, draw, person, assigned)),
         to: {
           name: `${person.firstName} ${person.lastName}`,
           address: person.email!,
@@ -386,11 +386,16 @@ const Mails = () => {
                 value={body}
               ></ReactTextareaAutocomplete>
             </div>
-            <div className="h-full flex-1 overflow-y-auto bg-white p-4 text-black">
-              <p className="mb-4 border-b pb-4 text-2xl font-bold">
+            <div className="h-full flex-1 overflow-y-auto bg-white/5 px-8">
+              <p className="mb-4 border-b border-white/10 py-6 text-2xl font-bold">
                 {subject ? generatePreview(subject) : "Aucun titre"}
               </p>
-              <p className="whitespace-pre-wrap">{generatePreview(body)}</p>
+              <div
+                className="prose"
+                dangerouslySetInnerHTML={{
+                  __html: toMarkdown(generatePreview(body)),
+                }}
+              />
             </div>
           </div>
         </div>

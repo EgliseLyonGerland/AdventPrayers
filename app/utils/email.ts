@@ -1,4 +1,5 @@
 import { get } from "lodash";
+import { marked } from "marked";
 
 import type { Nullable } from "~/types";
 
@@ -71,5 +72,11 @@ export function generate(
     }
 
     return `${result}`;
+  });
+}
+
+export function toMarkdown(text: string) {
+  return marked.parse(text, {
+    breaks: true,
   });
 }
