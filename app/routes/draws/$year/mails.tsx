@@ -3,6 +3,7 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useParams, useSubmit } from "@remix-run/react";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
+import clsx from "clsx";
 import { kebabCase } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
@@ -11,6 +12,7 @@ import { useLocalStorage } from "usehooks-ts";
 import type { DrawModel } from "~/models/draw.server";
 import { getDraw } from "~/models/draw.server";
 import type { WithRequired } from "~/utils";
+import { pluralize } from "~/utils";
 import { getYearParam } from "~/utils";
 import { generate, toMarkdown, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
@@ -42,6 +44,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       const subject = `${formData.get("subject")}`;
       const body = `${formData.get("body")}`;
       const grouped = formData.get("grouped") === "true";
+      const test = formData.get("test") === "true";
       const recipients = formData.getAll("recipients[]");
 
       invariant(subject, "You must provide a subject");
@@ -71,6 +74,7 @@ export const action: ActionFunction = async ({ request, params }) => {
         await sendEmail({
           subject: generate(subject, draw),
           body: toMarkdown(generate(body, draw)),
+          test,
           to: persons.map(({ person }) => ({
             name: `${person.firstName} ${person.lastName}`,
             address: person.email!,
@@ -83,6 +87,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       const emails = persons.map(({ person, assigned }) => ({
         subject: generate(subject, draw, person, assigned),
         body: toMarkdown(generate(body, draw, person, assigned)),
+        test,
         to: {
           name: `${person.firstName} ${person.lastName}`,
           address: person.email!,
@@ -153,12 +158,13 @@ const Mails = () => {
 
   let checkerStatus = getCheckerStatus(players, recipients);
 
-  const handleSend = () => {
+  const handleSend = (test: boolean = false) => {
     const formData = new FormData();
     formData.set("_action", "send");
     formData.set("subject", subject);
     formData.set("body", body);
     formData.set("grouped", `${grouped}`);
+    formData.set("test", `${test}`);
 
     recipients.forEach((recipient) => {
       formData.append("recipients[]", recipient.id);
@@ -231,13 +237,17 @@ const Mails = () => {
             <span className="label-text ml-2">Grouper</span>
           </label>
         </div>
-        <button
-          className="btn-accent btn-sm btn"
-          disabled={!ready}
-          onClick={handleSend}
+        <label
+          className={clsx("btn-accent btn-sm btn", { "btn-disabled": !ready })}
+          htmlFor="send-modal"
+          onClick={(event) => {
+            if (!ready) {
+              event.preventDefault();
+            }
+          }}
         >
           Envoyer
-        </button>
+        </label>
       </div>
       <div className="relative mx-auto w-full flex-1 overflow-hidden 2xl:container">
         <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200">
@@ -400,6 +410,41 @@ const Mails = () => {
           </div>
         </div>
       </div>
+
+      <input className="modal-toggle" id="send-modal" type="checkbox" />
+      <label className="modal cursor-pointer" htmlFor="send-modal">
+        <label className="w-500 modal-box relative max-w-2xl" htmlFor="">
+          <h3 className="text-lg font-bold">Confirmation</h3>
+          <p className="py-4">
+            Vous vous apprêtez à envoyer un message à {recipients.length}{" "}
+            {pluralize("personne", recipients)}.
+            <br />
+            <br />
+            Souhaitez-vous continuer ?
+          </p>
+          <div className="mt-8 flex gap-4">
+            <label className="btn-sm btn" htmlFor="send-modal">
+              Annuler
+            </label>
+            <button
+              className="btn-accent btn-sm btn ml-auto"
+              onClick={() => {
+                handleSend(true);
+              }}
+            >
+              Envoyer un mail de test
+            </button>
+            <button
+              className="btn-error btn-sm btn"
+              onClick={() => {
+                handleSend();
+              }}
+            >
+              Envoyer
+            </button>
+          </div>
+        </label>
+      </label>
     </>
   );
 };

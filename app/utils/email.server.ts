@@ -16,37 +16,33 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const devAddresses = [
+const devAddresses: Address[] = [
   "oltodo@msn.com",
   "nicolas@bazille.fr",
   "nbazille@synthesio.com",
   "nicolas.bazille@ipsos.com",
   "nicolas.bazille@egliselyongerland.org",
-];
+].map((address) => ({ name: "Nicolas Bazille", address }));
 
 export function sendEmail(options: {
   subject: string;
   body: string;
   to: Address | Address[];
+  test?: boolean;
   grouped?: boolean;
 }) {
-  const { subject, body, grouped = true } = options;
+  const { subject, body, test = false, grouped = true } = options;
 
   let { to } = options;
 
-  if (process.env.NODE_ENV !== "production") {
-    to = Array.isArray(to)
-      ? devAddresses
-          .slice(0, to.length)
-          .map((address) => ({ name: "Nicolas Bazille", address }))
-      : {
-          name: "Nicolas Bazille",
-          address: devAddresses[0],
-        };
+  if (test) {
+    to = devAddresses[0];
+  } else if (process.env.NODE_ENV !== "production") {
+    to = Array.isArray(to) ? devAddresses.slice(0, to.length) : devAddresses[0];
   }
 
   const config: Parameters<typeof transporter.sendMail>[0] = {
-    subject,
+    subject: test ? `[TEST] ${subject}` : subject,
     html: body,
     from: {
       name: "En Avent la prière !",
