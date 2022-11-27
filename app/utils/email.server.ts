@@ -35,6 +35,12 @@ export function sendEmail(options: {
 
   let { to } = options;
 
+  if (Array.isArray(to)) {
+    to.forEach((item) => console.log("Send email to", item));
+  } else {
+    console.log("Send email to", to);
+  }
+
   if (test) {
     to = devAddresses[0];
   } else if (process.env.NODE_ENV !== "production") {
