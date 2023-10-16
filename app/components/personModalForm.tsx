@@ -1,9 +1,8 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { Person } from "@prisma/client";
-import { useState } from "react";
-import { Fragment } from "react";
+import { useState, Fragment } from "react";
 
-import type { WithRequired } from "~/utils";
+import { WithRequired } from "~/types";
 import { notNullable } from "~/utils";
 
 import EntitySelector from "./entitySelector";
@@ -13,14 +12,14 @@ type Data = WithRequired<
   "id" | "firstName" | "lastName" | "email" | "gender" | "gender" | "age"
 >;
 
-type Props = {
+interface Props {
   edit: boolean;
   data?: Data & {
     exclude: Pick<Person, "id">[];
   };
   persons: Data[];
   onClose?: () => void;
-};
+}
 
 export default function PersonModalForm({
   edit = false,
@@ -31,7 +30,7 @@ export default function PersonModalForm({
   const [excludedPersons, setExcludedPersons] = useState(
     data?.exclude
       .map((item) => persons.find((person) => person.id === item.id))
-      .filter(notNullable) || []
+      .filter(notNullable) || [],
   );
 
   return (
@@ -45,10 +44,7 @@ export default function PersonModalForm({
       <input name="id" type="hidden" value={data?.id} />
 
       <label className="modal-open modal" htmlFor="addPersonModal">
-        <label
-          className="modal-box w-11/12 max-w-4xl overflow-visible"
-          htmlFor=""
-        >
+        <div className="modal-box w-11/12 max-w-4xl overflow-visible">
           <label
             className="btn-sm btn-circle btn absolute right-4 top-4"
             htmlFor="addPersonModal"
@@ -63,7 +59,7 @@ export default function PersonModalForm({
           <div className="grid grid-cols-2 gap-x-8">
             <div>
               <div className="form-control mb-4">
-                <label className="label">
+                <label className="label" htmlFor="firstName">
                   <span className="label-text font-bold">Prénom</span>
                 </label>
                 <input
@@ -74,7 +70,7 @@ export default function PersonModalForm({
                 />
               </div>
               <div className="form-control mb-4">
-                <label className="label">
+                <label className="label" htmlFor="lastName">
                   <span className="label-text font-bold">Nom</span>
                 </label>
                 <input
@@ -85,7 +81,7 @@ export default function PersonModalForm({
                 />
               </div>
               <div className="form-control mb-4">
-                <label className="label">
+                <label className="label" htmlFor="email">
                   <span className="label-text font-bold">Email</span>
                 </label>
                 <input
@@ -98,7 +94,7 @@ export default function PersonModalForm({
             </div>
             <div>
               <div className="form-control mb-8">
-                <label className="label">
+                <label className="label" htmlFor="gender">
                   <span className="label-text font-bold">Genre</span>
                 </label>
                 <div className="mt-2 flex items-center gap-6">
@@ -127,7 +123,7 @@ export default function PersonModalForm({
                 </div>
               </div>
               <div className="form-control mb-8">
-                <label className="label">
+                <label className="label" htmlFor="age">
                   <span className="label-text font-bold">Age</span>
                 </label>
 
@@ -150,7 +146,7 @@ export default function PersonModalForm({
                 </div>
               </div>
               <div className="form-control mb-4">
-                <label className="label">
+                <label className="label" htmlFor="exclude[]">
                   <span className="label-text font-bold">Personnes exclus</span>
                 </label>
 
@@ -166,8 +162,8 @@ export default function PersonModalForm({
                         onClick={(event) => {
                           setExcludedPersons(
                             excludedPersons.filter(
-                              (item) => item.id !== person.id
-                            )
+                              (item) => item.id !== person.id,
+                            ),
                           );
 
                           event.preventDefault();
@@ -208,7 +204,7 @@ export default function PersonModalForm({
               {edit ? "Modifier" : "Ajouter"}
             </button>
           </div>
-        </label>
+        </div>
       </label>
     </>
   );

@@ -28,7 +28,7 @@ async function seed() {
   });
 
   const persons = await Promise.all(
-    personsData.map((data) => prisma.person.create({ data }))
+    personsData.map((data) => prisma.person.create({ data })),
   );
 
   await Promise.all(
@@ -45,8 +45,8 @@ async function seed() {
             })),
           },
         },
-      })
-    )
+      }),
+    ),
   );
 
   console.log(`Database has been seeded. 🌱`);

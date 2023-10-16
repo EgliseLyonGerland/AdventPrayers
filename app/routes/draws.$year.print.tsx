@@ -1,20 +1,19 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 
 import { getDraw } from "~/models/draw.server";
 import { getYearParam } from "~/utils";
 import { generate, getFileVersion } from "~/utils/pdf.server";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   const version = await getFileVersion(year);
 
   return json({ year, version });
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ params }: ActionFunctionArgs) => {
   const year = getYearParam(params);
   const draw = await getDraw({ year });
 
@@ -48,12 +47,7 @@ const Print = () => {
         )}
 
         <Form method="post">
-          <button
-            className="btn-sm btn"
-            disabled={!version}
-            onClick={() => {}}
-            type="submit"
-          >
+          <button className="btn-sm btn" disabled={!version} type="submit">
             Re-générer
           </button>
         </Form>
@@ -78,7 +72,7 @@ const Print = () => {
               </p>
               <Form method="post">
                 <button className="btn-primary btn mt-8" type="submit">
-                  Générer le fichier d'impression
+                  Générer le fichier d&apos;impression
                 </button>
               </Form>
             </div>

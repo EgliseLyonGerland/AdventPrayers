@@ -6,7 +6,7 @@ import {
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import type { Params } from "@remix-run/react";
 import {
@@ -39,22 +39,22 @@ import { createPerson, getPersons, updatePerson } from "~/models/person.server";
 import { pluralize } from "~/utils";
 import { resolveGroup } from "~/utils/groups";
 
-type LoaderData = {
+interface LoaderData {
   draw: Awaited<ReturnType<typeof getDraw>>;
   persons: Awaited<ReturnType<typeof getPersons>>;
   drawExists: boolean;
-};
+}
 
 type SortBy = "date" | "firstName" | "lastName";
 type GroupBy = "player" | "age" | "group";
 
-type SearchParams = {
+interface SearchParams {
   showPersonForm: boolean;
   showSettings: boolean;
   personId: string | null;
   sortBy: SortBy;
   groupBy: GroupBy;
-};
+}
 
 const sortByOptions: SortBy[] = ["date", "firstName", "lastName"];
 
@@ -82,7 +82,7 @@ const searchParamsDefaults: SearchParams = {
 
 function toQueryString(
   params: URLSearchParams,
-  values: Partial<SearchParams> = {}
+  values: Partial<SearchParams> = {},
 ) {
   const searchParams = new URLSearchParams(params);
 
@@ -106,7 +106,7 @@ function getYearParam(params: Params): number {
   return year;
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   const draw = await getDraw({ year });
   const persons = await getPersons();
@@ -122,8 +122,8 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json({ draw, persons, drawExists: true });
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
-  let formData = await request.formData();
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const formData = await request.formData();
   const year = getYearParam(params);
 
   switch (formData.get("_action")) {
@@ -158,7 +158,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       await cancelDraw({ year });
       break;
 
-    case "newPerson":
+    case "newPerson": {
       const person = await createPerson({
         firstName: `${formData.get("firstName")}`,
         lastName: `${formData.get("lastName")}`,
@@ -170,6 +170,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
       await addPlayer({ year, id: person.id, age: person.age });
       break;
+    }
 
     case "editPerson":
       await updatePerson({
@@ -203,7 +204,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       showPersonForm: false,
       showSettings: false,
       personId: null,
-    })}`
+    })}`,
   );
 };
 
@@ -225,7 +226,7 @@ function Players({
 
   if (sortBy !== "date") {
     players = players.sort((a, b) =>
-      a.person[sortBy].localeCompare(b.person[sortBy])
+      a.person[sortBy].localeCompare(b.person[sortBy]),
     );
   }
 
@@ -256,10 +257,10 @@ function Players({
 
   return (
     <>
-      <table className="table-zebra z-0 table w-full">
+      <table className="z-0 table w-full">
         {groups.map((group) => (
           <Fragment key={group.name}>
-            {group.name && (
+            {group.name ? (
               <tbody className="group">
                 <tr>
                   <td colSpan={3}>
@@ -276,7 +277,7 @@ function Players({
                   </td>
                 </tr>
               </tbody>
-            )}
+            ) : null}
 
             <tbody>
               {group.players.map(({ person, assigned, age }) => (
@@ -292,7 +293,7 @@ function Players({
                         </div>
                         <div className="flex gap-2 text-sm text-white/30">
                           <span>{person.email}</span>
-                          {person.exclude.length > 0 && (
+                          {person.exclude.length > 0 ? (
                             <>
                               <span>•</span>
                               <span
@@ -300,7 +301,7 @@ function Players({
                                 data-tip={person.exclude
                                   .map(
                                     (item) =>
-                                      `${item.firstName} ${item.lastName}`
+                                      `${item.firstName} ${item.lastName}`,
                                   )
                                   .join(`, `)}
                               >
@@ -308,28 +309,28 @@ function Players({
                                 {pluralize("exclusion", person.exclude)}
                               </span>
                             </>
-                          )}
+                          ) : null}
                         </div>
                       </div>
-                      <div
+                      <button
                         className="btn-ghost btn-circle btn invisible group-hover:visible"
                         onClick={() => onNewPersonClick(person.id)}
                       >
                         <PencilIcon height={16} />
-                      </div>
+                      </button>
                     </div>
                   </td>
                   <td className="w-full">
-                    {assigned && (
+                    {assigned ? (
                       <span className="inline-block rounded-md bg-neutral px-4 py-2">
                         {`${assigned.firstName} ${assigned.lastName}`}
                         <span className="ml-2 text-sm opacity-50">
                           {assigned.age}
                         </span>
                       </span>
-                    )}
+                    ) : null}
                   </td>
-                  {!drawn && (
+                  {!drawn ? (
                     <td className="text-right">
                       <button
                         className="btn-ghost btn-sm btn-circle btn"
@@ -338,7 +339,7 @@ function Players({
                         <XMarkIcon height={24} />
                       </button>
                     </td>
-                  )}
+                  ) : null}
                 </tr>
               ))}
             </tbody>
@@ -346,12 +347,12 @@ function Players({
         ))}
       </table>
 
-      {players.length < 3 && (
+      {players.length < 3 ? (
         <div className="hero mt-4 bg-base-200 p-8">
           <div className="hero-content text-center">
             <div className="max-w-md">
               <h1 className="text-2xl font-bold">
-                C'est {missing < 3 && "toujours"} un peu vide ici !
+                C&apos;est {missing < 3 ? "toujours" : null} un peu vide ici !
               </h1>
               <p className="py-6 text-lg opacity-70">
                 Ajoute
@@ -363,7 +364,7 @@ function Players({
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }
@@ -391,7 +392,7 @@ export default function Index() {
   const go = (params: Partial<SearchParams>) => {
     navigate(
       { search: toQueryString(searchParams, params) },
-      { replace: true }
+      { replace: true },
     );
   };
 
@@ -400,7 +401,7 @@ export default function Index() {
       {draw ? (
         <>
           <div className="mb-4 flex items-center gap-4">
-            {!draw.drawn && (
+            {!draw.drawn ? (
               <>
                 <EntitySelector
                   filterBy={["firstName", "lastName"]}
@@ -430,7 +431,9 @@ export default function Index() {
                         <div className="opacity-30">{person.email}</div>
                       </span>
                       <span>
-                        {isSelected(person.id) && <CheckIcon height={18} />}
+                        {isSelected(person.id) ? (
+                          <CheckIcon height={18} />
+                        ) : null}
                       </span>
                     </div>
                   )}
@@ -447,14 +450,14 @@ export default function Index() {
                   </NavLink>
                 </div>
               </>
-            )}
+            ) : null}
 
             <div className="ml-auto opacity-50">
               {draw.players.length}{" "}
               {pluralize("participant", draw.players.length)}
             </div>
 
-            {!draw.drawn && draw.players.length > 2 && (
+            {!draw.drawn && draw.players.length > 2 ? (
               <Form method="post">
                 <button
                   className="btn-accent btn-sm btn"
@@ -465,7 +468,7 @@ export default function Index() {
                   Lancer le tirage
                 </button>
               </Form>
-            )}
+            ) : null}
 
             <Listbox as="div" className="dropdown-left dropdown">
               <Listbox.Button
@@ -478,7 +481,6 @@ export default function Index() {
               <Listbox.Options
                 as="ul"
                 className="dropdown-content menu rounded-box w-52 bg-base-300 p-2 shadow"
-                tabIndex={0}
               >
                 <li className="menu-title">
                   <span>Organiser</span>
@@ -496,7 +498,9 @@ export default function Index() {
                   >
                     <span className="flex justify-between">
                       {groupByLabels[value]}
-                      {settings.groupBy === value && <CheckIcon height={18} />}
+                      {settings.groupBy === value ? (
+                        <CheckIcon height={18} />
+                      ) : null}
                     </span>
                   </Listbox.Option>
                 ))}
@@ -517,7 +521,9 @@ export default function Index() {
                   >
                     <span className="flex justify-between">
                       {sortByLabels[value]}
-                      {settings.sortBy === value && <CheckIcon height={18} />}
+                      {settings.sortBy === value ? (
+                        <CheckIcon height={18} />
+                      ) : null}
                     </span>
                   </Listbox.Option>
                 ))}
@@ -556,7 +562,7 @@ export default function Index() {
                   onClick={() => {
                     if (
                       window.confirm(
-                        "Es-tu sûr de vouloir supprimer le tirage ?"
+                        "Es-tu sûr de vouloir supprimer le tirage ?",
                       )
                     ) {
                       const formData = new FormData();
@@ -604,7 +610,7 @@ export default function Index() {
         </div>
       )}
 
-      {settings.showSettings && (
+      {settings.showSettings ? (
         <Dialog
           as="div"
           className="modal-open modal"
@@ -629,8 +635,10 @@ export default function Index() {
 
             <Form method="post">
               <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text font-bold">Tranches d'age</span>
+                <label className="label" htmlFor="ages">
+                  <span className="label-text font-bold">
+                    Tranches d&apos;age
+                  </span>
                 </label>
                 <input
                   className="input-bordered input"
@@ -641,8 +649,10 @@ export default function Index() {
               </div>
 
               <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text font-bold">Groupes d'age</span>
+                <label className="label" htmlFor="groups">
+                  <span className="label-text font-bold">
+                    Groupes d&apos;age
+                  </span>
                 </label>
                 <input
                   className="input-bordered input"
@@ -665,9 +675,9 @@ export default function Index() {
             </Form>
           </Dialog.Panel>
         </Dialog>
-      )}
+      ) : null}
 
-      {settings.showPersonForm && (
+      {settings.showPersonForm ? (
         <Form method="post">
           <PersonModalForm
             data={
@@ -682,7 +692,7 @@ export default function Index() {
             persons={persons}
           />
         </Form>
-      )}
+      ) : null}
     </div>
   );
 }

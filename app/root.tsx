@@ -1,4 +1,5 @@
-import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
+import { cssBundleHref } from "@remix-run/css-bundle";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -10,36 +11,32 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 
-import Header from "./components/hearder";
+import Header from "~/components/hearder";
+import { getUser } from "~/session.server";
+import stylesheet from "~/tailwind.css";
+
 import { getDraws } from "./models/draw.server";
-import baseStylesheetUrl from "./styles/base.css";
-import tailwindStylesheetUrl from "./styles/tailwind.css";
 
-export const links: LinksFunction = () => {
-  return [
-    { rel: "stylesheet", href: tailwindStylesheetUrl },
-    { rel: "stylesheet", href: baseStylesheetUrl },
-  ];
-};
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
+  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+];
 
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  title: "En Avent la prière !",
-  viewport: "width=device-width,initial-scale=1",
-});
-
-export async function loader({ request }: LoaderArgs) {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const draws = await getDraws();
+  const user = await getUser(request);
 
-  return json({ draws });
-}
+  return json({ user, draws });
+};
 
 export default function App() {
   const { draws } = useLoaderData<typeof loader>();
 
   return (
-    <html className="h-full" lang="en">
+    <html lang="en" className="h-full">
       <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>

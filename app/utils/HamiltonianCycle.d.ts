@@ -4,7 +4,7 @@ export default class HamiltonianCycle {
   constructor(graph: Graph);
   graph: Graph;
   count(): number;
-  isSafe(v: any, path: any, pos: any): boolean;
-  isCycle(path: any, pos: any): boolean;
+  isSafe(v: unknown, path: unknown, pos: unknown): boolean;
+  isCycle(path: unknown, pos: unknown): boolean;
   run(): number[];
 }

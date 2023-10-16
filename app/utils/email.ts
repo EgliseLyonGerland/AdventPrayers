@@ -34,7 +34,7 @@ const variableGenerators: VariableGenerators = {
 
 function getVariables(
   generators: VariableGenerators,
-  prefix: string = ""
+  prefix = ""
 ): string[] {
   return Object.entries(generators).reduce<string[]>(
     (acc, [key, generator]) => {

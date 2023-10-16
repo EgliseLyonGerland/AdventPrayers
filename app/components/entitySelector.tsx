@@ -2,7 +2,7 @@ import { Combobox } from "@headlessui/react";
 import type { ReactNode } from "react";
 import { useState, memo } from "react";
 
-type Props<T> = {
+interface Props<T> {
   className?: string;
   name: string;
   items: T[];
@@ -12,7 +12,7 @@ type Props<T> = {
   horizontal?: "start" | "end";
   renderItem: (value: T) => ReactNode;
   onSelect: (value: T) => void;
-};
+}
 
 function EntitySelector<T>({
   className,
@@ -31,7 +31,7 @@ function EntitySelector<T>({
     query === ""
       ? items
       : items.filter((item) => {
-          let value = Array.isArray(filterBy)
+          const value = Array.isArray(filterBy)
             ? filterBy.map((prop) => item[prop]).join(" ")
             : item[filterBy];
 

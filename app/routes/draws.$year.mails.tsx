@@ -1,5 +1,5 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useParams, useSubmit } from "@remix-run/react";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
@@ -9,38 +9,41 @@ import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 import { useLocalStorage } from "usehooks-ts";
 
-import type { DrawModel } from "~/models/draw.server";
-import { getDraw } from "~/models/draw.server";
-import type { WithRequired } from "~/utils";
-import { pluralize } from "~/utils";
-import { getYearParam } from "~/utils";
+import {
+  GetDraw,
+  GetDrawPlayer,
+  GetDrawPlayerPerson,
+  getDraw,
+} from "~/models/draw.server";
+import { WithRequired } from "~/types";
+import { pluralize, getYearParam } from "~/utils";
 import { generate, toMarkdown, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
 
-type LoaderData = {
-  draw: DrawModel.GetDraw;
-};
+interface LoaderData {
+  draw: GetDraw;
+}
 
-type Player = WithRequired<DrawModel.GetDrawPlayer, "person">;
+type Player = WithRequired<GetDrawPlayer, "person">;
 type Person = WithRequired<
-  DrawModel.GetDrawPlayerPerson,
+  GetDrawPlayerPerson,
   "id" | "firstName" | "lastName" | "email"
 >;
 type Recipient = Person;
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   const draw = await getDraw({ year });
 
   return json({ draw });
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   const year = getYearParam(params);
   const formData = await request.formData();
 
   switch (formData.get("_action")) {
-    case "send":
+    case "send": {
       const subject = `${formData.get("subject")}`;
       const body = `${formData.get("body")}`;
       const grouped = formData.get("grouped") === "true";
@@ -55,20 +58,17 @@ export const action: ActionFunction = async ({ request, params }) => {
 
       invariant(draw, `Unable to find draw ${year}`);
 
-      const persons = recipients.reduce<DrawModel.GetDrawPlayer[]>(
-        (acc, recipient) => {
-          const player = draw.players.find(
-            (player) => player.personId === recipient
-          );
+      const persons = recipients.reduce<GetDrawPlayer[]>((acc, recipient) => {
+        const player = draw.players.find(
+          (player) => player.personId === recipient,
+        );
 
-          if (!player || player.person.email === null) {
-            return acc;
-          }
+        if (!player || player.person.email === null) {
+          return acc;
+        }
 
-          return acc.concat([player]);
-        },
-        []
-      );
+        return acc.concat([player]);
+      }, []);
 
       if (grouped) {
         await sendEmail({
@@ -95,12 +95,13 @@ export const action: ActionFunction = async ({ request, params }) => {
         grouped: false,
       }));
 
-      await emails.reduce<Promise<any>>(
+      await emails.reduce<Promise<unknown>>(
         (chain, email) => chain.then(() => sendEmail(email)),
-        Promise.resolve()
+        Promise.resolve(),
       );
 
       break;
+    }
   }
 
   return json({});
@@ -114,7 +115,7 @@ function getCheckerStatus(players: Player[], recipients: Recipient[]) {
       }
 
       const found = !!recipients.find(
-        (recipient) => curr.person.id === recipient.id
+        (recipient) => curr.person.id === recipient.id,
       );
 
       if (found) {
@@ -123,7 +124,7 @@ function getCheckerStatus(players: Player[], recipients: Recipient[]) {
 
       return acc === "checked" ? "indeterminate" : acc;
     },
-    "unchecked"
+    "unchecked",
   );
 }
 
@@ -133,15 +134,15 @@ const Mails = () => {
   const [search, setSearch] = useState("");
   const [recipients, setRecipients] = useLocalStorage<Recipient[]>(
     `draws.${year}.mails.draft.recipients`,
-    []
+    [],
   );
   const [subject, setSubject] = useLocalStorage(
     `draws.${year}.mails.draft.subject`,
-    ""
+    "",
   );
   const [grouped, setGrouped] = useLocalStorage(
     `draws.${year}.mails.draft.groupe`,
-    true
+    true,
   );
 
   const [body, setBody] = useLocalStorage(`draws.${year}.mails.draft.body`, "");
@@ -152,13 +153,13 @@ const Mails = () => {
 
   if (search) {
     players = players.filter(({ person }) =>
-      kebabCase(`${person.firstName} ${person.lastName}`).includes(search)
+      kebabCase(`${person.firstName} ${person.lastName}`).includes(search),
     );
   }
 
-  let checkerStatus = getCheckerStatus(players, recipients);
+  const checkerStatus = getCheckerStatus(players, recipients);
 
-  const handleSend = (test: boolean = false) => {
+  const handleSend = (test = false) => {
     const formData = new FormData();
     formData.set("_action", "send");
     formData.set("subject", subject);
@@ -237,9 +238,8 @@ const Mails = () => {
             <span className="label-text ml-2">Grouper</span>
           </label>
         </div>
-        <label
+        <button
           className={clsx("btn-accent btn-sm btn", { "btn-disabled": !ready })}
-          htmlFor="send-modal"
           onClick={(event) => {
             if (!ready) {
               event.preventDefault();
@@ -247,7 +247,7 @@ const Mails = () => {
           }}
         >
           Envoyer
-        </label>
+        </button>
       </div>
       <div className="relative mx-auto w-full flex-1 overflow-hidden 2xl:container">
         <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200">
@@ -280,7 +280,7 @@ const Mails = () => {
                       <input
                         checked={
                           !!recipients.find(
-                            (recipient) => recipient.id === person.id
+                            (recipient) => recipient.id === person.id,
                           )
                         }
                         className="checkbox checkbox-sm"
@@ -291,8 +291,8 @@ const Mails = () => {
                           } else {
                             setRecipients(
                               recipients.filter(
-                                (recipient) => recipient.id !== person.id
-                              )
+                                (recipient) => recipient.id !== person.id,
+                              ),
                             );
                           }
                         }}
@@ -334,8 +334,8 @@ const Mails = () => {
                           onClick={() => {
                             setRecipients(
                               recipients.filter(
-                                (item) => item.id !== recipient.id
-                              )
+                                (item) => item.id !== recipient.id,
+                              ),
                             );
                           }}
                         >
@@ -343,14 +343,14 @@ const Mails = () => {
                         </button>
                       </span>
                     ))}
-                    {recipients.length > 10 && (
+                    {recipients.length > 10 ? (
                       <span
                         className="tooltip tooltip-bottom tooltip-accent cursor-default px-2"
                         data-tip={recipients
                           .slice(10)
                           .map(
                             (recipient) =>
-                              `${recipient.firstName} ${recipient.lastName}`
+                              `${recipient.firstName} ${recipient.lastName}`,
                           )
                           .join(", ")}
                       >
@@ -358,7 +358,7 @@ const Mails = () => {
                           {recipients.length - 10} de plus
                         </span>
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
                 <div className="flex items-center p-4">
@@ -380,7 +380,7 @@ const Mails = () => {
                 containerClassName="h-full w-full relative"
                 dropdownClassName="absolute"
                 listClassName="menu menu-compact bg-neutral mt-6"
-                loadingComponent={({ data }) => <div>Loading</div>}
+                loadingComponent={() => <div>Loading</div>}
                 minChar={0}
                 onChange={(event) => {
                   setBody(event.target.value);

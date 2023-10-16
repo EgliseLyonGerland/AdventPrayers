@@ -1,9 +1,9 @@
 import nodemailer from "nodemailer";
 
-export type Address = {
+export interface Address {
   name: string;
   address: string;
-};
+}
 
 const transporter = nodemailer.createTransport({
   service: "gmail",

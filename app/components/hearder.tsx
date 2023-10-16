@@ -3,11 +3,11 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "@remix-run/react";
 import { Fragment } from "react";
 
-type Props = {
+interface Props {
   draws: {
     year: number;
   }[];
-};
+}
 
 function Header({ draws }: Props) {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ function Header({ draws }: Props) {
   }
 
   return (
-    <div className="navbar sticky top-0 z-[1000] mb-12 bg-neutral text-neutral-content">
+    <div className="navbar sticky top-0 z-[1000] mb-12 bg-base-200 text-neutral-content">
       <div className="container mx-auto px-4">
         <div className="mr-8">
           <Link className="text-xl normal-case" to="/">
@@ -28,7 +28,7 @@ function Header({ draws }: Props) {
         </div>
 
         <Menu as="div" className="relative">
-          <Menu.Button as="label" className="btn">
+          <Menu.Button as="label" className="btn btn-sm btn-ghost">
             Éditions
             <ChevronDownIcon className="ml-2" height={16} />
           </Menu.Button>
@@ -44,7 +44,6 @@ function Header({ draws }: Props) {
             <Menu.Items
               as="ul"
               className="menu absolute left-0 z-[1000] mt-2 origin-top-right rounded-md bg-base-300 shadow-md outline-none focus:outline-none"
-              tabIndex={0}
             >
               {years.map((year) => (
                 <Menu.Item

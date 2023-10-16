@@ -1,8 +1,8 @@
-type Group = {
+interface Group {
   min: number;
   max: number;
   label: string;
-};
+}
 
 export function parseGroups(groups: string | number[]): Group[] {
   const splitted =

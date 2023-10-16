@@ -1,9 +1,9 @@
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
 import { getYearParam } from "~/utils";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   return redirect(`/draws/${year}/players`);
 };

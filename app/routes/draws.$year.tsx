@@ -1,16 +1,15 @@
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { NavLink, useLoaderData, useMatches } from "@remix-run/react";
-import { Outlet } from "@remix-run/react";
+import { NavLink, useLoaderData, useMatches, Outlet } from "@remix-run/react";
 import clsx from "clsx";
 
 import { getYearParam } from "~/utils";
 
-type LoaderData = {
+interface LoaderData {
   year: number;
-};
+}
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   return json({ year });
 };

@@ -3,12 +3,10 @@ import type { Draw, Person } from "@prisma/client";
 import { prisma } from "~/db.server";
 import { letsDraw } from "~/utils/draw.server";
 
-export namespace DrawModel {
-  export type GetDraws = NonNullable<Awaited<ReturnType<typeof getDraws>>>;
-  export type GetDraw = NonNullable<Awaited<ReturnType<typeof getDraw>>>;
-  export type GetDrawPlayer = GetDraw["players"][number];
-  export type GetDrawPlayerPerson = GetDrawPlayer["person"];
-}
+export type GetDraws = NonNullable<Awaited<ReturnType<typeof getDraws>>>;
+export type GetDraw = NonNullable<Awaited<ReturnType<typeof getDraw>>>;
+export type GetDrawPlayer = GetDraw["players"][number];
+export type GetDrawPlayerPerson = GetDrawPlayer["person"];
 
 export function getDraws() {
   return prisma.draw.findMany({ orderBy: { year: "asc" } });

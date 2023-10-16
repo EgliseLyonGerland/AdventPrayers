@@ -3,7 +3,7 @@ import { letsDraw } from "../draw.server";
 
 vi.mock("lodash", () => {
   return {
-    shuffle: (entry: any) => entry,
+    shuffle: (entry: unknown) => entry,
   };
 });
 
