@@ -42,7 +42,7 @@ function Header({ draws }: Props) {
         </div>
 
         <Menu as="div" className="relative">
-          <Menu.Button as="label" className="btn btn-sm btn-ghost">
+          <Menu.Button as="label" className="btn btn-sm">
             Éditions
             <ChevronDownIcon className="ml-2" height={16} />
           </Menu.Button>
@@ -57,7 +57,7 @@ function Header({ draws }: Props) {
           >
             <Menu.Items
               as="ul"
-              className="menu absolute left-0 z-[1000] mt-2 origin-top-right rounded-md bg-base-300 shadow-md outline-none focus:outline-none"
+              className="menu absolute left-0 z-[1000] mt-2 origin-top-right rounded-md bg-base-200 text-base-content shadow-md outline-none focus:outline-none"
             >
               {years.map((year) => (
                 <Menu.Item
@@ -68,7 +68,7 @@ function Header({ draws }: Props) {
                     navigate(`/draws/${year}`);
                   }}
                 >
-                  <span className="px-16">{year}</span>
+                  <span className="min-w-[160px]">{year}</span>
                 </Menu.Item>
               ))}
             </Menu.Items>

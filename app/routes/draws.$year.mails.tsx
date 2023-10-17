@@ -217,7 +217,7 @@ const Mails = () => {
     <>
       <div className="container mx-auto mb-4 flex items-center gap-4">
         <input
-          className="input-bordered input-secondary input input-sm"
+          className="input-bordered input input-sm"
           onChange={(event) => {
             setSearch(kebabCase(event.target.value));
           }}
@@ -239,7 +239,7 @@ const Mails = () => {
           </label>
         </div>
         <button
-          className={clsx("btn-accent btn-sm btn", { "btn-disabled": !ready })}
+          className={clsx("btn-sm btn-primary btn", { "btn-disabled": !ready })}
           onClick={(event) => {
             if (!ready) {
               event.preventDefault();
@@ -250,10 +250,10 @@ const Mails = () => {
         </button>
       </div>
       <div className="relative mx-auto w-full flex-1 overflow-hidden 2xl:container">
-        <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200">
-          <div className="flex h-full w-full min-w-[1400px]">
+        <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200 text-base-content border border-primary">
+          <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content dark:divide-neutral-content/20">
             <div className="flex flex-col overflow-hidden">
-              <label className="flex h-14 items-center gap-4 px-4 text-white/60">
+              <label className="flex h-14 items-center gap-4 px-4 text-base-content/60">
                 <input
                   className="checkbox checkbox-sm"
                   onChange={(event) => {
@@ -270,11 +270,11 @@ const Mails = () => {
                   ? "Tout cocher"
                   : "Tout décocher"}
               </label>
-              <ul className="menu menu-compact menu-vertical w-72 flex-1 flex-nowrap divide-y divide-white/10 overflow-y-auto bg-base-300">
+              <ul className="w-72 flex-1 flex-nowrap divide-y divide-neutral-content dark:divide-neutral-content/20 overflow-y-auto">
                 {players.map(({ person, age }) => (
-                  <li key={person.id}>
+                  <li key={person.id} className="px-4 py-2">
                     <label
-                      className="flex w-full gap-4"
+                      className="flex w-full gap-4 items-center"
                       htmlFor={`player${person.id}`}
                     >
                       <input
@@ -299,13 +299,13 @@ const Mails = () => {
                         type="checkbox"
                       />
                       <div className="w-full overflow-hidden">
-                        <div className="flex w-full gap-2">
+                        <div className="flex items-center w-full gap-2 text-">
                           <span className="overflow-auto overflow-ellipsis whitespace-nowrap">{`${person.firstName} ${person.lastName}`}</span>
-                          <span className="flex-shrink-0 text-sm text-white/50">
+                          <span className="flex-shrink-0 text-sm text-base-content/50">
                             {age}
                           </span>
                         </div>
-                        <div className="overflow-auto overflow-ellipsis whitespace-nowrap text-sm text-white/30">
+                        <div className="overflow-auto overflow-ellipsis whitespace-nowrap text-sm text-base-content/30">
                           {person.email}
                         </div>
                       </div>
@@ -315,7 +315,7 @@ const Mails = () => {
               </ul>
             </div>
             <div className="flex flex-1 flex-col">
-              <div className="divide-y divide-white/10 border-b border-white/10 bg-base-200">
+              <div className="divide-y divide-neutral-content dark:divide-neutral-content/20 border-b border-white/10">
                 <div className="flex p-4">
                   <span className="mr-2 whitespace-nowrap font-bold opacity-50">
                     À :
@@ -323,7 +323,7 @@ const Mails = () => {
                   <div className="flex flex-wrap items-center gap-1">
                     {recipients.slice(0, 10).map((recipient) => (
                       <span
-                        className="rounded-md bg-neutral pl-2 text-sm flex-center"
+                        className="rounded-md bg-neutral text-neutral-content pl-2 text-sm flex-center"
                         data-tip={recipient.email}
                         key={recipient.id}
                       >
@@ -376,10 +376,10 @@ const Mails = () => {
                 </div>
               </div>
               <ReactTextareaAutocomplete
-                className="text-md h-full w-full resize-none bg-transparent p-4 font-mono text-white/60 outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
+                className="text-md block h-full w-full resize-none bg-transparent p-4 font-mono outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
                 containerClassName="h-full w-full relative"
                 dropdownClassName="absolute"
-                listClassName="menu menu-compact bg-neutral mt-6"
+                listClassName="menu menu-compact mt-6"
                 loadingComponent={() => <div>Loading</div>}
                 minChar={0}
                 onChange={(event) => {

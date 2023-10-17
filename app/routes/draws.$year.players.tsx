@@ -257,7 +257,7 @@ function Players({
 
   return (
     <>
-      <table className="z-0 table w-full">
+      <table className="z-0 table w-full rounded-xl table-zebra">
         {groups.map((group) => (
           <Fragment key={group.name}>
             {group.name ? (
@@ -287,11 +287,11 @@ function Players({
                       <div>
                         <div>
                           {`${person.firstName} ${person.lastName}`}{" "}
-                          <span className="ml-2 text-sm text-white/50">
+                          <span className="ml-2 text-sm text-base-content/50">
                             {age}
                           </span>
                         </div>
-                        <div className="flex gap-2 text-sm text-white/30">
+                        <div className="flex gap-2 text-sm text-base-content/30">
                           <span>{person.email}</span>
                           {person.exclude.length > 0 ? (
                             <>
@@ -322,7 +322,7 @@ function Players({
                   </td>
                   <td className="w-full">
                     {assigned ? (
-                      <span className="inline-block rounded-md bg-neutral px-4 py-2">
+                      <span className="inline-block rounded-md bg-neutral text-neutral-content px-2 py-1">
                         {`${assigned.firstName} ${assigned.lastName}`}
                         <span className="ml-2 text-sm opacity-50">
                           {assigned.age}
