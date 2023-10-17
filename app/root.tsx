@@ -1,6 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,30 +7,16 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
 } from "@remix-run/react";
 
-import Header from "~/components/hearder";
-import { getUser } from "~/session.server";
 import stylesheet from "~/tailwind.css";
-
-import { getDraws } from "./models/draw.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const draws = await getDraws();
-  const user = await getUser(request);
-
-  return json({ user, draws });
-};
-
 export default function App() {
-  const { draws } = useLoaderData<typeof loader>();
-
   return (
     <html lang="en" className="h-full">
       <head>
@@ -41,7 +26,6 @@ export default function App() {
         <Links />
       </head>
       <body className="flex min-h-screen flex-col pb-10">
-        <Header draws={draws} />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
