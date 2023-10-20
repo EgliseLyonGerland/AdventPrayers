@@ -215,42 +215,44 @@ const Mails = () => {
 
   return (
     <>
-      <div className="container mx-auto mb-4 flex items-center gap-4">
-        <input
-          className="input-bordered input input-sm"
-          onChange={(event) => {
-            setSearch(kebabCase(event.target.value));
-          }}
-          placeholder="Recherche"
-          type="text"
-          value={search}
-        />
-        <div className="form-control ml-auto">
-          <label className="label cursor-pointer">
-            <input
-              checked={grouped}
-              className="checkbox checkbox-sm"
-              onChange={(event) => {
-                setGrouped(event.target.checked);
-              }}
-              type="checkbox"
-            />
-            <span className="label-text ml-2">Grouper</span>
-          </label>
-        </div>
-        <button
-          className={clsx("btn-sm btn-primary btn", { "btn-disabled": !ready })}
-          onClick={(event) => {
-            if (!ready) {
-              event.preventDefault();
-            }
-          }}
-        >
-          Envoyer
-        </button>
-      </div>
       <div className="relative mx-auto w-full flex-1 overflow-hidden 2xl:container">
-        <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200 text-base-content border border-primary">
+        <div className="mb-4 flex items-center gap-4">
+          <input
+            className="input-bordered input input-sm input-secondary"
+            onChange={(event) => {
+              setSearch(kebabCase(event.target.value));
+            }}
+            placeholder="Recherche"
+            type="text"
+            value={search}
+          />
+          <div className="form-control ml-auto">
+            <label className="label cursor-pointer">
+              <input
+                checked={grouped}
+                className="checkbox checkbox-sm"
+                onChange={(event) => {
+                  setGrouped(event.target.checked);
+                }}
+                type="checkbox"
+              />
+              <span className="label-text ml-2">Grouper</span>
+            </label>
+          </div>
+          <button
+            className={clsx("btn-sm btn-secondary btn", {
+              "btn-disabled": !ready,
+            })}
+            onClick={(event) => {
+              if (!ready) {
+                event.preventDefault();
+              }
+            }}
+          >
+            Envoyer
+          </button>
+        </div>
+        <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200 text-base-content border border-base-content/20">
           <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content dark:divide-neutral-content/20">
             <div className="flex flex-col overflow-hidden">
               <label className="flex h-14 items-center gap-4 px-4 text-base-content/60">
@@ -427,7 +429,7 @@ const Mails = () => {
               Annuler
             </label>
             <button
-              className="btn-accent btn-sm btn ml-auto"
+              className="btn-secondary btn-sm btn ml-auto"
               onClick={() => {
                 handleSend(true);
               }}

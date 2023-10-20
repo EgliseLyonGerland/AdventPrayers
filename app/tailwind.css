@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn:not(.btn-circle) {
+  @apply rounded-full px-6;
+}
+.btn-sm:not(.btn-circle) {
+  @apply px-4;
+}
+.input:not(textarea) {
+  @apply rounded-full;
+}

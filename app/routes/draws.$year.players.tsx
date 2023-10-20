@@ -320,7 +320,7 @@ function Players({
                       </button>
                     </div>
                   </td>
-                  <td className="w-full">
+                  <td className="">
                     {assigned ? (
                       <span className="inline-block rounded-md bg-neutral text-neutral-content px-2 py-1">
                         {`${assigned.firstName} ${assigned.lastName}`}
@@ -408,6 +408,7 @@ export default function Index() {
                   items={persons}
                   keyProp="id"
                   name="Ajouter un participant"
+                  className="z-10"
                   onSelect={(person) => {
                     const formData = new FormData();
                     formData.set("personId", person.id);
@@ -460,7 +461,7 @@ export default function Index() {
             {!draw.drawn && draw.players.length > 2 ? (
               <Form method="post">
                 <button
-                  className="btn-accent btn-sm btn"
+                  className="btn-secondary btn-sm btn"
                   name="_action"
                   type="submit"
                   value="makeDraw"
@@ -470,7 +471,10 @@ export default function Index() {
               </Form>
             ) : null}
 
-            <Listbox as="div" className="dropdown-left dropdown">
+            <Listbox
+              as="div"
+              className="dropdown-bottom dropdown-end mt-2 dropdown z-10 "
+            >
               <Listbox.Button
                 as="button"
                 className="btn-ghost btn-sm btn-circle btn"
@@ -480,7 +484,7 @@ export default function Index() {
               </Listbox.Button>
               <Listbox.Options
                 as="ul"
-                className="dropdown-content menu rounded-box w-52 bg-base-300 p-2 shadow"
+                className="dropdown-content menu w-52 bg-base-300 p-2 shadow border border-base-content/20 rounded-md"
               >
                 <li className="menu-title">
                   <span>Organiser</span>

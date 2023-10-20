@@ -72,7 +72,7 @@ const Print = () => {
               </p>
               <Form method="post">
                 <button className="btn-primary btn mt-8" type="submit">
-                  Générer le fichier d&apos;impression
+                  Générer le fichier d‘impression
                 </button>
               </Form>
             </div>

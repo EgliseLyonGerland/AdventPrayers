@@ -1,4 +1,5 @@
 import { Combobox } from "@headlessui/react";
+import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useState, memo } from "react";
 
@@ -41,7 +42,12 @@ function EntitySelector<T>({
   return (
     <Combobox
       as="div"
-      className={`dropdown-ope dropdown relative dropdown-${horizontal} dropdown-${vertical} ${className}`}
+      className={clsx(
+        "dropdown relative",
+        horizontal === "start" ? "dropdown-start" : "dropdown-end",
+        vertical === "top" ? "dropdown-top" : "dropdown-bottom",
+        className,
+      )}
       onChange={(item: T) => onSelect(item)}
     >
       <Combobox.Input
@@ -52,7 +58,7 @@ function EntitySelector<T>({
       />
       <Combobox.Options
         as="ul"
-        className="dropdown-content max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md bg-base-200 shadow-xl focus:outline-none"
+        className="dropdown-content max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md bg-base-200 shadow-xl focus:outline-none border border-base-content/20 mt-2"
         static
       >
         {filteredItems.length === 0 ? (
