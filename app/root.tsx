@@ -35,7 +35,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="flex min-h-screen flex-col pb-10">
+      <body className="flex min-h-screen flex-col">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
