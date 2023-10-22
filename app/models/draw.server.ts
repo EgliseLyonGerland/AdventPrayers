@@ -12,16 +12,9 @@ export function getDraws() {
   return prisma.draw.findMany({ orderBy: { year: "asc" } });
 }
 
-export function getDefaultDraw({
-  year,
-}: Pick<Draw, "year">): Awaited<ReturnType<typeof getDraw>> {
-  return {
-    year,
-    drawn: false,
-    ages: "6,10,14,18",
-    groups: "6,10,14,18",
-    players: [],
-  };
+export function getCurrentDraw() {
+  const year = new Date().getFullYear();
+  return getDraw({ year });
 }
 
 export function getDraw({ year }: Pick<Draw, "year">) {

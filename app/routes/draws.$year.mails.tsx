@@ -10,7 +10,6 @@ import invariant from "tiny-invariant";
 import { useLocalStorage } from "usehooks-ts";
 
 import {
-  GetDraw,
   GetDrawPlayer,
   GetDrawPlayerPerson,
   getDraw,
@@ -19,10 +18,6 @@ import { WithRequired } from "~/types";
 import { pluralize, getYearParam } from "~/utils";
 import { generate, toMarkdown, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
-
-interface LoaderData {
-  draw: GetDraw;
-}
 
 type Player = WithRequired<GetDrawPlayer, "person">;
 type Person = WithRequired<
@@ -130,7 +125,7 @@ function getCheckerStatus(players: Player[], recipients: Recipient[]) {
 
 const Mails = () => {
   const year = getYearParam(useParams());
-  const { draw } = useLoaderData<LoaderData>();
+  const { draw } = useLoaderData<typeof loader>();
   const [search, setSearch] = useState("");
   const [recipients, setRecipients] = useLocalStorage<Recipient[]>(
     `draws.${year}.mails.draft.recipients`,

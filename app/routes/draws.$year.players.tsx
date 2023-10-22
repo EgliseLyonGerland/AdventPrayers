@@ -29,7 +29,6 @@ import {
   createDraw,
   deleteDraw,
   deletePlayer,
-  getDefaultDraw,
   getDraw,
   makeDraw,
   updateDraw,
@@ -38,12 +37,6 @@ import {
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
 import { pluralize } from "~/utils";
 import { resolveGroup } from "~/utils/groups";
-
-interface LoaderData {
-  draw: Awaited<ReturnType<typeof getDraw>>;
-  persons: Awaited<ReturnType<typeof getPersons>>;
-  drawExists: boolean;
-}
 
 type SortBy = "date" | "firstName" | "lastName";
 type GroupBy = "player" | "age" | "group";
@@ -110,15 +103,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   const draw = await getDraw({ year });
   const persons = await getPersons();
-
-  if (!draw) {
-    return json({
-      draw: getDefaultDraw({ year }),
-      persons,
-      drawExists: false,
-    });
-  }
-
   return json({ draw, persons, drawExists: true });
 };
 
@@ -352,7 +336,7 @@ function Players({
           <div className="hero-content text-center">
             <div className="max-w-md">
               <h1 className="text-2xl font-bold">
-                C&apos;est {missing < 3 ? "toujours" : null} un peu vide ici !
+                C‘est {missing < 3 ? "toujours" : null} un peu vide ici !
               </h1>
               <p className="py-6 text-lg opacity-70">
                 Ajoute
@@ -372,7 +356,7 @@ function Players({
 export default function Index() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { draw, persons, drawExists } = useLoaderData<LoaderData>();
+  const { draw, persons, drawExists } = useLoaderData<typeof loader>();
   const submit = useSubmit();
 
   const year = getYearParam(useParams());
@@ -640,9 +624,7 @@ export default function Index() {
             <Form method="post">
               <div className="form-control mb-4">
                 <label className="label" htmlFor="ages">
-                  <span className="label-text font-bold">
-                    Tranches d&apos;age
-                  </span>
+                  <span className="label-text font-bold">Tranches d‘age</span>
                 </label>
                 <input
                   className="input-bordered input"
@@ -654,9 +636,7 @@ export default function Index() {
 
               <div className="form-control mb-4">
                 <label className="label" htmlFor="groups">
-                  <span className="label-text font-bold">
-                    Groupes d&apos;age
-                  </span>
+                  <span className="label-text font-bold">Groupes d‘age</span>
                 </label>
                 <input
                   className="input-bordered input"

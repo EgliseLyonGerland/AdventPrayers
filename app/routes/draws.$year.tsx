@@ -1,21 +1,35 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { NavLink, useLoaderData, useMatches, Outlet } from "@remix-run/react";
+import {
+  NavLink,
+  useLoaderData,
+  useMatches,
+  Outlet,
+  Form,
+  useNavigation,
+} from "@remix-run/react";
 import clsx from "clsx";
 
+import { createDraw, getDraw } from "~/models/draw.server";
 import { getYearParam } from "~/utils";
 
-interface LoaderData {
-  year: number;
-}
+export const action = async ({ params }: ActionFunctionArgs) => {
+  const year = getYearParam(params);
+  await createDraw({ year });
+
+  return json({});
+};
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
-  return json({ year });
+  const draw = await getDraw({ year });
+
+  return json({ year, draw });
 };
 
 export default function Index() {
-  const { year } = useLoaderData<LoaderData>();
+  const { year, draw } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
   const matches = useMatches();
 
   const currentRoute = matches[matches.length - 1];
@@ -34,9 +48,11 @@ export default function Index() {
         <div className="tabs">
           {routes.map((route) => (
             <NavLink
-              className={clsx("tab tab-bordered", {
-                "tab-active": currentRoute.pathname === route.path,
-              })}
+              className={clsx(
+                "tab tab-bordered",
+                currentRoute.pathname === route.path && "tab-active",
+                !draw && "opacity-40 pointer-events-none",
+              )}
               key={route.path}
               to={route.path}
             >
@@ -45,7 +61,32 @@ export default function Index() {
           ))}
         </div>
       </div>
-      <Outlet />
+      {draw ? (
+        <Outlet />
+      ) : (
+        <Form method="post">
+          <div className="hero bg-base-200 p-8 container mx-auto">
+            <div className="hero-content text-center">
+              <div className="max-w-md">
+                <h1 className="text-2xl font-bold">
+                  L‘édition n‘existe pas encore...
+                </h1>
+                <p className="py-6 text-lg opacity-70">
+                  Tu dois d‘abord la créer avant de pouvoir ajouter des
+                  participants et lancer le tirage.
+                </p>
+                <button className="btn btn-secondary" type="submit">
+                  {navigation.state === "submitting" ? (
+                    <span className="loading loading-spinner"></span>
+                  ) : (
+                    `Créer l‘édition ${year}`
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </Form>
+      )}
     </main>
   );
 }
