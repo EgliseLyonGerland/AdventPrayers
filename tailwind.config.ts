@@ -7,6 +7,9 @@ import plugin from "tailwindcss/plugin";
 export default {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    fontFamily: {
+      sans: "'M PLUS Rounded 1c', sans-serif",
+    },
     extend: {},
   },
   plugins: [
