@@ -9,5 +9,5 @@
   @apply px-4;
 }
 .input:not(textarea) {
-  @apply rounded-full;
+  @apply rounded-full px-4;
 }
