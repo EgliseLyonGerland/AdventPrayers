@@ -10,12 +10,12 @@ export default function Index() {
   const navigate = useNavigate();
 
   return (
-    <main className="flex-1 flex-center flex-col h-full gap-8">
+    <main className="h-full flex-1 flex-col gap-8 flex-center">
       <motion.div layoutId="foobar">
-        <Logo className="fill-base-content h-40"></Logo>
+        <Logo className="h-40 fill-base-content"></Logo>
       </motion.div>
       <button
-        className="btn btn-lg btn-primary shadow-lg"
+        className="btn btn-primary btn-lg shadow-lg"
         onClick={() => navigate("/register")}
       >
         Je m‘inscris

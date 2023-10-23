@@ -34,20 +34,20 @@ const Print = () => {
       <div className="mb-4 ml-auto flex items-center gap-4">
         {version ? (
           <a
-            className="btn-accent btn-sm btn"
+            className="btn btn-accent btn-sm"
             download={`draw${year}.pdf`}
             href={filePath}
           >
             Télécharger
           </a>
         ) : (
-          <button className="btn-sm btn" disabled>
+          <button className="btn btn-sm" disabled>
             Télécharger
           </button>
         )}
 
         <Form method="post">
-          <button className="btn-sm btn" disabled={!version} type="submit">
+          <button className="btn btn-sm" disabled={!version} type="submit">
             Re-générer
           </button>
         </Form>
@@ -71,7 +71,7 @@ const Print = () => {
                 pouvoir le télécharger.
               </p>
               <Form method="post">
-                <button className="btn-primary btn mt-8" type="submit">
+                <button className="btn btn-primary mt-8" type="submit">
                   Générer le fichier d‘impression
                 </button>
               </Form>

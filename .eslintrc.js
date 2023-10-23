@@ -27,7 +27,7 @@ module.exports = {
     // React
     {
       files: ["**/*.{js,jsx,ts,tsx}"],
-      plugins: ["react", "jsx-a11y"],
+      plugins: ["react", "jsx-a11y", "tailwindcss"],
       extends: [
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
@@ -45,10 +45,19 @@ module.exports = {
         ],
       },
       rules: {
+        // react plugin rules
+        "react/sort-default-props": 1,
+        "react/jsx-sort-props": 1,
         "react/jsx-no-leaked-render": [
           "warn",
           { validStrategies: ["ternary"] },
         ],
+
+        // tailwindcss plugin rules
+        "tailwindcss/classnames-order": "error",
+        "tailwindcss/enforces-negative-arbitrary-values": "error",
+        "tailwindcss/enforces-shorthand": "error",
+        "tailwindcss/no-custom-classname": "error",
       },
     },
 
@@ -58,6 +67,7 @@ module.exports = {
       plugins: ["@typescript-eslint", "import"],
       parser: "@typescript-eslint/parser",
       settings: {
+        // import plugin rules
         "import/internal-regex": "^~/",
         "import/resolver": {
           node: {
@@ -76,6 +86,7 @@ module.exports = {
         "prettier",
       ],
       rules: {
+        // import plugin rules
         "import/order": [
           "error",
           {

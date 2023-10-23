@@ -51,7 +51,7 @@ export default function Index() {
               className={clsx(
                 "tab tab-bordered",
                 currentRoute.pathname === route.path && "tab-active",
-                !draw && "opacity-40 pointer-events-none",
+                !draw && "pointer-events-none opacity-40",
               )}
               key={route.path}
               to={route.path}
@@ -65,7 +65,7 @@ export default function Index() {
         <Outlet />
       ) : (
         <Form method="post">
-          <div className="hero bg-base-200 p-8 container mx-auto">
+          <div className="container hero mx-auto bg-base-200 p-8">
             <div className="hero-content text-center">
               <div className="max-w-md">
                 <h1 className="text-2xl font-bold">

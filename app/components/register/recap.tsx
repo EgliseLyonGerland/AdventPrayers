@@ -26,7 +26,7 @@ function Recap({
 
   useEffect(() => {
     animate(
-      ".item",
+      "[data-item]",
       { opacity: Number(visible) },
       { delay: stagger(0.1, { startDelay: 0.5 }) },
     );
@@ -34,44 +34,44 @@ function Recap({
 
   return (
     <div
-      className="bg-neutral rounded-xl md:rounded-3xl shadow-xl flex-1 overflow-auto w-full"
+      className="w-full flex-1 overflow-auto rounded-xl bg-neutral shadow-xl md:rounded-3xl"
       ref={scope}
     >
-      <div className="p-6 md:p-8 md:px-12 flex flex-col md:gap-6 gap-4">
-        <div className="flex sm:gap-20 gap-2 flex-col sm:flex-row">
-          <div className="flex flex-col md:gap-6 gap-2">
-            <div className="item opacity-0">
-              <div className="md:text-xl text-lg md:mb-2 opacity-60">
+      <div className="flex flex-col gap-4 p-6 md:gap-6 md:p-8 md:px-12">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-20">
+          <div className="flex flex-col gap-2 md:gap-6">
+            <div className="opacity-0" data-item>
+              <div className="text-lg opacity-60 md:mb-2 md:text-xl">
                 Prénom
               </div>
               <div className="text-xl md:text-2xl">{firstName}</div>
             </div>
-            <div className="item opacity-0">
-              <div className="md:text-xl text-lg md:mb-2 opacity-60">Nom</div>
+            <div className="opacity-0" data-item>
+              <div className="text-lg opacity-60 md:mb-2 md:text-xl">Nom</div>
               <div className="text-xl md:text-2xl">{lastName}</div>
             </div>
-            <div className="item opacity-0">
-              <div className="md:text-xl text-lg md:mb-2 opacity-60">
+            <div className="opacity-0" data-item>
+              <div className="text-lg opacity-60 md:mb-2 md:text-xl">
                 Adresse email
               </div>
               <div className="text-xl md:text-2xl">{email}</div>
             </div>
           </div>
-          <div className="flex flex-col md:gap-6 gap-4">
-            <div className="item opacity-0">
-              <div className="md:text-xl text-lg md:mb-2 opacity-60">Genre</div>
+          <div className="flex flex-col gap-4 md:gap-6">
+            <div className="opacity-0" data-item>
+              <div className="text-lg opacity-60 md:mb-2 md:text-xl">Genre</div>
               <div className="text-xl md:text-2xl">{t(gender)}</div>
             </div>
-            <div className="item opacity-0">
-              <div className="md:text-xl text-lg md:mb-2 opacity-60">
+            <div className="opacity-0" data-item>
+              <div className="text-lg opacity-60 md:mb-2 md:text-xl">
                 Tranche d‘âge
               </div>
               <div className="text-xl md:text-2xl">{age}</div>
             </div>
           </div>
         </div>
-        <div className="item opacity-0">
-          <div className="md:text-xl text-lg md:mb-2 opacity-60">
+        <div className="opacity-0" data-item>
+          <div className="text-lg opacity-60 md:mb-2 md:text-xl">
             Quelques mots à ton sujet
           </div>
           <div className="text-xl md:text-2xl">

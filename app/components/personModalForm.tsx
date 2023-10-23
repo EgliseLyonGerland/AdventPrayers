@@ -43,10 +43,10 @@ export default function PersonModalForm({
       />
       <input name="id" type="hidden" value={data?.id} />
 
-      <label className="modal-open modal" htmlFor="addPersonModal">
+      <label className="modal modal-open" htmlFor="addPersonModal">
         <div className="modal-box w-11/12 max-w-4xl overflow-visible">
           <label
-            className="btn-sm btn-circle btn absolute right-4 top-4"
+            className="btn btn-circle btn-sm absolute right-4 top-4"
             htmlFor="addPersonModal"
           >
             <XMarkIcon height={16} />
@@ -63,7 +63,7 @@ export default function PersonModalForm({
                   <span className="label-text font-bold">Prénom</span>
                 </label>
                 <input
-                  className="input-bordered input"
+                  className="input input-bordered"
                   defaultValue={data?.firstName || ""}
                   name="firstName"
                   type="text"
@@ -74,7 +74,7 @@ export default function PersonModalForm({
                   <span className="label-text font-bold">Nom</span>
                 </label>
                 <input
-                  className="input-bordered input"
+                  className="input input-bordered"
                   defaultValue={data?.lastName || ""}
                   name="lastName"
                   type="text"
@@ -85,7 +85,7 @@ export default function PersonModalForm({
                   <span className="label-text font-bold">Email</span>
                 </label>
                 <input
-                  className="input-bordered input"
+                  className="input input-bordered"
                   defaultValue={data?.email || ""}
                   name="email"
                   type="email"
@@ -158,7 +158,7 @@ export default function PersonModalForm({
                         {person.firstName} {person.lastName}
                       </span>
                       <button
-                        className="btn-ghost btn-sm btn ml-auto"
+                        className="btn btn-ghost btn-sm ml-auto"
                         onClick={(event) => {
                           setExcludedPersons(
                             excludedPersons.filter(

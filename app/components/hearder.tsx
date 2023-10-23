@@ -21,11 +21,11 @@ function Header({ draws }: Props) {
   }
 
   return (
-    <div className="navbar sticky top-0 z-[1000] mb-12 bg-base-100 text-neutral-content border-b border-b-base-content/10">
+    <div className="navbar sticky top-0 z-[1000] mb-12 border-b border-b-base-content/10 bg-base-100 text-neutral-content">
       <div className="container mx-auto">
         <div className="mr-8">
           <Link className="text-xl normal-case" to="/">
-            <Logo className="h-16 fill-base-content my-2" />
+            <Logo className="my-2 h-16 fill-base-content" />
           </Link>
         </div>
 

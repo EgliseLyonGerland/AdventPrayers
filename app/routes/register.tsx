@@ -145,10 +145,10 @@ export default function Register() {
     defaultValues: {
       gender: "female",
       age: "18+",
-      // firstName: "Nicolas",
-      // lastName: "Bazille",
-      // email: "oltodo@msn.com",
-      // bio: "Nulla reprehenderit pariatur magna eu aliqua aliquip dolore mollit ullamco culpa exercitation aliquip exercitation id.",
+      firstName: "Nicolas",
+      lastName: "Bazille",
+      email: "oltodo@msn.com",
+      bio: "Nulla reprehenderit pariatur magna eu aliqua aliquip dolore mollit ullamco culpa exercitation aliquip exercitation id.",
     },
     submitHandlers: {
       onValid: (data) => {
@@ -202,35 +202,35 @@ export default function Register() {
 
   return (
     <RemixFormProvider {...form}>
-      <main className="flex-1 flex flex-col items-center h-screen md:px-8 px-4 py-8 md:py-12 overflow-hidden gap-[8vh] md:gap-[10vh]">
+      <main className="flex h-screen flex-1 flex-col items-center gap-[8vh] overflow-hidden px-4 py-8 md:gap-[10vh] md:px-8 md:py-12">
         <motion.div layoutId="foobar">
-          <Logo className="fill-white md:h-20 h-16"></Logo>
+          <Logo className="h-16 fill-white md:h-20"></Logo>
         </motion.div>
 
         <fetcher.Form
+          className="flex w-full flex-1 flex-col items-center justify-center gap-8"
           method="post"
           onChange={() => {
             clearErrors(steps[currentStep]);
           }}
-          className="flex-1 flex-col flex gap-8 justify-center w-full items-center"
           onSubmit={handleSubmit}
         >
-          <div className="flex gap-8 flex-1 items-center max-w-[700px] w-full relative justify-center">
+          <div className="relative flex w-full max-w-[700px] flex-1 items-center justify-center gap-8">
             <motion.div
-              className="h-full flex flex-col flex-1 items-center absolute justify-between gap-8"
-              initial={false}
               animate={finalStep ? "visible" : "incoming"}
-              variants={variants}
-              transition={{ type: "tween" }}
+              className="absolute flex h-full flex-1 flex-col items-center justify-between gap-8"
+              initial={false}
               style={{ zIndex: finalStep ? 2 : 1 }}
+              transition={{ type: "tween" }}
+              variants={variants}
             >
               <motion.div
-                className="md:text-2xl text-lg text-center text-base-content/80"
+                className="text-center text-lg text-base-content/80 md:text-2xl"
+                transition={{ type: "tween", delay: 0.5 }}
                 variants={{
                   visible: { opacity: 1, y: 0 },
                   incoming: { opacity: 0, y: 20 },
                 }}
-                transition={{ type: "tween", delay: 0.5 }}
               >
                 Bravo, tu as presque terminé ! Il ne te reste plus qu‘à vérifier
                 les informations avant valider ton inscription.
@@ -238,15 +238,15 @@ export default function Register() {
               <Recap {...getValues()} visible={finalStep} />
               <div className="flex gap-2">
                 <button
-                  type="button"
-                  className="btn md:btn-lg btn-ghost"
+                  className="btn btn-ghost md:btn-lg"
                   onClick={() => {
                     setCurrentStep(0);
                   }}
+                  type="button"
                 >
                   <span className="hidden md:inline">Attends, </span>je corrige
                 </button>
-                <button className="btn md:btn-lg btn-primary" type="submit">
+                <button className="btn btn-primary md:btn-lg" type="submit">
                   <span className="hidden md:inline">C‘est tout bon, </span>je
                   m‘inscris !
                 </button>
@@ -265,41 +265,41 @@ export default function Register() {
 
               return (
                 <motion.div
-                  initial={false}
                   animate={variant}
-                  variants={variants}
-                  transition={{ type: "tween" }}
+                  className="absolute flex h-full w-full flex-col pb-20"
+                  initial={false}
                   key={step}
-                  style={{ zIndex: currentStep === index ? 2 : 1 }}
-                  className="absolute w-full h-full flex flex-col pb-20"
                   onAnimationComplete={(def) => {
                     if (def === "visible" && autoFocus[step]) {
                       setFocus(step);
                     }
                   }}
+                  style={{ zIndex: currentStep === index ? 2 : 1 }}
+                  transition={{ type: "tween" }}
+                  variants={variants}
                 >
                   <div className="">
                     <Component />
                   </div>
 
                   {errors[step] ? (
-                    <div className="text-error m-4 text-center">
+                    <div className="m-4 text-center text-error">
                       {errors[step]?.message}
                     </div>
                   ) : null}
 
                   {defs[step] ? (
                     <motion.div
-                      key={step}
-                      className="md:text-3xl text-xl text-center text-base-content/80 whitespace-pre-wrap my-auto"
-                      initial="incoming"
                       animate={variant}
+                      className="my-auto whitespace-pre-wrap text-center text-xl text-base-content/80 md:text-3xl"
+                      initial="incoming"
+                      key={step}
+                      transition={{ type: "tween", delay: 0.5 }}
                       variants={{
                         visible: { opacity: 1, y: 0 },
                         incoming: { opacity: 0, y: 20 },
                         outgoing: { opacity: 0 },
                       }}
-                      transition={{ type: "tween", delay: 0.5 }}
                     >
                       {defs[step]}
                     </motion.div>
@@ -309,20 +309,20 @@ export default function Register() {
             })}
 
             <motion.div
-              initial={false}
-              className="flex justify-center gap-6 items-center relative mt-auto"
-              transition={{ type: "tween" }}
               animate={{
                 opacity: finalStep ? 0 : 1,
                 y: finalStep ? 30 : 0,
               }}
+              className="relative mt-auto flex items-center justify-center gap-6"
+              initial={false}
               style={{ zIndex: finalStep ? 0 : 10 }}
+              transition={{ type: "tween" }}
             >
               <button
-                type="button"
-                className="btn btn-lg btn-circle btn-outline"
-                onClick={previousStep}
+                className="btn btn-circle btn-outline btn-lg"
                 disabled={currentStep === 0}
+                onClick={previousStep}
+                type="button"
               >
                 <ArrowLeftIcon className="h-8 fill-white" />
               </button>
@@ -330,8 +330,8 @@ export default function Register() {
                 {currentStep + 1}/{steps.length + 1}
               </span>
               <button
+                className="btn btn-circle btn-outline btn-lg"
                 type="submit"
-                className="btn btn-lg btn-circle btn-outline"
               >
                 <ArrowRightIcon className="h-8" />
               </button>

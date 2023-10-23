@@ -18,15 +18,15 @@ export const links: LinksFunction = () => [
 
 export default function App() {
   return (
-    <html lang="en" className="h-full">
+    <html className="h-full" lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <meta content="width=device-width,initial-scale=1" name="viewport" />
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
         <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
+          href="https://fonts.gstatic.com"
+          rel="preconnect"
         />
         <link
           href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300&display=swap"

@@ -10,11 +10,11 @@ export default function AgeField() {
       <div className="grid grid-cols-[auto_auto] gap-6 md:gap-20">
         {ages.map((age) => (
           <div className="form-control" key={age}>
-            <label className="label cursor-pointer flex gap-8 items-center justify-start">
+            <label className="label flex cursor-pointer items-center justify-start gap-8">
               <input
                 {...register("age")}
+                className="radio-accent radio radio-lg"
                 type="radio"
-                className="radio radio-lg radio-accent"
                 value={age}
               />
               <span className="label-text text-2xl md:text-4xl">{age}</span>

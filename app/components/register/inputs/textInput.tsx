@@ -7,10 +7,10 @@ export default forwardRef<HTMLInputElement, Props>(
     return (
       <input
         {...inputProps}
-        type="input"
-        className="w-full input focus:input-accent focus:outline-0 border-2 md:text-3xl text-2xl h-20 md:h-24 text-center bg-neutral shadow-xl placeholder:opacity-50"
-        ref={ref}
         autoComplete="false"
+        className="input h-20 w-full border-2 bg-neutral text-center text-2xl shadow-xl focus:input-accent placeholder:opacity-50 focus:outline-0 md:h-24 md:text-3xl"
+        ref={ref}
+        type="input"
       />
     );
   },

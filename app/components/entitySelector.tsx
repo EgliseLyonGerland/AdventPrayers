@@ -44,7 +44,7 @@ function EntitySelector<T>({
       as="div"
       className={clsx(
         "dropdown relative",
-        horizontal === "start" ? "dropdown-start" : "dropdown-end",
+        horizontal === "start" ? "" : "dropdown-end",
         vertical === "top" ? "dropdown-top" : "dropdown-bottom",
         className,
       )}
@@ -52,24 +52,24 @@ function EntitySelector<T>({
     >
       <Combobox.Input
         autoComplete="off"
-        className="input-ghost input-secondary input input-sm focus:outline-none"
+        className="input input-ghost input-secondary input-sm focus:outline-none"
         onChange={(event) => setQuery(event.target.value)}
         placeholder={name}
       />
       <Combobox.Options
         as="ul"
-        className="dropdown-content max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md bg-base-200 shadow-xl focus:outline-none border border-base-content/20 mt-2"
+        className="dropdown-content mt-2 max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md border border-base-content/20 bg-base-200 shadow-xl focus:outline-none"
         static
       >
         {filteredItems.length === 0 ? (
-          <div className="cursor-default select-none py-3 px-4 italic">
+          <div className="cursor-default select-none px-4 py-3 italic">
             Aucun résultat
           </div>
         ) : (
           filteredItems.map((item) => (
             <Combobox.Option
               as="li"
-              className="ui-selected:text-bold block w-full px-4 py-3 text-left ui-active:bg-base-300"
+              className="block w-full cursor-pointer px-4 py-3 text-left ui-selected:font-bold ui-active:bg-base-300"
               key={`${item[keyProp]}`}
               value={item}
             >

@@ -213,7 +213,7 @@ const Mails = () => {
       <div className="relative mx-auto w-full flex-1 overflow-hidden 2xl:container">
         <div className="mb-4 flex items-center gap-4">
           <input
-            className="input-bordered input input-sm input-secondary"
+            className="input input-bordered input-secondary input-sm"
             onChange={(event) => {
               setSearch(kebabCase(event.target.value));
             }}
@@ -235,7 +235,7 @@ const Mails = () => {
             </label>
           </div>
           <button
-            className={clsx("btn-sm btn-secondary btn", {
+            className={clsx("btn btn-secondary btn-sm", {
               "btn-disabled": !ready,
             })}
             onClick={(event) => {
@@ -247,7 +247,7 @@ const Mails = () => {
             Envoyer
           </button>
         </div>
-        <div className="absolute h-full w-full overflow-x-auto rounded-xl bg-base-200 text-base-content border border-base-content/20">
+        <div className="absolute h-full w-full overflow-x-auto rounded-xl border border-base-content/20 bg-base-200 text-base-content">
           <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content dark:divide-neutral-content/20">
             <div className="flex flex-col overflow-hidden">
               <label className="flex h-14 items-center gap-4 px-4 text-base-content/60">
@@ -267,11 +267,11 @@ const Mails = () => {
                   ? "Tout cocher"
                   : "Tout décocher"}
               </label>
-              <ul className="w-72 flex-1 flex-nowrap divide-y divide-neutral-content dark:divide-neutral-content/20 overflow-y-auto">
+              <ul className="w-72 flex-1 flex-nowrap divide-y divide-neutral-content overflow-y-auto dark:divide-neutral-content/20">
                 {players.map(({ person, age }) => (
-                  <li key={person.id} className="px-4 py-2">
+                  <li className="px-4 py-2" key={person.id}>
                     <label
-                      className="flex w-full gap-4 items-center"
+                      className="flex w-full items-center gap-4"
                       htmlFor={`player${person.id}`}
                     >
                       <input
@@ -296,7 +296,7 @@ const Mails = () => {
                         type="checkbox"
                       />
                       <div className="w-full overflow-hidden">
-                        <div className="flex items-center w-full gap-2 text-">
+                        <div className="flex w-full items-center gap-2">
                           <span className="overflow-auto overflow-ellipsis whitespace-nowrap">{`${person.firstName} ${person.lastName}`}</span>
                           <span className="flex-shrink-0 text-sm text-base-content/50">
                             {age}
@@ -312,7 +312,7 @@ const Mails = () => {
               </ul>
             </div>
             <div className="flex flex-1 flex-col">
-              <div className="divide-y divide-neutral-content dark:divide-neutral-content/20 border-b border-white/10">
+              <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/20">
                 <div className="flex p-4">
                   <span className="mr-2 whitespace-nowrap font-bold opacity-50">
                     À :
@@ -320,14 +320,14 @@ const Mails = () => {
                   <div className="flex flex-wrap items-center gap-1">
                     {recipients.slice(0, 10).map((recipient) => (
                       <span
-                        className="rounded-md bg-neutral text-neutral-content pl-2 text-sm flex-center"
+                        className="rounded-md bg-neutral pl-2 text-sm text-neutral-content flex-center"
                         data-tip={recipient.email}
                         key={recipient.id}
                       >
                         <span className="cursor-default">{`${recipient.firstName} ${recipient.lastName}`}</span>
 
                         <button
-                          className="btn-ghost btn-xs btn-circle btn ml-1"
+                          className="btn btn-circle btn-ghost btn-xs ml-1"
                           onClick={() => {
                             setRecipients(
                               recipients.filter(
@@ -373,7 +373,7 @@ const Mails = () => {
                 </div>
               </div>
               <ReactTextareaAutocomplete
-                className="text-md block h-full w-full resize-none bg-transparent p-4 font-mono outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
+                className="block h-full w-full resize-none bg-transparent p-4 font-mono outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
                 containerClassName="h-full w-full relative"
                 dropdownClassName="absolute"
                 listClassName="menu menu-compact mt-6"
@@ -410,7 +410,7 @@ const Mails = () => {
 
       <input className="modal-toggle" id="send-modal" type="checkbox" />
       <label className="modal cursor-pointer" htmlFor="send-modal">
-        <label className="w-500 modal-box relative max-w-2xl" htmlFor="">
+        <label className="modal-box relative max-w-2xl" htmlFor="">
           <h3 className="text-lg font-bold">Confirmation</h3>
           <p className="py-4">
             Vous vous apprêtez à envoyer un message à {recipients.length}{" "}
@@ -420,11 +420,11 @@ const Mails = () => {
             Souhaitez-vous continuer ?
           </p>
           <div className="mt-8 flex gap-4">
-            <label className="btn-sm btn" htmlFor="send-modal">
+            <label className="btn btn-sm" htmlFor="send-modal">
               Annuler
             </label>
             <button
-              className="btn-secondary btn-sm btn ml-auto"
+              className="btn btn-secondary btn-sm ml-auto"
               onClick={() => {
                 handleSend(true);
               }}
@@ -432,7 +432,7 @@ const Mails = () => {
               Envoyer un mail de test
             </button>
             <button
-              className="btn-error btn-sm btn"
+              className="btn btn-error btn-sm"
               onClick={() => {
                 handleSend();
               }}

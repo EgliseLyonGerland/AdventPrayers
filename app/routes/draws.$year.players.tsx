@@ -241,7 +241,7 @@ function Players({
 
   return (
     <>
-      <table className="z-0 table w-full rounded-xl table-zebra">
+      <table className="table table-zebra z-0 w-full rounded-xl">
         {groups.map((group) => (
           <Fragment key={group.name}>
             {group.name ? (
@@ -297,7 +297,7 @@ function Players({
                         </div>
                       </div>
                       <button
-                        className="btn-ghost btn-circle btn invisible group-hover:visible"
+                        className="btn btn-circle btn-ghost invisible group-hover:visible"
                         onClick={() => onNewPersonClick(person.id)}
                       >
                         <PencilIcon height={16} />
@@ -306,7 +306,7 @@ function Players({
                   </td>
                   <td className="">
                     {assigned ? (
-                      <span className="inline-block rounded-md bg-neutral text-neutral-content px-2 py-1">
+                      <span className="inline-block rounded-md bg-neutral px-2 py-1 text-neutral-content">
                         {`${assigned.firstName} ${assigned.lastName}`}
                         <span className="ml-2 text-sm opacity-50">
                           {assigned.age}
@@ -317,7 +317,7 @@ function Players({
                   {!drawn ? (
                     <td className="text-right">
                       <button
-                        className="btn-ghost btn-sm btn-circle btn"
+                        className="btn btn-circle btn-ghost btn-sm"
                         onClick={() => onDeletePlayerClick(person.id)}
                       >
                         <XMarkIcon height={24} />
@@ -388,11 +388,11 @@ export default function Index() {
             {!draw.drawn ? (
               <>
                 <EntitySelector
+                  className="z-10"
                   filterBy={["firstName", "lastName"]}
                   items={persons}
                   keyProp="id"
                   name="Ajouter un participant"
-                  className="z-10"
                   onSelect={(person) => {
                     const formData = new FormData();
                     formData.set("personId", person.id);
@@ -426,7 +426,7 @@ export default function Index() {
 
                 <div className="tooltip" data-tip="Créer une nouvelle personne">
                   <NavLink
-                    className="btn-sm btn-circle btn"
+                    className="btn btn-circle btn-sm"
                     to={`?${toQueryString(searchParams, {
                       showPersonForm: true,
                     })}`}
@@ -445,7 +445,7 @@ export default function Index() {
             {!draw.drawn && draw.players.length > 2 ? (
               <Form method="post">
                 <button
-                  className="btn-secondary btn-sm btn"
+                  className="btn btn-secondary btn-sm"
                   name="_action"
                   type="submit"
                   value="makeDraw"
@@ -457,18 +457,18 @@ export default function Index() {
 
             <Listbox
               as="div"
-              className="dropdown-bottom dropdown-end mt-2 dropdown z-10 "
+              className="dropdown dropdown-end dropdown-bottom z-10 mt-2"
             >
               <Listbox.Button
                 as="button"
-                className="btn-ghost btn-sm btn-circle btn"
+                className="btn btn-circle btn-ghost btn-sm"
                 tabIndex={0}
               >
                 <EllipsisVerticalIcon height={24} />
               </Listbox.Button>
               <Listbox.Options
                 as="ul"
-                className="dropdown-content menu w-52 bg-base-300 p-2 shadow border border-base-content/20 rounded-md"
+                className="menu dropdown-content w-52 rounded-md border border-base-content/20 bg-base-300 p-2 shadow"
               >
                 <li className="menu-title">
                   <span>Organiser</span>
@@ -601,7 +601,7 @@ export default function Index() {
       {settings.showSettings ? (
         <Dialog
           as="div"
-          className="modal-open modal"
+          className="modal modal-open"
           onClose={() => {
             go({ showSettings: false });
           }}
@@ -613,7 +613,7 @@ export default function Index() {
             </Dialog.Title>
 
             <button
-              className="btn-sm btn-circle btn absolute right-4 top-4"
+              className="btn btn-circle btn-sm absolute right-4 top-4"
               onClick={() => {
                 go({ showSettings: false });
               }}
@@ -627,7 +627,7 @@ export default function Index() {
                   <span className="label-text font-bold">Tranches d‘age</span>
                 </label>
                 <input
-                  className="input-bordered input"
+                  className="input input-bordered"
                   defaultValue={draw?.ages}
                   name="ages"
                   type="text"
@@ -639,7 +639,7 @@ export default function Index() {
                   <span className="label-text font-bold">Groupes d‘age</span>
                 </label>
                 <input
-                  className="input-bordered input"
+                  className="input input-bordered"
                   defaultValue={draw?.groups}
                   name="groups"
                   type="text"
