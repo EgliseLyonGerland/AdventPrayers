@@ -68,22 +68,29 @@ export const meta: MetaFunction = () => [{ title: "Login" }];
 const containerVariants: Variants = {
   hidden: {
     opacity: 0,
-    y: 1000,
+    y: 30,
   },
   show: {
     opacity: 1,
     y: 0,
 
     transition: {
+      type: "tween",
+      ease: "anticipate",
+      duration: 2,
       delayChildren: 0.5,
       staggerChildren: 0.1,
     },
   },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1 },
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "tween", ease: "anticipate", duration: 2 },
+  },
 };
 
 export default function LoginPage() {

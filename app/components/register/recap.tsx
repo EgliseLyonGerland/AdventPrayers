@@ -27,8 +27,13 @@ function Recap({
   useEffect(() => {
     animate(
       "[data-item]",
-      { opacity: Number(visible) },
-      { delay: stagger(0.1, { startDelay: 0.5 }) },
+      { opacity: Number(visible), y: visible ? 0 : 10 },
+      {
+        type: "tween",
+        ease: "anticipate",
+        duration: 1,
+        delay: stagger(0.1, { startDelay: 1 }),
+      },
     );
   }, [visible]);
 

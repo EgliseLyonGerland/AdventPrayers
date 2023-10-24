@@ -17,7 +17,7 @@ export default {
     headlessui({ prefix: "ui" }),
     typography,
     daisyui,
-    plugin(({ addUtilities }) => {
+    plugin(({ addUtilities, addVariant }) => {
       addUtilities({
         ".flex-center": {
           display: "flex",
@@ -29,7 +29,12 @@ export default {
           alignItems: "center",
           justifyContent: "center",
         },
+        ".wrap-balance": {
+          textWrap: "balance",
+        },
       });
+
+      addVariant("def", ":where(&)");
     }),
   ],
   daisyui: {

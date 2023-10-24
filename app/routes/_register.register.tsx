@@ -9,7 +9,7 @@ import {
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { Variants, motion } from "framer-motion";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import {
   RemixFormProvider,
   createFormData,
@@ -27,6 +27,8 @@ import LastNameField from "~/components/register/fields/lastNameField";
 import Recap from "~/components/register/recap";
 import { addPlayer, getCurrentDraw } from "~/models/draw.server";
 import { createPerson } from "~/models/person.server";
+
+import { Wrapper } from "./_register";
 
 export const meta: MetaFunction = () => [{ title: "Inscription" }];
 
@@ -131,6 +133,15 @@ export const loader = async () => {
   return json({});
 };
 
+const itemVariants: Variants = {
+  incoming: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "tween", ease: "anticipate", duration: 2 },
+  },
+};
+
 export default function Register() {
   const fetcher = useFetcher<Output<typeof schema>>();
   const [currentStep, setCurrentStep] = useState(0);
@@ -179,14 +190,6 @@ export default function Register() {
     getValues,
   } = form;
 
-  useEffect(() => {
-    const step = steps[currentStep];
-
-    if (autoFocus[step]) {
-      setFocus(step);
-    }
-  }, []);
-
   const previousStep = () => {
     const newStep = Math.max(currentStep - 1, 0);
     clearErrors();
@@ -199,145 +202,159 @@ export default function Register() {
     setCurrentStep(newStep);
   };
 
-  //  className="flex h-screen flex-1 flex-col items-center gap-[8vh] overflow-hidden px-4 py-8 md:gap-[10vh] md:px-8 md:py-12"
   return (
     <RemixFormProvider {...form}>
-      <fetcher.Form
-        className="flex w-full flex-1 flex-col items-center justify-center gap-8"
-        method="post"
-        onChange={() => {
-          clearErrors(steps[currentStep]);
-        }}
-        onSubmit={handleSubmit}
-      >
-        <motion.div
-          animate={{ opacity: 1 }}
-          className="relative flex w-full max-w-[700px] flex-1 items-center justify-center gap-8"
-          initial={{ opacity: 0 }}
-          transition={{ delay: 0.3 }}
+      <Wrapper>
+        <fetcher.Form
+          className="h-full w-full flex-col gap-8 flex-center"
+          method="post"
+          onChange={() => {
+            clearErrors(steps[currentStep]);
+          }}
+          onSubmit={handleSubmit}
         >
           <motion.div
-            animate={finalStep ? "visible" : "incoming"}
-            className="absolute flex h-full flex-1 flex-col items-center justify-between gap-8"
-            initial={false}
-            style={{ zIndex: finalStep ? 2 : 1 }}
-            transition={{ type: "tween" }}
-            variants={variants}
+            animate={{ opacity: 1 }}
+            className="relative flex w-full max-w-[700px] flex-1 items-center justify-center gap-8"
+            initial={{ opacity: 0 }}
+            transition={{ delay: 0.3 }}
           >
             <motion.div
-              className="text-center text-lg text-base-content/80 md:text-2xl"
-              transition={{ type: "tween", delay: 0.5 }}
-              variants={{
-                visible: { opacity: 1, y: 0 },
-                incoming: { opacity: 0, y: 20 },
+              animate={finalStep ? "visible" : "incoming"}
+              className="absolute flex h-full flex-1 flex-col items-center justify-between gap-8"
+              initial={false}
+              style={{ zIndex: finalStep ? 2 : 1 }}
+              transition={{
+                type: "tween",
+                ease: "anticipate",
+                duration: 0.5,
+                staggerChildren: 0.2,
               }}
+              variants={variants}
             >
-              Bravo, tu as presque terminé ! Il ne te reste plus qu‘à vérifier
-              les informations avant valider ton inscription.
+              <motion.div
+                className="text-center text-lg text-base-content/80 md:text-2xl"
+                variants={itemVariants}
+              >
+                Bravo, tu as presque terminé ! Il ne te reste plus qu‘à vérifier
+                les informations avant valider ton inscription.
+              </motion.div>
+              <Recap {...getValues()} visible={finalStep} />
+              <motion.div className="flex gap-2" variants={itemVariants}>
+                <button
+                  className="btn btn-ghost md:btn-lg"
+                  onClick={() => {
+                    setCurrentStep(0);
+                  }}
+                  type="button"
+                >
+                  <span className="hidden md:inline">Attends, </span>je corrige
+                </button>
+                <button
+                  className="btn btn-secondary btn-outline md:btn-lg"
+                  type="submit"
+                >
+                  <span className="hidden md:inline">C‘est tout bon, </span>je
+                  m‘inscris !
+                </button>
+              </motion.div>
             </motion.div>
-            <Recap {...getValues()} visible={finalStep} />
-            <div className="flex gap-2">
+
+            {steps.map((step, index) => {
+              const Component = fields[step];
+
+              const variant =
+                currentStep === index
+                  ? "visible"
+                  : currentStep < index
+                  ? "incoming"
+                  : "outgoing";
+
+              return (
+                <motion.div
+                  animate={variant}
+                  className="absolute flex h-full w-full flex-col pb-20"
+                  initial="incoming"
+                  key={step}
+                  onAnimationComplete={(def) => {
+                    if (def === "visible" && autoFocus[step]) {
+                      setFocus(step);
+                    }
+                  }}
+                  style={{ zIndex: currentStep === index ? 2 : 1 }}
+                  transition={{
+                    type: "tween",
+                    ease: "anticipate",
+                    duration: 0.5,
+                  }}
+                  variants={variants}
+                >
+                  <div className="">
+                    <Component />
+                  </div>
+
+                  {errors[step] ? (
+                    <div className="m-4 text-center text-error">
+                      {errors[step]?.message}
+                    </div>
+                  ) : null}
+
+                  {defs[step] ? (
+                    <motion.div
+                      animate={variant}
+                      className="my-auto whitespace-pre-wrap text-center text-xl text-base-content/80 wrap-balance md:text-3xl"
+                      initial="incoming"
+                      key={step}
+                      transition={{
+                        type: "tween",
+                        ease: "anticipate",
+                        duration: 0.5,
+                        delay: 0.5,
+                      }}
+                      variants={{
+                        visible: { opacity: 1, y: 0 },
+                        incoming: { opacity: 0, y: 20 },
+                        outgoing: { opacity: 0 },
+                      }}
+                    >
+                      {defs[step]}
+                    </motion.div>
+                  ) : null}
+                </motion.div>
+              );
+            })}
+
+            <motion.div
+              animate={{
+                opacity: finalStep ? 0 : 1,
+                y: finalStep ? 30 : 0,
+              }}
+              className="relative mt-auto flex items-center justify-center gap-6"
+              initial={false}
+              style={{ zIndex: finalStep ? 0 : 10 }}
+              transition={{ type: "tween", ease: "anticipate", duration: 0.5 }}
+            >
               <button
-                className="btn btn-ghost md:btn-lg"
-                onClick={() => {
-                  setCurrentStep(0);
-                }}
+                className="btn btn-circle btn-outline btn-lg"
+                disabled={currentStep === 0}
+                onClick={previousStep}
                 type="button"
               >
-                <span className="hidden md:inline">Attends, </span>je corrige
+                <ArrowLeftIcon className="h-8 fill-white" />
               </button>
+              <span className="text-xl">
+                {currentStep + 1}/{steps.length + 1}
+              </span>
               <button
-                className="btn btn-secondary btn-outline md:btn-lg"
+                className="btn btn-circle btn-outline btn-lg"
                 type="submit"
               >
-                <span className="hidden md:inline">C‘est tout bon, </span>je
-                m‘inscris !
+                <ArrowRightIcon className="h-8" />
               </button>
-            </div>
+            </motion.div>
           </motion.div>
-
-          {steps.map((step, index) => {
-            const Component = fields[step];
-
-            const variant =
-              currentStep === index
-                ? "visible"
-                : currentStep < index
-                ? "incoming"
-                : "outgoing";
-
-            return (
-              <motion.div
-                animate={variant}
-                className="absolute flex h-full w-full flex-col pb-20"
-                initial={false}
-                key={step}
-                onAnimationComplete={(def) => {
-                  if (def === "visible" && autoFocus[step]) {
-                    setFocus(step);
-                  }
-                }}
-                style={{ zIndex: currentStep === index ? 2 : 1 }}
-                transition={{ type: "tween" }}
-                variants={variants}
-              >
-                <div className="">
-                  <Component />
-                </div>
-
-                {errors[step] ? (
-                  <div className="m-4 text-center text-error">
-                    {errors[step]?.message}
-                  </div>
-                ) : null}
-
-                {defs[step] ? (
-                  <motion.div
-                    animate={variant}
-                    className="my-auto whitespace-pre-wrap text-center text-xl text-base-content/80 md:text-3xl"
-                    initial="incoming"
-                    key={step}
-                    transition={{ type: "tween", delay: 0.5 }}
-                    variants={{
-                      visible: { opacity: 1, y: 0 },
-                      incoming: { opacity: 0, y: 20 },
-                      outgoing: { opacity: 0 },
-                    }}
-                  >
-                    {defs[step]}
-                  </motion.div>
-                ) : null}
-              </motion.div>
-            );
-          })}
-
-          <motion.div
-            animate={{
-              opacity: finalStep ? 0 : 1,
-              y: finalStep ? 30 : 0,
-            }}
-            className="relative mt-auto flex items-center justify-center gap-6"
-            initial={false}
-            style={{ zIndex: finalStep ? 0 : 10 }}
-            transition={{ type: "tween" }}
-          >
-            <button
-              className="btn btn-circle btn-outline btn-lg"
-              disabled={currentStep === 0}
-              onClick={previousStep}
-              type="button"
-            >
-              <ArrowLeftIcon className="h-8 fill-white" />
-            </button>
-            <span className="text-xl">
-              {currentStep + 1}/{steps.length + 1}
-            </span>
-            <button className="btn btn-circle btn-outline btn-lg" type="submit">
-              <ArrowRightIcon className="h-8" />
-            </button>
-          </motion.div>
-        </motion.div>
-      </fetcher.Form>
+        </fetcher.Form>
+      </Wrapper>
     </RemixFormProvider>
   );
 }

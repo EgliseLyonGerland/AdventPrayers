@@ -18,7 +18,7 @@ export const links: LinksFunction = () => [
 
 export default function App() {
   return (
-    <html className="h-full" lang="en">
+    <html className="min-h-[100svh]" lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta content="width=device-width,initial-scale=1" name="viewport" />
@@ -35,7 +35,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="flex min-h-screen flex-col">
+      <body className="flex min-h-[100svh] flex-col">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
