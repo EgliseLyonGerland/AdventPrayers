@@ -39,7 +39,7 @@ function Recap({
 
   return (
     <div
-      className="w-full flex-1 overflow-auto rounded-xl bg-neutral shadow-xl md:rounded-3xl"
+      className="w-full flex-1 overflow-auto rounded-xl bg-base-200 shadow-xl md:rounded-3xl"
       ref={scope}
     >
       <div className="flex flex-col gap-4 p-6 md:gap-6 md:p-8 md:px-12">

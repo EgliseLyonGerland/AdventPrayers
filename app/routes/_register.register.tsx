@@ -302,7 +302,7 @@ export default function Register() {
                   {defs[step] ? (
                     <motion.div
                       animate={variant}
-                      className="my-auto whitespace-pre-wrap text-center text-xl text-base-content/80 wrap-balance md:text-3xl"
+                      className="z-10 my-auto whitespace-pre-wrap text-center text-xl text-base-content/80 wrap-balance md:text-3xl"
                       initial="incoming"
                       key={step}
                       transition={{
