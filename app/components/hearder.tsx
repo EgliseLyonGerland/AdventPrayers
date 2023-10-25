@@ -3,6 +3,8 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "@remix-run/react";
 import { Fragment } from "react";
 
+import { getCurrentYear } from "~/utils";
+
 import Logo from "./logo";
 
 interface Props {
@@ -14,7 +16,7 @@ interface Props {
 function Header({ draws }: Props) {
   const navigate = useNavigate();
 
-  const currentYear = new Date().getFullYear();
+  const currentYear = getCurrentYear();
   const years = draws.map(({ year }) => year).sort((a, b) => a - b);
   if (years[years.length - 1] !== currentYear) {
     years.push(currentYear);

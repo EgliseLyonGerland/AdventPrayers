@@ -1,6 +1,8 @@
 import { redirect } from "@remix-run/node";
 
+import { getCurrentYear } from "~/utils";
+
 export const loader = async () => {
-  const year = new Date().getFullYear();
+  const year = getCurrentYear();
   return redirect(`/draws/${year}`);
 };

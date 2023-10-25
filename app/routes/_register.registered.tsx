@@ -1,7 +1,7 @@
 import { NavLink } from "@remix-run/react";
 import { Variants, motion } from "framer-motion";
 
-import { Wrapper } from "./_register";
+import { Wrapper } from "~/components/register/wrapper";
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },

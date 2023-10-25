@@ -1,6 +1,7 @@
 import type { Draw, Person } from "@prisma/client";
 
 import { prisma } from "~/db.server";
+import { getCurrentYear } from "~/utils";
 import { letsDraw } from "~/utils/draw.server";
 
 export type GetDraws = NonNullable<Awaited<ReturnType<typeof getDraws>>>;
@@ -13,8 +14,7 @@ export function getDraws() {
 }
 
 export function getCurrentDraw() {
-  const year = new Date().getFullYear();
-  return getDraw({ year });
+  return getDraw({ year: getCurrentYear() });
 }
 
 export function getDraw({ year }: Pick<Draw, "year">) {

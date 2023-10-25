@@ -29,7 +29,7 @@ export default function App() {
           rel="preconnect"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300&display=swap"
+          href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap"
           rel="stylesheet"
         ></link>
         <Meta />

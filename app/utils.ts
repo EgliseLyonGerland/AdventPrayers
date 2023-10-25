@@ -1,4 +1,5 @@
 import { Params, useMatches } from "@remix-run/react";
+import dayjs from "dayjs";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
 
@@ -100,4 +101,8 @@ export function getYearParam(params: Params): number {
   invariant(Number.isInteger(year), "Year must be a integer");
 
   return year;
+}
+
+export function getCurrentYear() {
+  return dayjs().subtract(1, "month").year();
 }

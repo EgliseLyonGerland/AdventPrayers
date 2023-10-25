@@ -1,37 +1,70 @@
-import type { MetaFunction } from "@remix-run/node";
-import { Outlet, useLocation } from "@remix-run/react";
+import { json, type MetaFunction } from "@remix-run/node";
+import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 
 import Logo from "~/components/logo";
+import Message from "~/components/register/message";
+import { getCurrentDraw } from "~/models/draw.server";
 
 export const meta: MetaFunction = () => [{ title: "En Avent la prière !" }];
 
-export function Wrapper({
-  className,
-  children,
-}: {
-  className?: string;
-  children: ReactNode;
-}) {
-  return (
-    <div
-      className={clsx(
-        "h-full px-4 py-8 pt-36 def:overflow-hidden md:px-8 md:py-12 md:pt-64",
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
-}
+export const loader = async () => {
+  const draw = await getCurrentDraw();
+
+  return json({ draw });
+};
 
 export default function Index() {
+  const { draw } = useLoaderData<typeof loader>();
   const location = useLocation();
   const index = location.pathname === "/";
   const [complete, setComplete] = useState(!index);
   const [ready, setReady] = useState(!index);
+
+  if (!draw) {
+    return (
+      <Message>
+        {[
+          "👋 Hey !",
+          <>
+            Ça me fait plaisir de te voir ici mais il semble que tu sois un
+            petit trop pressé de participer à la prochaine édition de “En Avent
+            la pière !“.
+          </>,
+          <>
+            Si tu fais partie des contacts de l‘
+            <a
+              className="link-secondary link"
+              href="https://egliselyongerland.org"
+              rel="noreferrer"
+              target="_blank"
+            >
+              église Lyon-Gerland
+            </a>{" "}
+            et/ou que tu t‘y rends régulièrement, alors il y a de grandes
+            chances que tu sois informés du moment où les inscriptions
+            débuteront.
+          </>,
+          "A bientôt j‘espère. 😉",
+        ]}
+      </Message>
+    );
+  }
+
+  if (draw.drawn) {
+    return (
+      <Message>
+        {[
+          "Arf, ça s‘est joué à pas grand chose 😔",
+          "L‘opération “En Avent la prière !“ a déjà commencé malheureusement. Il n‘est donc plus possible pour toi de t‘inscrire.",
+          "Mais il est fort propable qu‘on recommence l‘année prochaine. Alors stay tuned!",
+          "A bientôt. 😉",
+        ]}
+      </Message>
+    );
+  }
 
   return (
     <main className="h-[100svh] overflow-hidden">

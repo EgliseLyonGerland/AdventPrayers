@@ -37,6 +37,7 @@
     "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.0.0",
+    "dayjs": "^1.11.10",
     "framer-motion": "^10.16.4",
     "isbot": "^3.7.0",
     "lodash": "^4.17.21",

@@ -25,10 +25,9 @@ import FirstNameField from "~/components/register/fields/firstNameField";
 import GenderField from "~/components/register/fields/genderField";
 import LastNameField from "~/components/register/fields/lastNameField";
 import Recap from "~/components/register/recap";
+import { Wrapper } from "~/components/register/wrapper";
 import { addPlayer, getCurrentDraw } from "~/models/draw.server";
 import { createPerson } from "~/models/person.server";
-
-import { Wrapper } from "./_register";
 
 export const meta: MetaFunction = () => [{ title: "Inscription" }];
 
@@ -106,11 +105,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const draw = await getCurrentDraw();
 
-  if (!draw) {
-    throw new Response(null, {
-      status: 404,
-      statusText: "Not Found",
-    });
+  if (!draw || draw.drawn) {
+    return redirect("/");
   }
 
   const person = await createPerson({ ...data, exclude: [] });
@@ -124,10 +120,7 @@ export const loader = async () => {
   const draw = await getCurrentDraw();
 
   if (!draw) {
-    throw new Response(null, {
-      status: 404,
-      statusText: "Not Found",
-    });
+    return redirect("/");
   }
 
   return json({});

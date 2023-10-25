@@ -271,11 +271,11 @@ function Players({
                       <div>
                         <div>
                           {`${person.firstName} ${person.lastName}`}{" "}
-                          <span className="ml-2 text-sm text-base-content/50">
+                          <span className="ml-2 text-base-content/50">
                             {age}
                           </span>
                         </div>
-                        <div className="flex gap-2 text-sm text-base-content/30">
+                        <div className="flex gap-2 text-base-content/30">
                           <span>{person.email}</span>
                           {person.exclude.length > 0 ? (
                             <>
@@ -308,9 +308,7 @@ function Players({
                     {assigned ? (
                       <span className="inline-block rounded-md bg-neutral px-2 py-1 text-neutral-content">
                         {`${assigned.firstName} ${assigned.lastName}`}
-                        <span className="ml-2 text-sm opacity-50">
-                          {assigned.age}
-                        </span>
+                        <span className="ml-2 opacity-50">{assigned.age}</span>
                       </span>
                     ) : null}
                   </td>
@@ -410,9 +408,7 @@ export default function Index() {
                     <div className="flex items-center justify-between whitespace-nowrap">
                       <span>
                         {person.firstName} {person.lastName}
-                        <span className="ml-2 text-sm opacity-50">
-                          {person.age}
-                        </span>
+                        <span className="ml-2 opacity-50">{person.age}</span>
                         <div className="opacity-30">{person.email}</div>
                       </span>
                       <span>
