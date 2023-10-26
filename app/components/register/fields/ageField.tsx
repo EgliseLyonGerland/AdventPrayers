@@ -13,7 +13,7 @@ export default function AgeField() {
             <label className="label flex cursor-pointer items-center justify-start gap-8">
               <input
                 {...register("age")}
-                className="radio-accent radio radio-lg"
+                className="radio-secondary radio radio-lg"
                 type="radio"
                 value={age}
               />

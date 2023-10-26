@@ -34,7 +34,7 @@ const Print = () => {
       <div className="mb-4 ml-auto flex items-center gap-4">
         {version ? (
           <a
-            className="btn btn-accent btn-sm"
+            className="btn btn-secondary btn-sm"
             download={`draw${year}.pdf`}
             href={filePath}
           >

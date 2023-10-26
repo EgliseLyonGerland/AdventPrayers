@@ -46,7 +46,7 @@ model Person {
   email       String?
   age         String   @default("18+")
   bio         String?
-  archived    Boolean  @default(false)
+  picture     String?
   exclude     Person[] @relation("PersonExcluded")
   excludedBy  Person[] @relation("PersonExcluded")
   players     Player[] @relation("Player")

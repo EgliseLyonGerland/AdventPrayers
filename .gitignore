@@ -8,3 +8,7 @@ node_modules
 /cypress/videos
 /prisma/data.db
 /prisma/data.db-journal
+
+# Uploads
+/public/uploads/*
+/public/uploads/!.gitkeep

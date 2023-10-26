@@ -14,6 +14,10 @@ entrypoint = "sh"
 source = "data"
 destination = "/data"
 
+[[statics]]
+guest_path = "/data/uploads"
+url_prefix = "/uploads"
+
 [[services]]
 internal_port = 8_080
 processes = ["app"]

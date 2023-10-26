@@ -39,9 +39,9 @@ async function seed() {
           drawn: true,
           players: {
             create: Object.entries(draw.relations).map(([from, to]) => ({
-              personId: persons.find((person) => person.slug === from)!.id,
-              assignedId: persons.find((person) => person.slug === to)!.id,
-              age: persons.find((person) => person.slug === from)!.age,
+              personId: from,
+              assignedId: to,
+              age: persons.find((person) => person.id === from)!.age,
             })),
           },
         },

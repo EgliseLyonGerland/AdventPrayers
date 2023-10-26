@@ -17,9 +17,12 @@ export function getPersons() {
 }
 
 export function createPerson(
-  data: Pick<Person, "firstName" | "lastName" | "age" | "gender" | "email"> & {
+  data: Pick<
+    Person,
+    "firstName" | "lastName" | "age" | "gender" | "email" | "bio" | "picture"
+  > & {
     exclude: string[];
-  }
+  },
 ) {
   return prisma.person.create({
     data: {

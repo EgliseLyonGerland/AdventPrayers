@@ -14,7 +14,7 @@ export default function GenderField() {
           <label className="label flex cursor-pointer items-center justify-center gap-8">
             <input
               {...register("gender")}
-              className="radio-accent radio radio-lg"
+              className="radio-secondary radio radio-lg"
               type="radio"
               value={gender}
             />

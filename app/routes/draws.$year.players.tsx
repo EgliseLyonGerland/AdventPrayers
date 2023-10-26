@@ -149,6 +149,8 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         email: `${formData.get("email")}`,
         gender: `${formData.get("gender")}`,
         age: `${formData.get("age")}`,
+        bio: null,
+        picture: null,
         exclude: formData.getAll("exclude[]").map(String),
       });
 
@@ -241,14 +243,14 @@ function Players({
 
   return (
     <>
-      <table className="table table-zebra z-0 w-full rounded-xl">
+      <table className="table table-zebra z-0 w-full rounded-xl text-base">
         {groups.map((group) => (
           <Fragment key={group.name}>
             {group.name ? (
               <tbody className="group">
                 <tr>
-                  <td colSpan={3}>
-                    <div className="flex justify-between border-b-[1px] border-b-white/10 pb-4 pt-8 group-first:pt-0">
+                  <td colSpan={4}>
+                    <div className="flex justify-between pb-4 pt-8 group-first:pt-0">
                       <h2 className="inline text-xl font-bold">
                         {group.name} ans
                       </h2>
@@ -266,7 +268,27 @@ function Players({
             <tbody>
               {group.players.map(({ person, assigned, age }) => (
                 <tr className="group hover" key={person.id}>
-                  <td>
+                  <td className="align-middle">
+                    {person.picture ? (
+                      <div className="avatar inline">
+                        <div className="w-10 rounded-full">
+                          <img
+                            alt={person.picture}
+                            src={`/uploads/${person.picture}`}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="avatar placeholder">
+                        <div className="w-10 rounded-full bg-neutral-focus text-neutral-content">
+                          <span>
+                            {`${person.firstName[0]}${person.lastName[0]}`.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap">
                     <div className="flex items-center gap-8">
                       <div>
                         <div>
@@ -281,7 +303,7 @@ function Players({
                             <>
                               <span>•</span>
                               <span
-                                className="tooltip tooltip-accent"
+                                className="tooltip tooltip-secondary"
                                 data-tip={person.exclude
                                   .map(
                                     (item) =>
@@ -304,7 +326,7 @@ function Players({
                       </button>
                     </div>
                   </td>
-                  <td className="">
+                  <td className="w-full">
                     {assigned ? (
                       <span className="inline-block rounded-md bg-neutral px-2 py-1 text-neutral-content">
                         {`${assigned.firstName} ${assigned.lastName}`}
@@ -336,7 +358,7 @@ function Players({
               <h1 className="text-2xl font-bold">
                 C‘est {missing < 3 ? "toujours" : null} un peu vide ici !
               </h1>
-              <p className="py-6 text-lg opacity-70">
+              <p className="py-6 text-lg opacity-70 wrap-balance">
                 Ajoute
                 {missing === 3
                   ? " au moins 3 participants "

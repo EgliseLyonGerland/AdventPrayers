@@ -6,8 +6,11 @@ import {
   type ActionFunctionArgs,
   type MetaFunction,
   redirect,
+  unstable_parseMultipartFormData,
+  unstable_createFileUploadHandler,
+  NodeOnDiskFile,
 } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { Form, useSubmit } from "@remix-run/react";
 import { Variants, motion } from "framer-motion";
 import { FC, useState } from "react";
 import {
@@ -16,7 +19,16 @@ import {
   getValidatedFormData,
   useRemixForm,
 } from "remix-hook-form";
-import { Output, email, minLength, object, string } from "valibot";
+import {
+  Output,
+  any,
+  email,
+  getOutput,
+  getPipeIssues,
+  minLength,
+  object,
+  string,
+} from "valibot";
 
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
@@ -24,6 +36,7 @@ import EmailField from "~/components/register/fields/emailNameField";
 import FirstNameField from "~/components/register/fields/firstNameField";
 import GenderField from "~/components/register/fields/genderField";
 import LastNameField from "~/components/register/fields/lastNameField";
+import PictureField from "~/components/register/fields/pictureField";
 import Recap from "~/components/register/recap";
 import { Wrapper } from "~/components/register/wrapper";
 import { addPlayer, getCurrentDraw } from "~/models/draw.server";
@@ -43,6 +56,23 @@ const schema = object({
   gender: string([minLength(1)]),
   age: string([minLength(1)]),
   bio: string(),
+  picture: any([
+    (input: File | undefined) => {
+      if (input) {
+        if (input.size > 3_000_000) {
+          return getPipeIssues(
+            "custom",
+            `La photo ne doit pas dépasser 3 Mo (> ${Math.floor(
+              input.size / 1000000,
+            )})`,
+            input,
+          );
+        }
+      }
+
+      return getOutput(input);
+    },
+  ]),
 });
 
 const steps = [
@@ -52,6 +82,7 @@ const steps = [
   "gender",
   "age",
   "bio",
+  "picture",
 ] as const;
 
 type Step = (typeof steps)[number];
@@ -63,6 +94,7 @@ const fields: Record<Step, FC> = {
   gender: GenderField,
   age: AgeField,
   bio: BioField,
+  picture: PictureField,
 };
 
 const defs: Record<Step, string> = {
@@ -74,6 +106,8 @@ const defs: Record<Step, string> = {
     "Déjà une bonne chose de faite !\n\nTu peux désormais me dire si tu es une femme ou un homme. Ça me servira surtout à utiliser le bon genre dans les messages.",
   age: "On avance ! Précise maintenant dans quelle tranche d‘age tu te situes. Cela permettra de créer des groupes de participants spécifiques si nécessaire.",
   bio: "Peux-tu écrire quelques mots te concernant ?\n\nCette étape n‘est pas obligatoire mais pourrait-être très utile à la personne qui te portera dans ses prières si elle ne te connait pas, surtout au début de l‘opération.",
+  picture:
+    "Non veniam commodo laboris laborum mollit est irure sint cupidatat.",
 };
 
 const autoFocus: Partial<Record<Step, true>> = {
@@ -91,6 +125,19 @@ const variants: Variants = {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const draw = await getCurrentDraw();
+
+  if (!draw || draw.drawn) {
+    return redirect("/");
+  }
+
+  const formData = await unstable_parseMultipartFormData(
+    request.clone(),
+    unstable_createFileUploadHandler({
+      directory: process.env.UPLOADS_DIR,
+    }),
+  );
+
   const {
     errors,
     data,
@@ -99,17 +146,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     request,
     valibotResolver(schema),
   );
+
   if (errors) {
     return json({ errors, defaultValues });
   }
 
-  const draw = await getCurrentDraw();
+  const picture = formData.get("picture") as NodeOnDiskFile | null;
 
-  if (!draw || draw.drawn) {
-    return redirect("/");
-  }
-
-  const person = await createPerson({ ...data, exclude: [] });
+  const person = await createPerson({
+    ...data,
+    picture: picture?.name || null,
+    exclude: [],
+  });
 
   await addPlayer({ id: person.id, age: person.age, year: draw.year });
 
@@ -136,22 +184,17 @@ const itemVariants: Variants = {
 };
 
 export default function Register() {
-  const fetcher = useFetcher<Output<typeof schema>>();
   const [currentStep, setCurrentStep] = useState(0);
+  const submit = useSubmit();
 
   const finalStep = currentStep === steps.length;
 
   const form = useRemixForm<Output<typeof schema>>({
-    fetcher,
     resolver: valibotResolver(schema),
     reValidateMode: "onSubmit",
     defaultValues: {
       gender: "female",
       age: "18+",
-      firstName: "Nicolas",
-      lastName: "Bazille",
-      email: "oltodo@msn.com",
-      bio: "Nulla reprehenderit pariatur magna eu aliqua aliquip dolore mollit ullamco culpa exercitation aliquip exercitation id.",
     },
     submitHandlers: {
       onValid: (data) => {
@@ -165,7 +208,7 @@ export default function Register() {
         }
 
         const formData = createFormData(data);
-        fetcher.submit(formData, { method: "post" });
+        submit(formData, { method: "post", encType: "multipart/form-data" });
       },
       onInvalid: (errors) => {
         if (!errors[steps[currentStep]]) {
@@ -196,13 +239,15 @@ export default function Register() {
   };
 
   return (
+    // @ts-expect-error ts(2322)
     <RemixFormProvider {...form}>
       <Wrapper>
-        <fetcher.Form
+        <Form
           className="h-full w-full flex-col gap-8 flex-center"
+          encType="multipart/form-data"
           method="post"
           onChange={() => {
-            clearErrors(steps[currentStep]);
+            clearErrors();
           }}
           onSubmit={handleSubmit}
         >
@@ -288,14 +333,14 @@ export default function Register() {
 
                   {errors[step] ? (
                     <div className="m-4 text-center text-error">
-                      {errors[step]?.message}
+                      {errors[step]?.message?.toString()}
                     </div>
                   ) : null}
 
                   {defs[step] ? (
                     <motion.div
                       animate={variant}
-                      className="z-10 my-auto whitespace-pre-wrap text-center text-xl text-base-content/80 wrap-balance md:text-3xl"
+                      className="z-10 my-auto space-y-8 whitespace-pre-wrap text-center text-xl text-base-content/80 wrap-balance md:text-2xl"
                       initial="incoming"
                       key={step}
                       transition={{
@@ -310,7 +355,9 @@ export default function Register() {
                         outgoing: { opacity: 0 },
                       }}
                     >
-                      {defs[step]}
+                      {defs[step].split("\n\n").map((part) => (
+                        <div key={part}>{part}</div>
+                      ))}
                     </motion.div>
                   ) : null}
                 </motion.div>
@@ -346,7 +393,7 @@ export default function Register() {
               </button>
             </motion.div>
           </motion.div>
-        </fetcher.Form>
+        </Form>
       </Wrapper>
     </RemixFormProvider>
   );

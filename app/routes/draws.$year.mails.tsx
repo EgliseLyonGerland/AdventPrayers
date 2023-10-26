@@ -342,7 +342,7 @@ const Mails = () => {
                     ))}
                     {recipients.length > 10 ? (
                       <span
-                        className="tooltip tooltip-bottom tooltip-accent cursor-default px-2"
+                        className="tooltip tooltip-bottom tooltip-secondary cursor-default px-2"
                         data-tip={recipients
                           .slice(10)
                           .map(
