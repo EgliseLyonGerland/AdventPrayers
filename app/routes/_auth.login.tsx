@@ -132,7 +132,7 @@ export default function LoginPage() {
               id="email"
               name="email"
               ref={emailRef}
-              required
+              required={true}
               type="email"
             />
             {actionData?.errors?.email ? (

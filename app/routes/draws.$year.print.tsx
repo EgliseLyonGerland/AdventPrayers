@@ -41,7 +41,7 @@ const Print = () => {
             Télécharger
           </a>
         ) : (
-          <button className="btn btn-outline btn-sm" disabled>
+          <button className="btn btn-outline btn-sm" disabled={true}>
             Télécharger
           </button>
         )}
@@ -63,7 +63,7 @@ const Print = () => {
           src={filePath}
           title="Cartes imprimables"
           width="100%"
-        ></iframe>
+        />
       ) : (
         <div className="hero mt-4 bg-base-200 p-8">
           <div className="hero-content text-center">

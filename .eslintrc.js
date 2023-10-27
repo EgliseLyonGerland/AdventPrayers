@@ -27,11 +27,13 @@ module.exports = {
     // React
     {
       files: ["**/*.{js,jsx,ts,tsx}"],
-      plugins: ["react", "jsx-a11y", "tailwindcss"],
+      plugins: ["react", "jsx-a11y", "react-hooks", "tailwindcss", "import"],
       extends: [
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
         "plugin:jsx-a11y/recommended",
+        "plugin:import/recommended",
+        "plugin:react-hooks/recommended",
         "prettier",
       ],
       settings: {
@@ -45,6 +47,9 @@ module.exports = {
         ],
       },
       rules: {
+        // eslint rules
+        "arrow-body-style": ["error", "as-needed"],
+
         // react plugin rules
         "react/sort-default-props": 1,
         "react/jsx-sort-props": 1,
@@ -52,12 +57,24 @@ module.exports = {
           "warn",
           { validStrategies: ["ternary"] },
         ],
+        "react/self-closing-comp": "error",
+        "react/jsx-boolean-value": ["error", "always"],
 
         // tailwindcss plugin rules
         "tailwindcss/classnames-order": "error",
         "tailwindcss/enforces-negative-arbitrary-values": "error",
         "tailwindcss/enforces-shorthand": "error",
         "tailwindcss/no-custom-classname": "error",
+
+        // import plugin rules
+        "import/order": [
+          "error",
+          {
+            alphabetize: { caseInsensitive: true, order: "asc" },
+            groups: ["builtin", "external", "internal", "parent", "sibling"],
+            "newlines-between": "always",
+          },
+        ],
       },
     },
 
@@ -85,17 +102,6 @@ module.exports = {
         "plugin:import/typescript",
         "prettier",
       ],
-      rules: {
-        // import plugin rules
-        "import/order": [
-          "error",
-          {
-            alphabetize: { caseInsensitive: true, order: "asc" },
-            groups: ["builtin", "external", "internal", "parent", "sibling"],
-            "newlines-between": "always",
-          },
-        ],
-      },
     },
 
     // Markdown

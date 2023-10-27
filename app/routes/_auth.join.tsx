@@ -106,7 +106,7 @@ export default function Join() {
                 id="email"
                 name="email"
                 ref={emailRef}
-                required
+                required={true}
                 type="email"
               />
               {actionData?.errors?.email ? (

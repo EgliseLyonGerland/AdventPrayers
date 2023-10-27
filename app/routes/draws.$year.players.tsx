@@ -381,9 +381,8 @@ export default function Index() {
 
   const year = getYearParam(useParams());
 
-  const isSelected = (id: string) => {
-    return Boolean(draw?.players.find((player) => player.person.id === id));
-  };
+  const isSelected = (id: string) =>
+    Boolean(draw?.players.find((player) => player.person.id === id));
 
   const settings: SearchParams = {
     showPersonForm: searchParams.get("showPersonForm") === "true",
@@ -515,7 +514,7 @@ export default function Index() {
                     </Listbox.Option>
                   ))}
 
-                  <div className="divider"></div>
+                  <div className="divider" />
                   <li className="menu-title">
                     <span>Ordonner</span>
                   </li>
@@ -538,7 +537,7 @@ export default function Index() {
                     </Listbox.Option>
                   ))}
 
-                  <div className="divider"></div>
+                  <div className="divider" />
                   <li className="menu-title">
                     <span>Tirage</span>
                   </li>
@@ -675,7 +674,7 @@ export default function Index() {
           </Form>
         </div>
         <form className="modal-backdrop" method="dialog">
-          <button></button>
+          <button />
         </form>
       </dialog>
 

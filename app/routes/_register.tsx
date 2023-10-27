@@ -73,7 +73,7 @@ export default function Index() {
           "fixed inset-x-8 h-0 flex-center",
           ready ? "top-16 md:top-32" : "top-[50vh]",
         )}
-        layout
+        layout={true}
         layoutId="logo"
         transition={{
           duration: 1,

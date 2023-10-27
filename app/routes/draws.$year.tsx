@@ -77,7 +77,7 @@ export default function Index() {
                 </p>
                 <button className="btn btn-secondary" type="submit">
                   {navigation.state === "submitting" ? (
-                    <span className="loading loading-spinner"></span>
+                    <span className="loading loading-spinner" />
                   ) : (
                     `Créer l‘édition ${year}`
                   )}

@@ -35,7 +35,7 @@ function Recap({
         delay: stagger(0.1, { startDelay: 1 }),
       },
     );
-  }, [visible]);
+  }, [animate, visible]);
 
   return (
     <div
@@ -45,17 +45,17 @@ function Recap({
       <div className="flex flex-col gap-4 p-6 md:gap-6 md:p-8 md:px-12">
         <div className="flex flex-col gap-2 sm:flex-row sm:gap-20">
           <div className="flex flex-col gap-2 md:gap-6">
-            <div className="opacity-0" data-item>
+            <div className="opacity-0" data-item={true}>
               <div className="text-lg opacity-60 md:mb-2 md:text-xl">
                 Prénom
               </div>
               <div className="text-xl md:text-2xl">{firstName}</div>
             </div>
-            <div className="opacity-0" data-item>
+            <div className="opacity-0" data-item={true}>
               <div className="text-lg opacity-60 md:mb-2 md:text-xl">Nom</div>
               <div className="text-xl md:text-2xl">{lastName}</div>
             </div>
-            <div className="opacity-0" data-item>
+            <div className="opacity-0" data-item={true}>
               <div className="text-lg opacity-60 md:mb-2 md:text-xl">
                 Adresse email
               </div>
@@ -63,11 +63,11 @@ function Recap({
             </div>
           </div>
           <div className="flex flex-col gap-4 md:gap-6">
-            <div className="opacity-0" data-item>
+            <div className="opacity-0" data-item={true}>
               <div className="text-lg opacity-60 md:mb-2 md:text-xl">Genre</div>
               <div className="text-xl md:text-2xl">{t(gender)}</div>
             </div>
-            <div className="opacity-0" data-item>
+            <div className="opacity-0" data-item={true}>
               <div className="text-lg opacity-60 md:mb-2 md:text-xl">
                 Tranche d‘âge
               </div>
@@ -75,7 +75,7 @@ function Recap({
             </div>
           </div>
         </div>
-        <div className="opacity-0" data-item>
+        <div className="opacity-0" data-item={true}>
           <div className="text-lg opacity-60 md:mb-2 md:text-xl">
             Quelques mots à ton sujet
           </div>

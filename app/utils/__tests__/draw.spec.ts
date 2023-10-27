@@ -1,11 +1,9 @@
 import type { Draw, Person } from "../draw.server";
 import { letsDraw } from "../draw.server";
 
-vi.mock("lodash", () => {
-  return {
-    shuffle: (entry: unknown) => entry,
-  };
-});
+vi.mock("lodash", () => ({
+  shuffle: (entry: unknown) => entry,
+}));
 
 const persons: Person[] = [
   {

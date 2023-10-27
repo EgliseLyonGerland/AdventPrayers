@@ -31,7 +31,7 @@ export default function App() {
         <link
           href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap"
           rel="stylesheet"
-        ></link>
+        />
         <Meta />
         <Links />
       </head>

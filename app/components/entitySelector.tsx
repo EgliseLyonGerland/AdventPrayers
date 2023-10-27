@@ -59,7 +59,7 @@ function EntitySelector<T>({
       <Combobox.Options
         as="ul"
         className="dropdown-content mt-2 max-h-[320px] min-w-[400px] divide-y divide-white/10 overflow-auto rounded-md border border-base-content/20 bg-base-200 shadow-xl focus:outline-none"
-        static
+        static={true}
       >
         {filteredItems.length === 0 ? (
           <div className="cursor-default select-none px-4 py-3 italic">

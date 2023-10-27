@@ -391,7 +391,7 @@ const Mails = () => {
                   },
                 }}
                 value={body}
-              ></ReactTextareaAutocomplete>
+              />
             </div>
             <div className="h-full flex-1 overflow-y-auto bg-white/5 px-8">
               <p className="mb-4 border-b border-white/10 py-6 text-2xl font-bold">
