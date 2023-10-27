@@ -40,7 +40,11 @@ import PictureField from "~/components/register/fields/pictureField";
 import Recap from "~/components/register/recap";
 import { Wrapper } from "~/components/register/wrapper";
 import { addPlayer, getCurrentDraw } from "~/models/draw.server";
-import { createPerson } from "~/models/person.server";
+import {
+  createPerson,
+  findSimilarPerson,
+  updatePerson,
+} from "~/models/person.server";
 
 export const meta: MetaFunction = () => [{ title: "Inscription" }];
 
@@ -153,11 +157,24 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const picture = formData.get("picture") as NodeOnDiskFile | null;
 
-  const person = await createPerson({
-    ...data,
-    picture: picture?.name || null,
-    exclude: [],
+  const twin = await findSimilarPerson({
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    gender: data.gender,
   });
+
+  const person = twin
+    ? await updatePerson({
+        id: twin.id,
+        ...data,
+        picture: picture?.name || null,
+      })
+    : await createPerson({
+        ...data,
+        picture: picture?.name || null,
+        exclude: [],
+      });
 
   await addPlayer({ id: person.id, age: person.age, year: draw.year });
 

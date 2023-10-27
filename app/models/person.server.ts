@@ -1,4 +1,4 @@
-import type { Person } from "@prisma/client";
+import type { Person, Prisma } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
@@ -11,8 +11,17 @@ export function getPersons() {
       email: true,
       gender: true,
       age: true,
+      bio: true,
+      picture: true,
       exclude: true,
     },
+  });
+}
+
+export function findSimilarPerson(where: Prisma.PersonWhereInput) {
+  return prisma.person.findFirst({
+    select: { id: true },
+    where: where,
   });
 }
 
@@ -42,22 +51,34 @@ export function createPerson(
 
 export function updatePerson({
   id,
+  exclude,
   ...data
-}: Pick<
-  Person,
-  "id" | "firstName" | "lastName" | "age" | "gender" | "email"
-> & {
-  exclude: string[];
-}) {
+}: Partial<
+  Pick<
+    Person,
+    | "id"
+    | "firstName"
+    | "lastName"
+    | "age"
+    | "gender"
+    | "email"
+    | "bio"
+    | "picture"
+  > & {
+    exclude?: string[];
+  }
+>) {
   return prisma.person.update({
     where: { id },
-    data: {
-      ...data,
-      exclude: {
-        connect: data.exclude.map((personId) => ({
-          id: personId,
-        })),
-      },
-    },
+    data: exclude
+      ? {
+          ...data,
+          exclude: {
+            connect: exclude.map((personId) => ({
+              id: personId,
+            })),
+          },
+        }
+      : data,
   });
 }

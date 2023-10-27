@@ -89,14 +89,17 @@ export async function addPlayer({
   id: personId,
   age,
 }: Pick<Draw, "year"> & Pick<Person, "id" | "age">) {
-  return prisma.draw.upsert({
+  return prisma.draw.update({
     where: { year },
-    create: {
+    data: {
       year,
-      players: { create: { personId, age } },
+      players: {
+        deleteMany: { personId },
+        create: { personId, age },
+      },
     },
-    update: {
-      players: { create: { personId, age } },
+    include: {
+      players: true,
     },
   });
 }
