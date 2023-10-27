@@ -168,7 +168,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     ? await updatePerson({
         id: twin.id,
         ...data,
-        picture: picture?.name || null,
+        ...(picture ? { picture: picture.name } : null),
       })
     : await createPerson({
         ...data,
