@@ -186,7 +186,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const url = new URL(request.url);
 
   return redirect(
-    `/draws/${year}/players?${toQueryString(url.searchParams, {
+    `/admin/draws/${year}/players?${toQueryString(url.searchParams, {
       showPersonForm: false,
       showSettings: false,
       personId: null,

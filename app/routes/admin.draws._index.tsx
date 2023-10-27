@@ -4,5 +4,5 @@ import { getCurrentYear } from "~/utils";
 
 export const loader = async () => {
   const year = getCurrentYear();
-  return redirect(`/draws/${year}`);
+  return redirect(`/admin/draws/${year}`);
 };

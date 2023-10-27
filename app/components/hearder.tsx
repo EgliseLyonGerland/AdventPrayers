@@ -55,7 +55,7 @@ function Header({ draws }: Props) {
                   className="ui-active:active"
                   key={year}
                   onClick={() => {
-                    navigate(`/draws/${year}`);
+                    navigate(`/admin/admin/draws/${year}`);
                   }}
                 >
                   <span className="min-w-[160px]">{year}</span>

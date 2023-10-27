@@ -35,9 +35,9 @@ export default function Index() {
   const currentRoute = matches[matches.length - 1];
 
   const routes = [
-    { path: `/draws/${year}/players`, label: "Participants" },
-    { path: `/draws/${year}/mails`, label: "Messages" },
-    { path: `/draws/${year}/print`, label: "Impression" },
+    { path: `/admin/draws/${year}/players`, label: "Participants" },
+    { path: `/admin/draws/${year}/mails`, label: "Messages" },
+    { path: `/admin/draws/${year}/print`, label: "Impression" },
   ];
 
   return (

@@ -5,5 +5,5 @@ import { getYearParam } from "~/utils";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
-  return redirect(`/draws/${year}/players`);
+  return redirect(`/admin/draws/${year}/players`);
 };

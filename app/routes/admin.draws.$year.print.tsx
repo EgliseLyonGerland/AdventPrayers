@@ -21,7 +21,7 @@ export const action = async ({ params }: ActionFunctionArgs) => {
     await generate(draw);
   }
 
-  return redirect(`/draws/${year}/print`);
+  return redirect(`/admin/draws/${year}/print`);
 };
 
 const Print = () => {

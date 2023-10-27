@@ -1,12 +1,10 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 
 import Header from "~/components/hearder";
 import { getDraws } from "~/models/draw.server";
-import { requireUserId } from "~/session.server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await requireUserId(request);
+export const loader = async () => {
   const draws = await getDraws();
 
   return json({ draws });
