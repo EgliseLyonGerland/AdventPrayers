@@ -139,6 +139,7 @@ const Mails = () => {
     `draws.${year}.mails.draft.groupe`,
     true,
   );
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   const [body, setBody] = useLocalStorage(`draws.${year}.mails.draft.body`, "");
   const submit = useSubmit();
@@ -235,13 +236,12 @@ const Mails = () => {
             </label>
           </div>
           <button
-            className={clsx("btn btn-secondary btn-sm", {
-              "btn-disabled": !ready,
-            })}
-            onClick={(event) => {
-              if (!ready) {
-                event.preventDefault();
-              }
+            className={clsx(
+              "btn btn-secondary btn-outline btn-sm",
+              !ready && "btn-disabled",
+            )}
+            onClick={() => {
+              modalRef.current?.showModal();
             }}
           >
             Envoyer
@@ -408,9 +408,8 @@ const Mails = () => {
         </div>
       </div>
 
-      <input className="modal-toggle" id="send-modal" type="checkbox" />
-      <label className="modal cursor-pointer" htmlFor="send-modal">
-        <label className="modal-box relative max-w-2xl" htmlFor="">
+      <dialog className="modal" ref={modalRef}>
+        <div className="modal-box max-w-2xl">
           <h3 className="text-lg font-bold">Confirmation</h3>
           <p className="py-4">
             Vous vous apprêtez à envoyer un message à {recipients.length}{" "}
@@ -420,11 +419,11 @@ const Mails = () => {
             Souhaitez-vous continuer ?
           </p>
           <div className="mt-8 flex gap-4">
-            <label className="btn btn-sm" htmlFor="send-modal">
-              Annuler
-            </label>
+            <form method="dialog">
+              <button className="btn btn-sm">Annuler</button>
+            </form>
             <button
-              className="btn btn-secondary btn-sm ml-auto"
+              className="btn btn-sm ml-auto"
               onClick={() => {
                 handleSend(true);
               }}
@@ -432,7 +431,7 @@ const Mails = () => {
               Envoyer un mail de test
             </button>
             <button
-              className="btn btn-error btn-sm"
+              className="btn btn-secondary btn-outline btn-sm"
               onClick={() => {
                 handleSend();
               }}
@@ -440,8 +439,11 @@ const Mails = () => {
               Envoyer
             </button>
           </div>
-        </label>
-      </label>
+        </div>
+        <form className="modal-backdrop" method="dialog">
+          <button>Annuler</button>
+        </form>
+      </dialog>
     </>
   );
 };

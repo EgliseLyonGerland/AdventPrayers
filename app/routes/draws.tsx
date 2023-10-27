@@ -16,9 +16,9 @@ export default function Draws() {
   const { draws } = useLoaderData<typeof loader>();
 
   return (
-    <>
+    <div className="px-8 pb-10">
       <Header draws={draws} />
       <Outlet />
-    </>
+    </div>
   );
 }

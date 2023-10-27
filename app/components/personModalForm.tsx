@@ -1,6 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { Person } from "@prisma/client";
-import { useState, Fragment } from "react";
+import { Form } from "@remix-run/react";
+import { useState, Fragment, useRef, useEffect } from "react";
 
 import { WithRequired } from "~/types";
 import { notNullable } from "~/utils";
@@ -27,35 +28,36 @@ export default function PersonModalForm({
   persons,
   onClose,
 }: Props) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [excludedPersons, setExcludedPersons] = useState(
     data?.exclude
       .map((item) => persons.find((person) => person.id === item.id))
       .filter(notNullable) || [],
   );
 
+  useEffect(() => {
+    dialogRef.current?.showModal();
+  }, []);
+
   return (
-    <>
-      <input
-        className="modal-toggle"
-        id="addPersonModal"
-        onChange={onClose}
-        type="checkbox"
-      />
+    <dialog className="modal" onClose={onClose} ref={dialogRef}>
       <input name="id" type="hidden" value={data?.id} />
 
-      <label className="modal modal-open" htmlFor="addPersonModal">
-        <div className="modal-box w-11/12 max-w-4xl overflow-visible">
-          <label
-            className="btn btn-circle btn-sm absolute right-4 top-4"
-            htmlFor="addPersonModal"
-          >
+      <form className="modal-backdrop" method="dialog">
+        <button>close</button>
+      </form>
+      <div className="modal-box w-11/12 max-w-4xl overflow-visible">
+        <form method="dialog">
+          <button className="btn btn-circle btn-sm absolute right-4 top-4">
             <XMarkIcon height={16} />
-          </label>
+          </button>
+        </form>
 
-          <h3 className="mb-4 text-lg font-bold">
-            Ajouter une nouvelle personne
-          </h3>
+        <h3 className="mb-4 text-lg font-bold">
+          Ajouter une nouvelle personne
+        </h3>
 
+        <Form method="post">
           <div className="grid grid-cols-2 gap-x-8">
             <div>
               <div className="form-control mb-4">
@@ -145,10 +147,25 @@ export default function PersonModalForm({
                   ))}
                 </div>
               </div>
-              <div className="form-control mb-4">
+              <div className="form-control mb-4 space-y-2">
                 <label className="label" htmlFor="exclude[]">
                   <span className="label-text font-bold">Personnes exclus</span>
                 </label>
+
+                <EntitySelector
+                  filterBy={["firstName", "lastName"]}
+                  horizontal="end"
+                  items={persons}
+                  keyProp="id"
+                  name="Ajouter une personne"
+                  onSelect={(person) => {
+                    setExcludedPersons([...excludedPersons, person]);
+                  }}
+                  renderItem={(person) =>
+                    `${person.firstName} ${person.lastName}`
+                  }
+                  vertical="top"
+                />
 
                 <div className="divide-y divide-white/10">
                   {excludedPersons.map((person) => (
@@ -158,7 +175,7 @@ export default function PersonModalForm({
                         {person.firstName} {person.lastName}
                       </span>
                       <button
-                        className="btn btn-ghost btn-sm ml-auto"
+                        className="btn btn-circle btn-ghost btn-sm ml-auto"
                         onClick={(event) => {
                           setExcludedPersons(
                             excludedPersons.filter(
@@ -174,29 +191,13 @@ export default function PersonModalForm({
                     </div>
                   ))}
                 </div>
-
-                <EntitySelector
-                  className="mt-4"
-                  filterBy={["firstName", "lastName"]}
-                  horizontal="end"
-                  items={persons}
-                  keyProp="id"
-                  name="Ajouter une personne"
-                  onSelect={(person) => {
-                    setExcludedPersons([...excludedPersons, person]);
-                  }}
-                  renderItem={(person) =>
-                    `${person.firstName} ${person.lastName}`
-                  }
-                  vertical="top"
-                />
               </div>
             </div>
           </div>
 
           <div className="modal-action mt-8">
             <button
-              className="btn"
+              className="btn btn-secondary btn-outline"
               name="_action"
               type="submit"
               value={edit ? "editPerson" : "newPerson"}
@@ -204,8 +205,8 @@ export default function PersonModalForm({
               {edit ? "Modifier" : "Ajouter"}
             </button>
           </div>
-        </div>
-      </label>
-    </>
+        </Form>
+      </div>
+    </dialog>
   );
 }

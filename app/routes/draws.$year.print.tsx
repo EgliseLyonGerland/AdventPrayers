@@ -41,14 +41,17 @@ const Print = () => {
             Télécharger
           </a>
         ) : (
-          <button className="btn btn-sm" disabled>
+          <button className="btn btn-outline btn-sm" disabled>
             Télécharger
           </button>
         )}
 
         <Form method="post">
-          <button className="btn btn-sm" disabled={!version} type="submit">
-            Re-générer
+          <button
+            className="btn btn-secondary btn-outline btn-sm"
+            type="submit"
+          >
+            {version ? "Re-générer" : "Générer"}
           </button>
         </Form>
       </div>
@@ -71,7 +74,10 @@ const Print = () => {
                 pouvoir le télécharger.
               </p>
               <Form method="post">
-                <button className="btn btn-primary mt-8" type="submit">
+                <button
+                  className="btn btn-secondary btn-outline mt-8"
+                  type="submit"
+                >
                   Générer le fichier d‘impression
                 </button>
               </Form>

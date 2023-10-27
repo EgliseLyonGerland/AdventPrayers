@@ -1,4 +1,4 @@
-import { Dialog, Listbox } from "@headlessui/react";
+import { Listbox } from "@headlessui/react";
 import {
   CheckIcon,
   EllipsisVerticalIcon,
@@ -270,7 +270,7 @@ function Players({
                 <tr className="group hover" key={person.id}>
                   <td className="align-middle">
                     {person.picture ? (
-                      <div className="avatar inline">
+                      <div className="avatar">
                         <div className="w-10 rounded-full">
                           <img
                             alt={person.picture}
@@ -335,12 +335,12 @@ function Players({
                     ) : null}
                   </td>
                   {!drawn ? (
-                    <td className="text-right">
+                    <td className="text-right align-middle">
                       <button
-                        className="btn btn-circle btn-ghost btn-sm"
+                        className="btn btn-circle btn-ghost"
                         onClick={() => onDeletePlayerClick(person.id)}
                       >
-                        <XMarkIcon height={24} />
+                        <XMarkIcon className="h-6" />
                       </button>
                     </td>
                   ) : null}
@@ -401,300 +401,298 @@ export default function Index() {
   };
 
   return (
-    <div className="container mx-auto">
-      {draw ? (
-        <>
-          <div className="mb-4 flex items-center gap-4">
-            {!draw.drawn ? (
-              <>
-                <EntitySelector
-                  className="z-10"
-                  filterBy={["firstName", "lastName"]}
-                  items={persons}
-                  keyProp="id"
-                  name="Ajouter un participant"
-                  onSelect={(person) => {
-                    const formData = new FormData();
-                    formData.set("personId", person.id);
+    <>
+      <div className="mx-auto w-full max-w-7xl">
+        {draw ? (
+          <>
+            <div className="mb-4 flex items-center gap-4">
+              {!draw.drawn ? (
+                <>
+                  <EntitySelector
+                    className="z-10"
+                    filterBy={["firstName", "lastName"]}
+                    items={persons}
+                    keyProp="id"
+                    name="Ajouter un participant"
+                    onSelect={(person) => {
+                      const formData = new FormData();
+                      formData.set("personId", person.id);
 
-                    if (isSelected(person.id)) {
-                      formData.set("_action", "deletePlayer");
-                    } else {
-                      formData.set("_action", "addPlayer");
-                      formData.set("age", person.age);
-                    }
+                      if (isSelected(person.id)) {
+                        formData.set("_action", "deletePlayer");
+                      } else {
+                        formData.set("_action", "addPlayer");
+                        formData.set("age", person.age);
+                      }
 
-                    submit(formData, { method: "post" });
-                  }}
-                  renderItem={(person) => (
-                    <div className="flex items-center justify-between whitespace-nowrap">
-                      <span>
-                        {person.firstName} {person.lastName}
-                        <span className="ml-2 opacity-50">{person.age}</span>
-                        <div className="opacity-30">{person.email}</div>
-                      </span>
-                      <span>
-                        {isSelected(person.id) ? (
+                      submit(formData, { method: "post" });
+                    }}
+                    renderItem={(person) => (
+                      <div className="flex items-center justify-between whitespace-nowrap">
+                        <span>
+                          {person.firstName} {person.lastName}
+                          <span className="ml-2 opacity-50">{person.age}</span>
+                          <div className="opacity-30">{person.email}</div>
+                        </span>
+                        <span>
+                          {isSelected(person.id) ? (
+                            <CheckIcon height={18} />
+                          ) : null}
+                        </span>
+                      </div>
+                    )}
+                  />
+
+                  <div
+                    className="tooltip"
+                    data-tip="Créer une nouvelle personne"
+                  >
+                    <NavLink
+                      className="btn btn-circle btn-sm"
+                      to={`?${toQueryString(searchParams, {
+                        showPersonForm: true,
+                      })}`}
+                    >
+                      <PlusIcon className="h-4" />
+                    </NavLink>
+                  </div>
+                </>
+              ) : null}
+
+              <div className="ml-auto opacity-50">
+                {draw.players.length}{" "}
+                {pluralize("participant", draw.players.length)}
+              </div>
+
+              {!draw.drawn && draw.players.length > 2 ? (
+                <Form method="post">
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    name="_action"
+                    type="submit"
+                    value="makeDraw"
+                  >
+                    Lancer le tirage
+                  </button>
+                </Form>
+              ) : null}
+
+              <Listbox
+                as="div"
+                className="dropdown dropdown-end dropdown-bottom z-10"
+              >
+                <Listbox.Button
+                  as="button"
+                  className="btn btn-circle btn-ghost btn-sm"
+                  tabIndex={0}
+                >
+                  <EllipsisVerticalIcon className="h-4" />
+                </Listbox.Button>
+                <Listbox.Options
+                  as="ul"
+                  className="menu dropdown-content mt-2 w-52 rounded-md border border-base-content/20 bg-base-300 p-2 shadow"
+                >
+                  <li className="menu-title">
+                    <span>Organiser</span>
+                  </li>
+
+                  {groupByOptions.map((value) => (
+                    <Listbox.Option
+                      as="li"
+                      disabled={settings.groupBy === value}
+                      key={value}
+                      onClick={() => {
+                        go({ groupBy: value });
+                      }}
+                      value={value}
+                    >
+                      <span className="flex justify-between">
+                        {groupByLabels[value]}
+                        {settings.groupBy === value ? (
                           <CheckIcon height={18} />
                         ) : null}
                       </span>
-                    </div>
-                  )}
-                />
+                    </Listbox.Option>
+                  ))}
 
-                <div className="tooltip" data-tip="Créer une nouvelle personne">
-                  <NavLink
-                    className="btn btn-circle btn-sm"
-                    to={`?${toQueryString(searchParams, {
-                      showPersonForm: true,
-                    })}`}
-                  >
-                    <PlusIcon height={24} />
-                  </NavLink>
-                </div>
-              </>
-            ) : null}
+                  <div className="divider"></div>
+                  <li className="menu-title">
+                    <span>Ordonner</span>
+                  </li>
+                  {sortByOptions.map((value) => (
+                    <Listbox.Option
+                      as="li"
+                      disabled={settings.sortBy === value}
+                      key={value}
+                      onClick={() => {
+                        go({ sortBy: value });
+                      }}
+                      value={value}
+                    >
+                      <span className="flex justify-between">
+                        {sortByLabels[value]}
+                        {settings.sortBy === value ? (
+                          <CheckIcon height={18} />
+                        ) : null}
+                      </span>
+                    </Listbox.Option>
+                  ))}
 
-            <div className="ml-auto opacity-50">
-              {draw.players.length}{" "}
-              {pluralize("participant", draw.players.length)}
-            </div>
-
-            {!draw.drawn && draw.players.length > 2 ? (
-              <Form method="post">
-                <button
-                  className="btn btn-secondary btn-sm"
-                  name="_action"
-                  type="submit"
-                  value="makeDraw"
-                >
-                  Lancer le tirage
-                </button>
-              </Form>
-            ) : null}
-
-            <Listbox
-              as="div"
-              className="dropdown dropdown-end dropdown-bottom z-10 mt-2"
-            >
-              <Listbox.Button
-                as="button"
-                className="btn btn-circle btn-ghost btn-sm"
-                tabIndex={0}
-              >
-                <EllipsisVerticalIcon height={24} />
-              </Listbox.Button>
-              <Listbox.Options
-                as="ul"
-                className="menu dropdown-content w-52 rounded-md border border-base-content/20 bg-base-300 p-2 shadow"
-              >
-                <li className="menu-title">
-                  <span>Organiser</span>
-                </li>
-
-                {groupByOptions.map((value) => (
+                  <div className="divider"></div>
+                  <li className="menu-title">
+                    <span>Tirage</span>
+                  </li>
                   <Listbox.Option
                     as="li"
-                    disabled={settings.groupBy === value}
-                    key={value}
                     onClick={() => {
-                      go({ groupBy: value });
+                      go({ showSettings: true });
                     }}
-                    value={value}
+                    value="showSettings"
                   >
-                    <span className="flex justify-between">
-                      {groupByLabels[value]}
-                      {settings.groupBy === value ? (
-                        <CheckIcon height={18} />
-                      ) : null}
-                    </span>
+                    <span>Configurer</span>
                   </Listbox.Option>
-                ))}
-
-                <div className="divider"></div>
-                <li className="menu-title">
-                  <span>Ordonner</span>
-                </li>
-                {sortByOptions.map((value) => (
                   <Listbox.Option
                     as="li"
-                    disabled={settings.sortBy === value}
-                    key={value}
+                    className={!draw.drawn ? "disabled" : ""}
+                    disabled={!draw.drawn}
                     onClick={() => {
-                      go({ sortBy: value });
-                    }}
-                    value={value}
-                  >
-                    <span className="flex justify-between">
-                      {sortByLabels[value]}
-                      {settings.sortBy === value ? (
-                        <CheckIcon height={18} />
-                      ) : null}
-                    </span>
-                  </Listbox.Option>
-                ))}
-
-                <div className="divider"></div>
-                <li className="menu-title">
-                  <span>Tirage</span>
-                </li>
-                <Listbox.Option
-                  as="li"
-                  onClick={() => {
-                    go({ showSettings: true });
-                  }}
-                  value="showSettings"
-                >
-                  <span>Configurer</span>
-                </Listbox.Option>
-                <Listbox.Option
-                  as="li"
-                  className={!draw.drawn ? "disabled" : ""}
-                  disabled={!draw.drawn}
-                  onClick={() => {
-                    const formData = new FormData();
-                    formData.set("_action", "cancelDraw");
-
-                    submit(formData, { method: "post" });
-                  }}
-                  value="cancelDraw"
-                >
-                  <span>Annuler</span>
-                </Listbox.Option>
-                <Listbox.Option
-                  as="li"
-                  className={!drawExists ? "disabled" : ""}
-                  disabled={!drawExists}
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        "Es-tu sûr de vouloir supprimer le tirage ?",
-                      )
-                    ) {
                       const formData = new FormData();
-                      formData.set("_action", "deleteDraw");
+                      formData.set("_action", "cancelDraw");
 
                       submit(formData, { method: "post" });
-                    }
-                  }}
-                  value="deleteDraw"
-                >
-                  <span className="text-error">Supprimer</span>
-                </Listbox.Option>
-              </Listbox.Options>
-            </Listbox>
-          </div>
+                    }}
+                    value="cancelDraw"
+                  >
+                    <span>Annuler</span>
+                  </Listbox.Option>
+                  <Listbox.Option
+                    as="li"
+                    className={!drawExists ? "disabled" : ""}
+                    disabled={!drawExists}
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Es-tu sûr de vouloir supprimer le tirage ?",
+                        )
+                      ) {
+                        const formData = new FormData();
+                        formData.set("_action", "deleteDraw");
 
-          <Players
-            draw={draw}
-            groupBy={settings.groupBy}
-            onDeletePlayerClick={(personId) => {
-              const formData = new FormData();
-              formData.set("_action", "deletePlayer");
-              formData.set("personId", personId);
+                        submit(formData, { method: "post" });
+                      }
+                    }}
+                    value="deleteDraw"
+                  >
+                    <span className="text-error">Supprimer</span>
+                  </Listbox.Option>
+                </Listbox.Options>
+              </Listbox>
+            </div>
 
-              submit(formData, { method: "post" });
-            }}
-            onNewPersonClick={(personId) => {
-              go({ showPersonForm: true, personId });
-            }}
-            sortBy={settings.sortBy}
-          />
-        </>
-      ) : (
-        <div className="mt-4">
-          <Form method="post">
-            <button
-              className="btn"
-              name="_action"
-              type="submit"
-              value="createDraw"
-            >
-              Créer le tirage {year}
-            </button>
-          </Form>
-        </div>
-      )}
+            <Players
+              draw={draw}
+              groupBy={settings.groupBy}
+              onDeletePlayerClick={(personId) => {
+                const formData = new FormData();
+                formData.set("_action", "deletePlayer");
+                formData.set("personId", personId);
 
-      {settings.showSettings ? (
-        <Dialog
-          as="div"
-          className="modal modal-open"
-          onClose={() => {
-            go({ showSettings: false });
-          }}
-          open={true}
-        >
-          <Dialog.Panel as="div" className="modal-box">
-            <Dialog.Title as="h3" className="mb-4 text-lg font-bold">
-              Paramètres du tirage
-            </Dialog.Title>
-
-            <button
-              className="btn btn-circle btn-sm absolute right-4 top-4"
-              onClick={() => {
-                go({ showSettings: false });
+                submit(formData, { method: "post" });
               }}
-            >
+              onNewPersonClick={(personId) => {
+                go({ showPersonForm: true, personId });
+              }}
+              sortBy={settings.sortBy}
+            />
+          </>
+        ) : (
+          <div className="mt-4">
+            <Form method="post">
+              <button
+                className="btn"
+                name="_action"
+                type="submit"
+                value="createDraw"
+              >
+                Créer le tirage {year}
+              </button>
+            </Form>
+          </div>
+        )}
+      </div>
+
+      <dialog
+        className="modal"
+        onClose={() => {
+          go({ showSettings: false });
+        }}
+        open={settings.showSettings}
+      >
+        <div className="modal-box">
+          <h3 className="mb-4 text-lg font-bold">Paramètres du tirage</h3>
+
+          <form method="dialog">
+            <button className="btn btn-circle btn-sm absolute right-4 top-4">
               <XMarkIcon height={16} />
             </button>
+          </form>
 
-            <Form method="post">
-              <div className="form-control mb-4">
-                <label className="label" htmlFor="ages">
-                  <span className="label-text font-bold">Tranches d‘age</span>
-                </label>
-                <input
-                  className="input input-bordered"
-                  defaultValue={draw?.ages}
-                  name="ages"
-                  type="text"
-                />
-              </div>
+          <Form method="post">
+            <div className="form-control mb-4">
+              <label className="label" htmlFor="ages">
+                <span className="label-text font-bold">Tranches d‘age</span>
+              </label>
+              <input
+                className="input input-bordered"
+                defaultValue={draw?.ages}
+                name="ages"
+                type="text"
+              />
+            </div>
 
-              <div className="form-control mb-4">
-                <label className="label" htmlFor="groups">
-                  <span className="label-text font-bold">Groupes d‘age</span>
-                </label>
-                <input
-                  className="input input-bordered"
-                  defaultValue={draw?.groups}
-                  name="groups"
-                  type="text"
-                />
-              </div>
+            <div className="form-control mb-4">
+              <label className="label" htmlFor="groups">
+                <span className="label-text font-bold">Groupes d‘age</span>
+              </label>
+              <input
+                className="input input-bordered"
+                defaultValue={draw?.groups}
+                name="groups"
+                type="text"
+              />
+            </div>
 
-              <div className="modal-action mt-8">
-                <button
-                  className="btn"
-                  name="_action"
-                  type="submit"
-                  value={"saveSettings"}
-                >
-                  Enregistrer
-                </button>
-              </div>
-            </Form>
-          </Dialog.Panel>
-        </Dialog>
-      ) : null}
+            <div className="modal-action mt-8">
+              <button
+                className="btn btn-secondary btn-outline"
+                name="_action"
+                type="submit"
+                value={"saveSettings"}
+              >
+                Enregistrer
+              </button>
+            </div>
+          </Form>
+        </div>
+        <form className="modal-backdrop" method="dialog">
+          <button></button>
+        </form>
+      </dialog>
 
       {settings.showPersonForm ? (
-        <Form method="post">
-          <PersonModalForm
-            data={
-              settings.personId
-                ? persons.find((person) => person.id === settings.personId)
-                : undefined
-            }
-            edit={Boolean(settings.personId)}
-            onClose={() => {
-              go({ showPersonForm: false, personId: null });
-            }}
-            persons={persons}
-          />
-        </Form>
+        <PersonModalForm
+          data={
+            settings.personId
+              ? persons.find((person) => person.id === settings.personId)
+              : undefined
+          }
+          edit={Boolean(settings.personId)}
+          onClose={() => {
+            go({ showPersonForm: false, personId: null });
+          }}
+          persons={persons}
+        />
       ) : null}
-    </div>
+    </>
   );
 }
