@@ -210,204 +210,199 @@ const Mails = () => {
   };
 
   return (
-    <>
-      <div className="relative mx-auto w-full flex-1 overflow-hidden 2xl:container">
-        <div className="mb-4 flex items-center gap-4">
-          <input
-            className="input input-bordered input-secondary input-sm"
-            onChange={(event) => {
-              setSearch(kebabCase(event.target.value));
-            }}
-            placeholder="Recherche"
-            type="text"
-            value={search}
-          />
-          <div className="form-control ml-auto">
-            <label className="label cursor-pointer">
+    <div className="flex flex-1 flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <input
+          className="input input-bordered input-secondary input-sm"
+          onChange={(event) => {
+            setSearch(kebabCase(event.target.value));
+          }}
+          placeholder="Recherche"
+          type="text"
+          value={search}
+        />
+        <div className="form-control ml-auto">
+          <label className="label cursor-pointer">
+            <input
+              checked={grouped}
+              className="checkbox checkbox-sm"
+              onChange={(event) => {
+                setGrouped(event.target.checked);
+              }}
+              type="checkbox"
+            />
+            <span className="label-text ml-2">Grouper</span>
+          </label>
+        </div>
+        <button
+          className={clsx(
+            "btn btn-secondary btn-outline btn-sm",
+            !ready && "btn-disabled",
+          )}
+          onClick={() => {
+            modalRef.current?.showModal();
+          }}
+        >
+          Envoyer
+        </button>
+      </div>
+      <div className="flex-1 overflow-x-auto overflow-y-hidden rounded-xl border border-base-content/20 bg-base-200 text-base-content">
+        <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content overflow-hidden dark:divide-neutral-content/20">
+          <div className="flex flex-col overflow-hidden">
+            <label className="flex h-14 items-center gap-4 px-4 text-base-content/60">
               <input
-                checked={grouped}
                 className="checkbox checkbox-sm"
                 onChange={(event) => {
-                  setGrouped(event.target.checked);
+                  if (event.target.checked) {
+                    setRecipients(players.map((player) => player.person));
+                  } else {
+                    setRecipients([]);
+                  }
                 }}
+                ref={checker}
                 type="checkbox"
               />
-              <span className="label-text ml-2">Grouper</span>
+              {checkerStatus === "unchecked" ? "Tout cocher" : "Tout décocher"}
             </label>
-          </div>
-          <button
-            className={clsx(
-              "btn btn-secondary btn-outline btn-sm",
-              !ready && "btn-disabled",
-            )}
-            onClick={() => {
-              modalRef.current?.showModal();
-            }}
-          >
-            Envoyer
-          </button>
-        </div>
-        <div className="absolute h-full w-full overflow-x-auto rounded-xl border border-base-content/20 bg-base-200 text-base-content">
-          <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content dark:divide-neutral-content/20">
-            <div className="flex flex-col overflow-hidden">
-              <label className="flex h-14 items-center gap-4 px-4 text-base-content/60">
-                <input
-                  className="checkbox checkbox-sm"
-                  onChange={(event) => {
-                    if (event.target.checked) {
-                      setRecipients(players.map((player) => player.person));
-                    } else {
-                      setRecipients([]);
-                    }
-                  }}
-                  ref={checker}
-                  type="checkbox"
-                />
-                {checkerStatus === "unchecked"
-                  ? "Tout cocher"
-                  : "Tout décocher"}
-              </label>
-              <ul className="w-72 flex-1 flex-nowrap divide-y divide-neutral-content overflow-y-auto dark:divide-neutral-content/20">
-                {players.map(({ person, age }) => (
-                  <li className="px-4 py-2" key={person.id}>
-                    <label
-                      className="flex w-full items-center gap-4"
-                      htmlFor={`player${person.id}`}
-                    >
-                      <input
-                        checked={
-                          !!recipients.find(
-                            (recipient) => recipient.id === person.id,
-                          )
+            <ul className="w-72 flex-1 flex-nowrap divide-y divide-neutral-content overflow-y-auto dark:divide-neutral-content/20">
+              {players.map(({ person, age }) => (
+                <li className="px-4 py-2" key={person.id}>
+                  <label
+                    className="flex w-full items-center gap-4"
+                    htmlFor={`player${person.id}`}
+                  >
+                    <input
+                      checked={
+                        !!recipients.find(
+                          (recipient) => recipient.id === person.id,
+                        )
+                      }
+                      className="checkbox checkbox-sm"
+                      id={`player${person.id}`}
+                      onChange={(event) => {
+                        if (event.target.checked) {
+                          setRecipients(recipients.concat([person]));
+                        } else {
+                          setRecipients(
+                            recipients.filter(
+                              (recipient) => recipient.id !== person.id,
+                            ),
+                          );
                         }
-                        className="checkbox checkbox-sm"
-                        id={`player${person.id}`}
-                        onChange={(event) => {
-                          if (event.target.checked) {
-                            setRecipients(recipients.concat([person]));
-                          } else {
-                            setRecipients(
-                              recipients.filter(
-                                (recipient) => recipient.id !== person.id,
-                              ),
-                            );
-                          }
-                        }}
-                        type="checkbox"
-                      />
-                      <div className="w-full overflow-hidden">
-                        <div className="flex w-full items-center gap-2">
-                          <span className="overflow-auto overflow-ellipsis whitespace-nowrap">{`${person.firstName} ${person.lastName}`}</span>
-                          <span className="flex-shrink-0 text-sm text-base-content/50">
-                            {age}
-                          </span>
-                        </div>
-                        <div className="overflow-auto overflow-ellipsis whitespace-nowrap text-sm text-base-content/30">
-                          {person.email}
-                        </div>
-                      </div>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-1 flex-col">
-              <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/20">
-                <div className="flex p-4">
-                  <span className="mr-2 whitespace-nowrap font-bold opacity-50">
-                    À :
-                  </span>
-                  <div className="flex flex-wrap items-center gap-1">
-                    {recipients.slice(0, 10).map((recipient) => (
-                      <span
-                        className="rounded-md bg-neutral pl-2 text-sm text-neutral-content flex-center"
-                        data-tip={recipient.email}
-                        key={recipient.id}
-                      >
-                        <span className="cursor-default">{`${recipient.firstName} ${recipient.lastName}`}</span>
-
-                        <button
-                          className="btn btn-circle btn-ghost btn-xs ml-1"
-                          onClick={() => {
-                            setRecipients(
-                              recipients.filter(
-                                (item) => item.id !== recipient.id,
-                              ),
-                            );
-                          }}
-                        >
-                          <XMarkIcon height={16} />
-                        </button>
-                      </span>
-                    ))}
-                    {recipients.length > 10 ? (
-                      <span
-                        className="tooltip tooltip-bottom tooltip-secondary cursor-default px-2"
-                        data-tip={recipients
-                          .slice(10)
-                          .map(
-                            (recipient) =>
-                              `${recipient.firstName} ${recipient.lastName}`,
-                          )
-                          .join(", ")}
-                      >
-                        <span className="text-sm opacity-50">
-                          {recipients.length - 10} de plus
+                      }}
+                      type="checkbox"
+                    />
+                    <div className="w-full overflow-hidden">
+                      <div className="flex w-full items-center gap-2">
+                        <span className="overflow-auto overflow-ellipsis whitespace-nowrap">{`${person.firstName} ${person.lastName}`}</span>
+                        <span className="flex-shrink-0 text-sm text-base-content/50">
+                          {age}
                         </span>
+                      </div>
+                      <div className="overflow-auto overflow-ellipsis whitespace-nowrap text-sm text-base-content/30">
+                        {person.email}
+                      </div>
+                    </div>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="flex flex-1 flex-col">
+            <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/20">
+              <div className="flex p-4">
+                <span className="mr-2 whitespace-nowrap font-bold opacity-50">
+                  À :
+                </span>
+                <div className="flex flex-wrap items-center gap-1">
+                  {recipients.slice(0, 10).map((recipient) => (
+                    <span
+                      className="rounded-md bg-neutral pl-2 text-sm text-neutral-content flex-center"
+                      data-tip={recipient.email}
+                      key={recipient.id}
+                    >
+                      <span className="cursor-default">{`${recipient.firstName} ${recipient.lastName}`}</span>
+
+                      <button
+                        className="btn btn-circle btn-ghost btn-xs ml-1"
+                        onClick={() => {
+                          setRecipients(
+                            recipients.filter(
+                              (item) => item.id !== recipient.id,
+                            ),
+                          );
+                        }}
+                      >
+                        <XMarkIcon height={16} />
+                      </button>
+                    </span>
+                  ))}
+                  {recipients.length > 10 ? (
+                    <span
+                      className="tooltip tooltip-bottom tooltip-secondary cursor-default px-2"
+                      data-tip={recipients
+                        .slice(10)
+                        .map(
+                          (recipient) =>
+                            `${recipient.firstName} ${recipient.lastName}`,
+                        )
+                        .join(", ")}
+                    >
+                      <span className="text-sm opacity-50">
+                        {recipients.length - 10} de plus
                       </span>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="flex items-center p-4">
-                  <span className="mr-2 whitespace-nowrap font-bold opacity-50">
-                    Sujet :
-                  </span>
-                  <input
-                    className="input input-sm w-full"
-                    defaultValue={subject}
-                    onChange={(event) => {
-                      setSubject(event.target.value);
-                    }}
-                    type="text"
-                  />
+                    </span>
+                  ) : null}
                 </div>
               </div>
-              <ReactTextareaAutocomplete
-                className="block h-full w-full resize-none bg-transparent p-4 font-mono outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
-                containerClassName="h-full w-full relative"
-                dropdownClassName="absolute"
-                listClassName="menu menu-compact mt-6"
-                loadingComponent={() => <div>Loading</div>}
-                minChar={0}
-                onChange={(event) => {
-                  setBody(event.target.value);
-                }}
-                placeholder="Écris ton message..."
-                trigger={{
-                  "%": {
-                    dataProvider: () => variables,
-                    component: ({ entity }) => <span>{`${entity}`}</span>,
-                    output: (item) => `%${item}%`,
-                  },
-                }}
-                value={body}
-              />
+              <div className="flex items-center p-4">
+                <span className="mr-2 whitespace-nowrap font-bold opacity-50">
+                  Sujet :
+                </span>
+                <input
+                  className="input input-sm w-full"
+                  defaultValue={subject}
+                  onChange={(event) => {
+                    setSubject(event.target.value);
+                  }}
+                  type="text"
+                />
+              </div>
             </div>
-            <div className="h-full flex-1 overflow-y-auto bg-white/5 px-8">
-              <p className="mb-4 border-b border-white/10 py-6 text-2xl font-bold">
-                {subject ? generatePreview(subject) : "Aucun titre"}
-              </p>
-              <div
-                className="prose"
-                dangerouslySetInnerHTML={{
-                  __html: toMarkdown(generatePreview(body)),
-                }}
-              />
-            </div>
+            <ReactTextareaAutocomplete
+              className="block h-full w-full resize-none bg-transparent p-4 font-mono outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
+              containerClassName="h-full w-full relative"
+              dropdownClassName="absolute"
+              listClassName="menu menu-compact mt-6"
+              loadingComponent={() => <div>Loading</div>}
+              minChar={0}
+              onChange={(event) => {
+                setBody(event.target.value);
+              }}
+              placeholder="Écris ton message..."
+              trigger={{
+                "%": {
+                  dataProvider: () => variables,
+                  component: ({ entity }) => <span>{`${entity}`}</span>,
+                  output: (item) => `%${item}%`,
+                },
+              }}
+              value={body}
+            />
+          </div>
+          <div className="h-full flex-1 overflow-y-auto bg-white/5 px-8">
+            <p className="mb-4 border-b border-white/10 py-6 text-2xl font-bold">
+              {subject ? generatePreview(subject) : "Aucun titre"}
+            </p>
+            <div
+              className="prose"
+              dangerouslySetInnerHTML={{
+                __html: toMarkdown(generatePreview(body)),
+              }}
+            />
           </div>
         </div>
       </div>
-
       <dialog className="modal" ref={modalRef}>
         <div className="modal-box max-w-2xl">
           <h3 className="text-lg font-bold">Confirmation</h3>
@@ -444,7 +439,7 @@ const Mails = () => {
           <button>Annuler</button>
         </form>
       </dialog>
-    </>
+    </div>
   );
 };
 

@@ -401,7 +401,7 @@ export default function Index() {
 
   return (
     <>
-      <div className="mx-auto w-full max-w-7xl">
+      <div className="w-full max-w-7xl">
         {draw ? (
           <>
             <div className="mb-4 flex items-center gap-4">

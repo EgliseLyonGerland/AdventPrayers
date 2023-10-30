@@ -1,11 +1,9 @@
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { Link, useNavigate } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { Fragment } from "react";
 
 import { getCurrentYear } from "~/utils";
-
-import Logo from "./logo";
 
 interface Props {
   draws: {
@@ -23,14 +21,8 @@ function Header({ draws }: Props) {
   }
 
   return (
-    <div className="navbar sticky top-0 z-[1000] mb-12 border-b border-b-base-content/10 bg-base-100 text-neutral-content">
-      <div className="mx-auto w-full max-w-7xl">
-        <div className="mr-8">
-          <Link className="text-xl normal-case" to="/">
-            <Logo className="my-2 h-16 fill-base-content" />
-          </Link>
-        </div>
-
+    <div className="navbar sticky top-0 mb-12 border-b border-b-base-content/10 bg-base-100 text-neutral-content">
+      <div className="w-full max-w-7xl">
         <Menu as="div" className="relative">
           <Menu.Button as="label" className="btn btn-sm">
             Éditions
@@ -55,7 +47,7 @@ function Header({ draws }: Props) {
                   className="ui-active:active"
                   key={year}
                   onClick={() => {
-                    navigate(`/admin/admin/draws/${year}`);
+                    navigate(`/admin/draws/${year}`);
                   }}
                 >
                   <span className="min-w-[160px]">{year}</span>

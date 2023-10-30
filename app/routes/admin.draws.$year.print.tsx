@@ -30,7 +30,7 @@ const Print = () => {
   const filePath = `/exports/draw${year}.pdf?${version}`;
 
   return (
-    <div className="container mx-auto flex flex-1 flex-col">
+    <div className="flex flex-col">
       <div className="mb-4 ml-auto flex items-center gap-4">
         {version ? (
           <a
