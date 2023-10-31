@@ -4,7 +4,6 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import {
   json,
   type ActionFunctionArgs,
-  type MetaFunction,
   redirect,
   unstable_parseMultipartFormData,
   unstable_createFileUploadHandler,
@@ -45,8 +44,6 @@ import {
   getSimilarPerson,
   updatePerson,
 } from "~/models/person.server";
-
-export const meta: MetaFunction = () => [{ title: "Inscription" }];
 
 const schema = object({
   firstName: string([minLength(1, "Tu dois bien avoir un prénom...")]),

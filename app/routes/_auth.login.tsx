@@ -1,8 +1,4 @@
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useActionData, useSearchParams } from "@remix-run/react";
 import { Variants, motion } from "framer-motion";
@@ -62,8 +58,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     userId: user.id,
   });
 };
-
-export const meta: MetaFunction = () => [{ title: "Login" }];
 
 const containerVariants: Variants = {
   hidden: {

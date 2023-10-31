@@ -1,4 +1,4 @@
-import { json, type MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
@@ -6,10 +6,8 @@ import { useState } from "react";
 
 import Logo from "~/components/logo";
 import Message from "~/components/register/message";
-import { AppName, AppNameQuoted } from "~/config";
+import { AppNameQuoted } from "~/config";
 import { getCurrentDraw } from "~/models/draw.server";
-
-export const meta: MetaFunction = () => [{ title: AppName }];
 
 export const loader = async () => {
   const draw = await getCurrentDraw();
