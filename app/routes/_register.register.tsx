@@ -42,7 +42,7 @@ import { Wrapper } from "~/components/register/wrapper";
 import { addPlayer, getCurrentDraw } from "~/models/draw.server";
 import {
   createPerson,
-  findSimilarPerson,
+  getSimilarPerson,
   updatePerson,
 } from "~/models/person.server";
 
@@ -157,7 +157,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const picture = formData.get("picture") as NodeOnDiskFile | null;
 
-  const twin = await findSimilarPerson({
+  const twin = await getSimilarPerson({
     firstName: data.firstName,
     lastName: data.lastName,
     email: data.email,

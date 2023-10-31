@@ -2,6 +2,12 @@ import type { Person, Prisma } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
+export function getPerson(id: string) {
+  return prisma.person.findUnique({
+    where: { id },
+  });
+}
+
 export function getPersons() {
   return prisma.person.findMany({
     select: {
@@ -18,7 +24,7 @@ export function getPersons() {
   });
 }
 
-export function findSimilarPerson(where: Prisma.PersonWhereInput) {
+export function getSimilarPerson(where: Prisma.PersonWhereInput) {
   return prisma.person.findFirst({
     select: { id: true },
     where: where,

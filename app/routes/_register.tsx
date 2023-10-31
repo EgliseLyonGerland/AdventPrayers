@@ -6,9 +6,10 @@ import { useState } from "react";
 
 import Logo from "~/components/logo";
 import Message from "~/components/register/message";
+import { AppName, AppNameQuoted } from "~/config";
 import { getCurrentDraw } from "~/models/draw.server";
 
-export const meta: MetaFunction = () => [{ title: "En Avent la prière !" }];
+export const meta: MetaFunction = () => [{ title: AppName }];
 
 export const loader = async () => {
   const draw = await getCurrentDraw();
@@ -30,8 +31,8 @@ export default function Index() {
           "👋 Hey !",
           <>
             Ça me fait plaisir de te voir ici mais il semble que tu sois un
-            petit trop pressé de participer à la prochaine édition de “En Avent
-            la pière !“.
+            petit trop pressé de participer à la prochaine édition de{" "}
+            {AppNameQuoted}.
           </>,
           <>
             Si tu fais partie des contacts de l‘
@@ -58,7 +59,7 @@ export default function Index() {
       <Message>
         {[
           "Arf, ça s‘est joué à pas grand chose 😔",
-          "L‘opération “En Avent la prière !“ a déjà commencé malheureusement. Il n‘est donc plus possible pour toi de t‘inscrire.",
+          `L‘opération ${AppNameQuoted} a déjà commencé malheureusement. Il n‘est donc plus possible pour toi de t‘inscrire.`,
           "Mais il est fort propable qu‘on recommence l‘année prochaine. Alors stay tuned!",
           "A bientôt. 😉",
         ]}

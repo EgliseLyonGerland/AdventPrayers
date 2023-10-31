@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 
+import { AppName } from "~/config";
+
 export interface Address {
   name: string;
   address: string;
@@ -51,7 +53,7 @@ export function sendEmail(options: {
     subject: test ? `[TEST] ${subject}` : subject,
     html: body,
     from: {
-      name: "En Avent la prière !",
+      name: AppName,
       address: `nicolas.bazille+ealp@egliselyongerland.org`,
     },
   };

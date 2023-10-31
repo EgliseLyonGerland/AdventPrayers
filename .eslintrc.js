@@ -49,6 +49,12 @@ module.exports = {
       rules: {
         // eslint rules
         "arrow-body-style": ["error", "as-needed"],
+        quotes: [
+          "error",
+          "double",
+          { avoidEscape: true, allowTemplateLiterals: false },
+        ],
+        "prefer-template": "error",
 
         // react plugin rules
         "react/sort-default-props": 1,

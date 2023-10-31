@@ -246,8 +246,8 @@ const Mails = () => {
           Envoyer
         </button>
       </div>
-      <div className="flex-1 overflow-x-auto overflow-y-hidden rounded-xl border border-base-content/20 bg-base-200 text-base-content">
-        <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content overflow-hidden dark:divide-neutral-content/20">
+      <div className="flex-1 overflow-x-auto overflow-y-hidden rounded-xl border border-base-content/10 bg-base-200 text-base-content">
+        <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content overflow-hidden dark:divide-neutral-content/10">
           <div className="flex flex-col overflow-hidden">
             <label className="flex h-14 items-center gap-4 px-4 text-base-content/60">
               <input
@@ -264,7 +264,7 @@ const Mails = () => {
               />
               {checkerStatus === "unchecked" ? "Tout cocher" : "Tout décocher"}
             </label>
-            <ul className="w-72 flex-1 flex-nowrap divide-y divide-neutral-content overflow-y-auto dark:divide-neutral-content/20">
+            <ul className="w-72 flex-1 flex-nowrap divide-y divide-neutral-content overflow-y-auto dark:divide-neutral-content/10">
               {players.map(({ person, age }) => (
                 <li className="px-4 py-2" key={person.id}>
                   <label
@@ -299,7 +299,7 @@ const Mails = () => {
                           {age}
                         </span>
                       </div>
-                      <div className="overflow-auto overflow-ellipsis whitespace-nowrap text-sm text-base-content/30">
+                      <div className="overflow-auto overflow-ellipsis whitespace-nowrap text-sm text-base-content/10">
                         {person.email}
                       </div>
                     </div>
@@ -309,7 +309,7 @@ const Mails = () => {
             </ul>
           </div>
           <div className="flex flex-1 flex-col">
-            <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/20">
+            <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/10">
               <div className="flex p-4">
                 <span className="mr-2 whitespace-nowrap font-bold opacity-50">
                   À :

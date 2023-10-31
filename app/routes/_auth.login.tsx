@@ -110,7 +110,7 @@ export default function LoginPage() {
 
   return (
     <Form
-      className="flex flex-1 items-center justify-center gap-4 text-base-content"
+      className="h-screen gap-4 text-base-content flex-center"
       method="post"
     >
       <motion.div

@@ -2,6 +2,7 @@ import { useNavigate } from "@remix-run/react";
 import { Variants, motion } from "framer-motion";
 
 import { Wrapper } from "~/components/register/wrapper";
+import { AppNameQuoted } from "~/config";
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -25,9 +26,9 @@ function RegisterIndex() {
       >
         <div className="my-auto max-w-2xl space-y-8 text-center text-lg leading-relaxed wrap-balance md:text-xl">
           <motion.div variants={itemVariants}>
-            L‘opération “En Avent la prière“ est une occasion pour toi de porter
-            dans tes prières un frère ou une soeur de l‘église en particulier
-            pendant toute la période de l‘Avent.
+            L‘opération {AppNameQuoted} est une occasion pour toi de porter dans
+            tes prières un frère ou une soeur de l‘église en particulier pendant
+            toute la période de l‘Avent.
           </motion.div>
           <motion.div variants={itemVariants}>
             En t‘inscrivant, tu recevras le nom d‘un autre participant à
