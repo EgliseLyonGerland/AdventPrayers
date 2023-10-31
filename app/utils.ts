@@ -1,9 +1,9 @@
-import { Params, useMatches } from "@remix-run/react";
+import { type Params, useMatches } from "@remix-run/react";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
 
-import type { User } from "~/models/user.server";
+import { type User } from "~/models/user.server";
 
 const DEFAULT_REDIRECT = "/";
 

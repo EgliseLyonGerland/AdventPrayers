@@ -1,14 +1,14 @@
 import { get } from "lodash";
 import { marked } from "marked";
 
-import type { Nullable } from "~/types";
+import { type Nullable } from "~/types";
 
-import type { Draw, Person } from "./draw.server";
+import { type Draw, type Person } from "./draw.server";
 
 type VariableGenerator = (
   draw: Draw,
   person: Nullable<Person>,
-  assigned: Nullable<Person>
+  assigned: Nullable<Person>,
 ) => string | number | undefined | null;
 
 interface VariableGenerators {
@@ -32,10 +32,7 @@ const variableGenerators: VariableGenerators = {
   },
 };
 
-function getVariables(
-  generators: VariableGenerators,
-  prefix = ""
-): string[] {
+function getVariables(generators: VariableGenerators, prefix = ""): string[] {
   return Object.entries(generators).reduce<string[]>(
     (acc, [key, generator]) => {
       if (typeof generator === "function") {
@@ -44,7 +41,7 @@ function getVariables(
 
       return acc.concat(getVariables(generator, `${prefix}${key}.`));
     },
-    []
+    [],
   );
 }
 
@@ -54,7 +51,7 @@ export function generate(
   text: string,
   draw: Draw,
   person?: Person,
-  assigned?: Nullable<Person>
+  assigned?: Nullable<Person>,
 ): string {
   return text.replace(/%([\w.]+)%/g, (match, variableName) => {
     const generator = get(variableGenerators, variableName) as

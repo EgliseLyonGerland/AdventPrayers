@@ -1,9 +1,9 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import type { Person } from "@prisma/client";
+import { type Person } from "@prisma/client";
 import { Form } from "@remix-run/react";
 import { useState, Fragment, useRef, useEffect } from "react";
 
-import { WithRequired } from "~/types";
+import { type WithRequired } from "~/types";
 import { notNullable } from "~/utils";
 
 import EntitySelector from "./entitySelector";

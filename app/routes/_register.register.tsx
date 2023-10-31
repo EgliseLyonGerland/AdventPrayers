@@ -7,11 +7,11 @@ import {
   redirect,
   unstable_parseMultipartFormData,
   unstable_createFileUploadHandler,
-  NodeOnDiskFile,
+  type NodeOnDiskFile,
 } from "@remix-run/node";
 import { Form, useSubmit } from "@remix-run/react";
-import { Variants, motion } from "framer-motion";
-import { FC, useState } from "react";
+import { type Variants, motion } from "framer-motion";
+import { type FC, useState } from "react";
 import {
   RemixFormProvider,
   createFormData,
@@ -19,7 +19,7 @@ import {
   useRemixForm,
 } from "remix-hook-form";
 import {
-  Output,
+  type Output,
   any,
   email,
   getOutput,

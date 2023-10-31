@@ -1,7 +1,11 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import {
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  json,
+  redirect,
+} from "@remix-run/node";
 import { Form, useActionData, useSearchParams } from "@remix-run/react";
-import { Variants, motion } from "framer-motion";
+import { type Variants, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 import { verifyLogin } from "~/models/user.server";

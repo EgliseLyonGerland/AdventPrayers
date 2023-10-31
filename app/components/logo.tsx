@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Variants, motion } from "framer-motion";
+import { type Variants, motion } from "framer-motion";
 
 interface Props {
   animate?: boolean;

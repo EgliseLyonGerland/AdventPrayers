@@ -1,7 +1,7 @@
 import type * as Client from "@prisma/client";
 import { shuffle } from "lodash";
 
-import { WithRequired } from "~/types";
+import { type WithRequired } from "~/types";
 
 import { inGroup, parseGroups } from "./groups";
 import HamiltonianCycle from "./HamiltonianCycle";

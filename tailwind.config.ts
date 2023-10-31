@@ -1,7 +1,7 @@
 import headlessui from "@headlessui/tailwindcss";
 import typography from "@tailwindcss/typography";
 import daisyui from "daisyui";
-import type { Config } from "tailwindcss";
+import { type Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
 export default {

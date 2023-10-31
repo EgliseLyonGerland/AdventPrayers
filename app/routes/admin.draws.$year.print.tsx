@@ -1,5 +1,9 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
+import {
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  redirect,
+  json,
+} from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 
 import { getDraw } from "~/models/draw.server";

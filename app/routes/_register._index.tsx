@@ -1,5 +1,5 @@
 import { useNavigate } from "@remix-run/react";
-import { Variants, motion } from "framer-motion";
+import { type Variants, motion } from "framer-motion";
 
 import { Wrapper } from "~/components/register/wrapper";
 import { AppNameQuoted } from "~/config";

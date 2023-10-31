@@ -1,7 +1,6 @@
 import { Combobox } from "@headlessui/react";
 import clsx from "clsx";
-import type { ReactNode } from "react";
-import { useState, memo } from "react";
+import { type ReactNode, useState, memo } from "react";
 
 interface Props<T> {
   className?: string;

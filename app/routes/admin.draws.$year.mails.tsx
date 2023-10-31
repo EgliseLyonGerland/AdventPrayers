@@ -1,6 +1,9 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import {
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  json,
+} from "@remix-run/node";
 import { useLoaderData, useParams, useSubmit } from "@remix-run/react";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 import clsx from "clsx";
@@ -10,11 +13,11 @@ import invariant from "tiny-invariant";
 import { useLocalStorage } from "usehooks-ts";
 
 import {
-  GetDrawPlayer,
-  GetDrawPlayerPerson,
+  type GetDrawPlayer,
+  type GetDrawPlayerPerson,
   getDraw,
 } from "~/models/draw.server";
-import { WithRequired } from "~/types";
+import { type WithRequired } from "~/types";
 import { pluralize, getYearParam } from "~/utils";
 import { generate, toMarkdown, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";

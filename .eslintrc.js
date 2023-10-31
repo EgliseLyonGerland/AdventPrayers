@@ -108,6 +108,12 @@ module.exports = {
         "plugin:import/typescript",
         "prettier",
       ],
+      rules: {
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          { fixStyle: "inline-type-imports" },
+        ],
+      },
     },
 
     // Markdown

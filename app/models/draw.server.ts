@@ -1,4 +1,4 @@
-import type { Draw, Person } from "@prisma/client";
+import { type Draw, type Person } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 import { getCurrentYear } from "~/utils";

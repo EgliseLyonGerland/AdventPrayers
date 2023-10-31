@@ -1,5 +1,4 @@
-import type { Draw, Person } from "../draw.server";
-import { letsDraw } from "../draw.server";
+import { type Draw, type Person, letsDraw } from "../draw.server";
 
 vi.mock("lodash", () => ({
   shuffle: (entry: unknown) => entry,

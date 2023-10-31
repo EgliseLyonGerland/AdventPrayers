@@ -3,7 +3,7 @@ import fs from "fs";
 
 import PDFDocument from "pdfkit";
 
-import type { getDraw } from "~/models/draw.server.js";
+import { type getDraw } from "~/models/draw.server.js";
 
 type Draw = Awaited<ReturnType<typeof getDraw>>;
 type Doc = typeof PDFDocument;
