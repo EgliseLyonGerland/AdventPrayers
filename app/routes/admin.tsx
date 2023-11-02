@@ -35,10 +35,13 @@ export default function Admin() {
           className="drawer-overlay"
           htmlFor="drawer"
         />
-        <div className="flex min-h-full flex-col gap-8 bg-base-200 p-8">
-          <Link className="mr-10 block w-40 self-center" to="/admin">
-            <Logo className="my-2 w-full fill-base-content" />
-          </Link>
+        <div className="w-64"> </div>
+        <div className="fixed flex h-screen min-h-full w-64 flex-col gap-8 overflow-y-auto bg-base-200 px-6 py-8">
+          <div className="border-b border-base-content/20 pb-4">
+            <Link className="mx-auto block w-40 self-center" to="/admin">
+              <Logo className="my-2 w-full fill-base-content" />
+            </Link>
+          </div>
 
           <ul className="menu rounded-box w-full space-y-4 bg-base-200 p-0">
             <li>
@@ -47,10 +50,9 @@ export default function Admin() {
               </NavLink>
             </li>
             <li>
-              <span className="cursor-pointer rounded-full opacity-70">
+              <NavLink className="rounded-full" to="/admin/persons">
                 Personnes
-                <span className="badge badge-secondary badge-sm">soon</span>
-              </span>
+              </NavLink>
             </li>
             <li>
               <NavLink className="rounded-full" to="/admin/emails">
