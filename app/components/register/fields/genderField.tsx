@@ -11,7 +11,7 @@ export default function GenderField() {
     <div className="flex flex-col flex-wrap gap-6 md:flex-row md:justify-center md:gap-12">
       {genders.map((gender) => (
         <div className="form-control" key={gender}>
-          <label className="label flex cursor-pointer items-center justify-center gap-8">
+          <label className="label flex cursor-pointer items-center justify-center gap-6">
             <input
               {...register("gender")}
               className="radio-secondary radio radio-lg"
