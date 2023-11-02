@@ -10,7 +10,7 @@ import {
   unstable_createFileUploadHandler,
   type NodeOnDiskFile,
 } from "@remix-run/node";
-import { Form, useSubmit } from "@remix-run/react";
+import { Form, useSearchParams, useSubmit } from "@remix-run/react";
 import { type Variants, motion } from "framer-motion";
 import { type FC, useState } from "react";
 import {
@@ -210,6 +210,7 @@ const itemVariants: Variants = {
 };
 
 export default function Register() {
+  const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(0);
   const submit = useSubmit();
 
@@ -218,6 +219,7 @@ export default function Register() {
   const form = useRemixForm<Output<typeof schema>>({
     resolver: valibotResolver(schema),
     reValidateMode: "onSubmit",
+    defaultValues: Object.fromEntries(searchParams),
     submitHandlers: {
       onValid: (data) => {
         if (errors[steps[currentStep]]) {
