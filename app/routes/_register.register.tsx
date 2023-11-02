@@ -218,10 +218,6 @@ export default function Register() {
   const form = useRemixForm<Output<typeof schema>>({
     resolver: valibotResolver(schema),
     reValidateMode: "onSubmit",
-    defaultValues: {
-      gender: "female",
-      age: "18+",
-    },
     submitHandlers: {
       onValid: (data) => {
         if (errors[steps[currentStep]]) {
