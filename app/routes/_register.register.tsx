@@ -265,7 +265,6 @@ export default function Register() {
   };
 
   return (
-    // @ts-expect-error ts(2322)
     <RemixFormProvider {...form}>
       <Wrapper>
         <Form
