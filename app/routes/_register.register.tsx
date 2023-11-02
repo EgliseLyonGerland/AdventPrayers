@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { valibotResolver } from "@hookform/resolvers/valibot";
+import { render } from "@react-email/render";
 import {
   json,
   type ActionFunctionArgs,
@@ -29,6 +30,7 @@ import {
   string,
 } from "valibot";
 
+import RegisteredEmail from "~/components/emails/registered";
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
 import EmailField from "~/components/register/fields/emailNameField";
@@ -44,6 +46,7 @@ import {
   getSimilarPerson,
   updatePerson,
 } from "~/models/person.server";
+import { sendEmail } from "~/utils/email.server";
 
 const schema = object({
   firstName: string([minLength(1, "Tu dois bien avoir un prénom...")]),
@@ -174,6 +177,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       });
 
   await addPlayer({ id: person.id, age: person.age, year: draw.year });
+
+  sendEmail({
+    body: render(<RegisteredEmail firstName={data.firstName} id={person.id} />),
+    subject: "Tu es inscris ✅",
+    to: {
+      address: data.email,
+      name: data.firstName,
+    },
+  });
 
   return redirect("/registered");
 };

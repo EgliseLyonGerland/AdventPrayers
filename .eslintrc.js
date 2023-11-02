@@ -66,6 +66,9 @@ module.exports = {
         "react/self-closing-comp": "error",
         "react/jsx-boolean-value": ["error", "always"],
 
+        // jsx-a11y plugin rules
+        "jsx-a11y/label-has-associated-control": "off",
+
         // tailwindcss plugin rules
         "tailwindcss/classnames-order": "error",
         "tailwindcss/enforces-negative-arbitrary-values": "error",

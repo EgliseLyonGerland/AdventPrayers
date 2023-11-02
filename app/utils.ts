@@ -1,9 +1,15 @@
 import { type Params, useMatches } from "@remix-run/react";
-import dayjs from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
+import weekday from "dayjs/plugin/weekday";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
 
 import { type User } from "~/models/user.server";
+
+import "dayjs/locale/fr";
+
+dayjs.extend(weekday);
+dayjs.locale("fr");
 
 const DEFAULT_REDIRECT = "/";
 
@@ -105,4 +111,17 @@ export function getYearParam(params: Params): number {
 
 export function getCurrentYear() {
   return dayjs().subtract(1, "month").year();
+}
+
+export function getFirstAdventSundayDate(year: number) {
+  const christmas = dayjs(`${year}-12-25`);
+  return christmas.weekday(-22);
+}
+
+export function formatDate(date: Dayjs) {
+  if (date.date() === 1) {
+    return date.format("1er MMMM");
+  }
+
+  return date.format("D MMMM");
 }

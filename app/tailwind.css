@@ -11,3 +11,9 @@
 .input:not(textarea) {
   @apply rounded-full px-4;
 }
+.select {
+  @apply rounded-full px-6 pr-10;
+}
+.select-sm {
+  @apply px-4 pr-8;
+}

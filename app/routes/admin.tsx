@@ -52,6 +52,11 @@ export default function Admin() {
                 <span className="badge badge-secondary badge-sm">soon</span>
               </span>
             </li>
+            <li>
+              <NavLink className="rounded-full" to="/admin/emails">
+                Emails
+              </NavLink>
+            </li>
           </ul>
         </div>
       </div>
