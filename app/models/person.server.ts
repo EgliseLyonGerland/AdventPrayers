@@ -50,7 +50,14 @@ export function createPerson(
     },
     select: {
       id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      gender: true,
       age: true,
+      bio: true,
+      picture: true,
+      exclude: true,
     },
   });
 }

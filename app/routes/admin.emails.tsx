@@ -1,3 +1,4 @@
+import { type Person } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
   type ActionFunctionArgs,
@@ -9,13 +10,18 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 
 import RegisteredEmail from "~/components/emails/registered";
+import UnregisteredEmail from "~/components/emails/unregistered";
 import { getUser } from "~/session.server";
 import { sendEmail } from "~/utils/email.server";
 
 const templates = {
   registered: {
-    label: "Registered",
+    label: "Confirmation d‘inscription",
     Component: RegisteredEmail,
+  },
+  unregistered: {
+    label: "Confirmation de désinscription",
+    Component: UnregisteredEmail,
   },
 } as const;
 
@@ -24,11 +30,25 @@ function isTemplate(name: string): name is keyof typeof templates {
 }
 
 function renderTemplate(name: keyof typeof templates) {
-  const { Component } = templates[name];
+  const person: Person = {
+    id: "123456",
+    firstName: "Marie",
+    lastName: "Bonneville",
+    age: "18+",
+    gender: "female",
+    email: "marie.bonneville@example.com",
+    bio: null,
+    picture: null,
+  };
 
   switch (name) {
     case "registered": {
-      return render(<Component firstName="Marie" id="123456" />);
+      const { Component } = templates[name];
+      return render(<Component person={person} />);
+    }
+    case "unregistered": {
+      const { Component } = templates[name];
+      return render(<Component person={person} />);
     }
 
     default:
@@ -86,7 +106,9 @@ export default function Email() {
           value={currentTemplate}
         >
           {Object.entries(templates).map(([name, template]) => (
-            <option key={name}>{template.label}</option>
+            <option key={name} value={name}>
+              {template.label}
+            </option>
           ))}
         </select>
         <Form className="ml-auto" method="post">

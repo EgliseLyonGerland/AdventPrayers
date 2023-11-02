@@ -178,8 +178,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   await addPlayer({ id: person.id, age: person.age, year: draw.year });
 
-  sendEmail({
-    body: render(<RegisteredEmail firstName={data.firstName} id={person.id} />),
+  await sendEmail({
+    body: render(<RegisteredEmail person={person} />),
     subject: "Tu es inscris ✅",
     to: {
       address: data.email,

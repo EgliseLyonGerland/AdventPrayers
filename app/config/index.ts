@@ -1,3 +1,3 @@
 export const AppName = "En Avent la prière !";
 
-export const AppNameQuoted = `“${AppName}“`;
+export const AppNameQuoted = `« ${AppName} »`;

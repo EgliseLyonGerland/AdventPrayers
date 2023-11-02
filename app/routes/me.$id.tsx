@@ -1,3 +1,4 @@
+import { render } from "@react-email/components";
 import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -9,11 +10,13 @@ import { useRef } from "react";
 import invariant from "tiny-invariant";
 
 import Box from "~/components/box";
+import UnregisteredEmail from "~/components/emails/unregistered";
 import Logo from "~/components/logo";
 import { AppNameQuoted } from "~/config";
 import { deletePlayer, getCurrentDraw } from "~/models/draw.server";
 import { getPerson } from "~/models/person.server";
 import { getCurrentYear } from "~/utils";
+import { sendEmail } from "~/utils/email.server";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { id } = params;
@@ -50,9 +53,29 @@ export const action = async ({ params }: ActionFunctionArgs) => {
   const { id } = params;
   invariant(id, "No ID provided");
 
+  const person = await getPerson(id);
+
+  if (!person) {
+    throw new Response(null, {
+      status: 404,
+      statusText: "Not Found",
+    });
+  }
+
   const year = getCurrentYear();
 
   await deletePlayer({ id, year });
+
+  if (person.email) {
+    await sendEmail({
+      body: render(<UnregisteredEmail person={person} />),
+      subject: "Tu es désinscris 🥺",
+      to: {
+        address: person.email,
+        name: person.firstName,
+      },
+    });
+  }
 
   return redirect("/me/unregistered");
 };

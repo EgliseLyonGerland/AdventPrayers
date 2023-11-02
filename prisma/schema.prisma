@@ -26,7 +26,6 @@ model Password {
 
 model Person {
   id          String   @id @default(cuid())
-  slug        String?
   firstName   String
   lastName    String
   gender      String

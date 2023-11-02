@@ -1,14 +1,15 @@
+import { type Person } from "@prisma/client";
+
 import { AppNameQuoted } from "~/config";
 import { formatDate, getCurrentYear, getFirstAdventSundayDate } from "~/utils";
 
 import Email, { Button, Text } from "./base";
 
 interface Props {
-  id: string;
-  firstName: string;
+  person: Person;
 }
 
-function RegisteredEmail({ id, firstName }: Props) {
+function RegisteredEmail({ person }: Props) {
   const startsAt = getFirstAdventSundayDate(getCurrentYear());
 
   return (
@@ -29,12 +30,12 @@ function RegisteredEmail({ id, firstName }: Props) {
           en cliquant sur le bouton ci-dessous. J‘espère quand même que tu n‘en
           auras pas besoin 😇.
         </Text>,
-        <Button href={`/me/${id}`} key={4}>
+        <Button href={`/me/${person.id}`} key={4}>
           Accéder à mon espace
         </Button>,
         <Text key={5}>À très bientôt dans un prochain message !</Text>,
       ]}
-      heading={`Hey ${firstName} ! 👋`}
+      heading={`Hey ${person.firstName} ! 👋`}
     />
   );
 }
