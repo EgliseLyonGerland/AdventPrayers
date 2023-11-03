@@ -16,7 +16,7 @@ export default function PictureField() {
 
   return (
     <label
-      className="group relative mx-auto block aspect-square h-[30vh] cursor-pointer rounded-lg border-2 border-dashed border-base-content/50 p-2 shadow-xl flex-center hover:border-secondary hover:bg-base-200"
+      className="group relative mx-auto block aspect-square h-[20vh] cursor-pointer rounded-lg border-2 border-dashed border-base-content/50 p-2 shadow-xl flex-center hover:border-secondary hover:bg-base-200 md:h-[25vh]"
       htmlFor="picture"
     >
       {picture ? (

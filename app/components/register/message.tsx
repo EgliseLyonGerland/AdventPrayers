@@ -1,26 +1,48 @@
-import clsx from "clsx";
+import { type Variants, motion } from "framer-motion";
 import { type ReactNode } from "react";
 
-import Logo from "../logo";
+import { Wrapper } from "./wrapper";
 
 interface Props {
+  heading?: ReactNode;
   children: ReactNode[];
 }
 
-export default function Message({ children }: Props) {
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "tween", ease: "anticipate", duration: 2 },
+  },
+};
+
+export default function Message({ heading, children }: Props) {
   return (
-    <div className="flex-1 flex-col gap-8 p-8 flex-center md:gap-12 md:p-16">
-      <Logo className="h-16 md:h-32" />
-      <div className="my-auto max-w-2xl space-y-8 text-center text-lg leading-relaxed wrap-balance md:text-xl">
-        {children.map((child, index) => (
-          <div
-            className={clsx(index === 0 && "text-[1.2em] font-bold")}
-            key={index}
-          >
-            {child}
-          </div>
-        ))}
+    <Wrapper className="mb-12 overflow-y-auto">
+      <div className="flex flex-col items-center">
+        <motion.div
+          animate="show"
+          className="max-w-2xl space-y-8 text-center text-lg leading-relaxed wrap-balance md:text-xl"
+          initial="hidden"
+          transition={{ staggerChildren: 0.1 }}
+        >
+          {heading ? (
+            <motion.div
+              className="text-[1.2em] font-bold"
+              variants={itemVariants}
+            >
+              {heading}
+            </motion.div>
+          ) : null}
+
+          {children.map((child, index) => (
+            <motion.div key={index} variants={itemVariants}>
+              {child}
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
-    </div>
+    </Wrapper>
   );
 }

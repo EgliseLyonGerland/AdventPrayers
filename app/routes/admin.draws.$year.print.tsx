@@ -82,7 +82,7 @@ const Print = () => {
                   className="btn btn-secondary btn-outline mt-8"
                   type="submit"
                 >
-                  Générer le fichier d‘impression
+                  Générer le fichier d’impression
                 </button>
               </Form>
             </div>

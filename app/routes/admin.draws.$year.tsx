@@ -118,17 +118,17 @@ export default function Index() {
               <div className="hero-content text-center">
                 <div className="max-w-md">
                   <h1 className="text-2xl font-bold">
-                    L‘édition n‘existe pas encore...
+                    L’édition n’existe pas encore...
                   </h1>
                   <p className="py-6 text-lg opacity-70">
-                    Tu dois d‘abord la créer avant de pouvoir ajouter des
+                    Tu dois d’abord la créer avant de pouvoir ajouter des
                     participants et lancer le tirage.
                   </p>
                   <button className="btn btn-secondary" type="submit">
                     {navigation.state === "submitting" ? (
                       <span className="loading loading-spinner" />
                     ) : (
-                      `Créer l‘édition ${year}`
+                      `Créer l’édition ${year}`
                     )}
                   </button>
                 </div>

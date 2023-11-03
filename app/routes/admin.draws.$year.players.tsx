@@ -360,7 +360,7 @@ function Players({
           <div className="hero-content text-center">
             <div className="max-w-md">
               <h1 className="text-2xl font-bold">
-                C‘est {missing < 3 ? "toujours" : null} un peu vide ici !
+                C’est {missing < 3 ? "toujours" : null} un peu vide ici !
               </h1>
               <p className="py-6 text-lg opacity-70 wrap-balance">
                 Ajoute
@@ -643,7 +643,7 @@ export default function Index() {
           <Form method="post">
             <div className="form-control mb-4">
               <label className="label" htmlFor="ages">
-                <span className="label-text font-bold">Tranches d‘age</span>
+                <span className="label-text font-bold">Tranches d’age</span>
               </label>
               <input
                 className="input input-bordered"
@@ -655,7 +655,7 @@ export default function Index() {
 
             <div className="form-control mb-4">
               <label className="label" htmlFor="groups">
-                <span className="label-text font-bold">Groupes d‘age</span>
+                <span className="label-text font-bold">Groupes d’age</span>
               </label>
               <input
                 className="input input-bordered"

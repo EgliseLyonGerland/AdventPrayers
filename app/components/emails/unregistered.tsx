@@ -22,7 +22,7 @@ function UnregisteredEmail({ person }: Props) {
     <Email
       content={[
         <Text key={1}>
-          J‘ai bien pris note de ta désincription à l‘édition 2023 de{" "}
+          J’ai bien pris note de ta désincription à l’édition 2023 de{" "}
           {AppNameQuoted} !
         </Text>,
         <Text key={1}>
@@ -32,7 +32,7 @@ function UnregisteredEmail({ person }: Props) {
         <Button href={`/register?${searchParams.toString()}`} key={4}>
           Me réinscrire
         </Button>,
-        <Text key={5}>A bientôt j‘espère !</Text>,
+        <Text key={5}>A bientôt j’espère !</Text>,
       ]}
       heading={`Hey ${person.firstName} ! 👋`}
     />

@@ -15,7 +15,7 @@ import Logo from "~/components/logo";
 import { AppNameQuoted } from "~/config";
 import { deletePlayer, getCurrentDraw } from "~/models/draw.server";
 import { getPerson } from "~/models/person.server";
-import { getCurrentYear } from "~/utils";
+import { genderize, getCurrentYear } from "~/utils";
 import { sendEmail } from "~/utils/email.server";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -90,10 +90,11 @@ export default function Me() {
 
       <Box title={`👋 Hey ${person.firstName} !`}>
         <div>
-          Tu es bien inscrit pour l‘édition {draw.year} de {AppNameQuoted}.
+          Tu es {genderize("inscrit", person.gender)} pour l’édition {draw.year}{" "}
+          de {AppNameQuoted}.
         </div>
         <div>
-          L‘oépration n‘a pas encore démarré, tu peux encore te désinscrire si
+          L’oépration n’a pas encore démarré, tu peux encore te désinscrire si
           tu le souhaites.
         </div>
         <button

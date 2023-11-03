@@ -97,6 +97,18 @@ export function pluralize(
   return total > 1 ? word + suffix : word;
 }
 
+export function genderize(
+  word: string | [string, string],
+  gender: string,
+  feminine = `${word}e`,
+) {
+  if (gender === "female") {
+    return feminine;
+  }
+
+  return word;
+}
+
 export function notNullable<T>(item: T): item is NonNullable<T> {
   return !!item;
 }

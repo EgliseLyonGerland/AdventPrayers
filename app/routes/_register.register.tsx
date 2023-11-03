@@ -54,7 +54,7 @@ const schema = object({
     minLength(1, "Je ne peux pas croire que tu n'aies pas de nom..."),
   ]),
   email: string([
-    minLength(1, "J‘ai vraiment de ton email 🙏"),
+    minLength(1, "J’ai vraiment de ton email 🙏"),
     email("Hmm, ça ressemble pas à une adresse email ça 🤔"),
   ]),
   gender: string([minLength(1)]),
@@ -102,16 +102,16 @@ const fields: Record<Step, FC> = {
 };
 
 const defs: Record<Step, string> = {
-  firstName: "C‘est parti, commence par renseigner ton prénom.",
+  firstName: "C’est parti, commence par renseigner ton prénom.",
   lastName: "Super, et maintenant ton nom.",
   email:
-    "J‘ai également besoin de ton adresse email pour t‘envoyer des messages super intéressants sur le déroulement de l‘opération.\n\nGaranti sans spam ! 😉",
+    "J’ai également besoin de ton adresse email pour t’envoyer des messages super intéressants sur le déroulement de l’opération.\n\nGaranti sans spam ! 😉",
   gender:
     "Déjà une bonne chose de faite !\n\nTu peux désormais me dire si tu es une femme ou un homme. Ça me servira surtout à utiliser le bon genre dans les messages.",
-  age: "On avance ! Précise maintenant dans quelle tranche d‘age tu te situes. Cela permettra de créer des groupes de participants spécifiques si nécessaire.",
-  bio: "Peux-tu écrire quelques mots te concernant ?\n\nCette étape n‘est pas obligatoire mais pourrait-être très utile à la personne qui te portera dans ses prières si elle ne te connait pas, surtout au début de l‘opération.",
+  age: "On avance !\n\nPrécise maintenant dans quelle tranche d’âge tu te situes. Cela permettra de créer des groupes de participants spécifiques si nécessaire.",
   picture:
-    "Non veniam commodo laboris laborum mollit est irure sint cupidatat.",
+    "Une dernière chose. Est-ce que tu peux mettre une photo de toi ?\n\nCette étape non plus n'est pas obligatoire mais elle aidera ton prieur mystère à te reconnaître s’il ne t’a jamais vu. Sache d’ailleurs que cette information ne sera visible que par cette personne.",
+  bio: "Peux-tu écrire quelques mots te concernant ?\n\nCette étape n’est pas obligatoire mais pourrait être très utile à la personne qui te portera dans ses prières si elle ne te connait pas, surtout au début de l’opération.",
 };
 
 const autoFocus: Partial<Record<Step, true>> = {
@@ -297,8 +297,8 @@ export default function Register() {
                 className="text-center text-lg text-base-content/80 md:text-2xl"
                 variants={itemVariants}
               >
-                Bravo, tu as presque terminé ! Il ne te reste plus qu‘à vérifier
-                les informations avant valider ton inscription.
+                Bravo, tu as presque terminé ! Il ne te reste plus qu’à vérifier
+                les informations avant de valider ton inscription.
               </motion.div>
               <Recap {...getValues()} visible={finalStep} />
               <motion.div className="flex gap-2" variants={itemVariants}>
@@ -315,8 +315,8 @@ export default function Register() {
                   className="btn btn-secondary btn-outline md:btn-lg"
                   type="submit"
                 >
-                  <span className="hidden md:inline">C‘est tout bon, </span>je
-                  m‘inscris !
+                  <span className="hidden md:inline">C’est tout bon, </span>je
+                  m’inscris !
                 </button>
               </motion.div>
             </motion.div>
@@ -363,7 +363,7 @@ export default function Register() {
                   {defs[step] ? (
                     <motion.div
                       animate={variant}
-                      className="z-10 my-auto space-y-8 whitespace-pre-wrap text-center text-xl text-base-content/80 wrap-balance md:text-2xl"
+                      className="z-10 my-auto space-y-8 whitespace-pre-wrap text-center text-[2.9vh] leading-tight text-base-content/80 wrap-balance md:text-[2.8vh] md:leading-normal"
                       initial="incoming"
                       key={step}
                       transition={{

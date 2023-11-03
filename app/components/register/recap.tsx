@@ -56,7 +56,7 @@ function Recap({
           </div>
           <div className="flex-1 opacity-0" data-item={true}>
             <div className="text-lg opacity-60 md:mb-2 md:text-xl">
-              Tranche d‘âge
+              Tranche d’âge
             </div>
             <div className="text-lg md:text-xl">{age}</div>
           </div>

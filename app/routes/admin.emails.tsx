@@ -16,7 +16,7 @@ import { sendEmail } from "~/utils/email.server";
 
 const templates = {
   registered: {
-    label: "Confirmation d‘inscription",
+    label: "Confirmation d’inscription",
     Component: RegisteredEmail,
   },
   unregistered: {
