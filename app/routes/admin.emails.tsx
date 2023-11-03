@@ -1,4 +1,3 @@
-import { type Person } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
   type ActionFunctionArgs,
@@ -11,6 +10,7 @@ import invariant from "tiny-invariant";
 
 import RegisteredEmail from "~/components/emails/registered";
 import UnregisteredEmail from "~/components/emails/unregistered";
+import { type Person } from "~/models/person.server";
 import { getUser } from "~/session.server";
 import { sendEmail } from "~/utils/email.server";
 

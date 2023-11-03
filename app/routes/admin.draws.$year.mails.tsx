@@ -12,21 +12,14 @@ import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 import { useLocalStorage } from "usehooks-ts";
 
-import {
-  type GetDrawPlayer,
-  type GetDrawPlayerPerson,
-  getDraw,
-} from "~/models/draw.server";
+import { type GetDrawPlayer, getDraw } from "~/models/draw.server";
+import { type Person } from "~/models/person.server";
 import { type WithRequired } from "~/types";
 import { pluralize, getYearParam } from "~/utils";
 import { generate, toMarkdown, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
 
 type Player = WithRequired<GetDrawPlayer, "person">;
-type Person = WithRequired<
-  GetDrawPlayerPerson,
-  "id" | "firstName" | "lastName" | "email"
->;
 type Recipient = Person;
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {

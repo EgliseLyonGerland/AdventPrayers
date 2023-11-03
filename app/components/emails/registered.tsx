@@ -1,6 +1,5 @@
-import { type Person } from "@prisma/client";
-
 import { AppNameQuoted } from "~/config";
+import { type Person } from "~/models/person.server";
 import { formatDate, getCurrentYear, getFirstAdventSundayDate } from "~/utils";
 
 import Email, { Button, Text } from "./base";

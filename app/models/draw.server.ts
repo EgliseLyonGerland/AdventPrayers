@@ -1,8 +1,10 @@
-import { type Draw, type Person } from "@prisma/client";
+import { type Draw } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 import { getCurrentYear } from "~/utils";
 import { letsDraw } from "~/utils/draw.server";
+
+import { type Person } from "./person.server";
 
 export type GetDraws = NonNullable<Awaited<ReturnType<typeof getDraws>>>;
 export type GetDraw = NonNullable<Awaited<ReturnType<typeof getDraw>>>;
@@ -37,8 +39,20 @@ export function getDraw({ year }: Pick<Draw, "year">) {
               gender: true,
               email: true,
               age: true,
-              exclude: true,
+              bio: true,
               picture: true,
+              exclude: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  gender: true,
+                  email: true,
+                  age: true,
+                  bio: true,
+                  picture: true,
+                },
+              },
             },
           },
           assigned: {
@@ -49,7 +63,20 @@ export function getDraw({ year }: Pick<Draw, "year">) {
               gender: true,
               email: true,
               age: true,
-              exclude: true,
+              bio: true,
+              picture: true,
+              exclude: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  gender: true,
+                  email: true,
+                  age: true,
+                  bio: true,
+                  picture: true,
+                },
+              },
             },
           },
           personId: true,

@@ -1,9 +1,12 @@
 import { get } from "lodash";
 import { marked } from "marked";
 
+import { type PersonWithExclude } from "~/models/person.server";
 import { type Nullable } from "~/types";
 
-import { type Draw, type Person } from "./draw.server";
+import { type Draw } from "./draw.server";
+
+type Person = PersonWithExclude;
 
 type VariableGenerator = (
   draw: Draw,

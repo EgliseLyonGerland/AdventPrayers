@@ -1,8 +1,8 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { type Person } from "@prisma/client";
 import { Form } from "@remix-run/react";
 import { useState, Fragment, useRef, useEffect } from "react";
 
+import { type Person } from "~/models/person.server";
 import { type WithRequired } from "~/types";
 import { notNullable } from "~/utils";
 
@@ -41,8 +41,6 @@ export default function PersonModalForm({
 
   return (
     <dialog className="modal" onClose={onClose} ref={dialogRef}>
-      <input name="id" type="hidden" value={data?.id} />
-
       <form className="modal-backdrop" method="dialog">
         <button>close</button>
       </form>
@@ -58,6 +56,8 @@ export default function PersonModalForm({
         </h3>
 
         <Form method="post">
+          <input name="id" type="hidden" value={data?.id} />
+
           <div className="grid grid-cols-2 gap-x-8">
             <div>
               <div className="form-control mb-4">

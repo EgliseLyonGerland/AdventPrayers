@@ -1,6 +1,9 @@
-import { type Person, type Prisma } from "@prisma/client";
+import { type Person as PersonType, type Prisma } from "@prisma/client";
 
 import { prisma } from "~/db.server";
+
+export type Person = Omit<PersonType, "createdAt" | "updatedAt">;
+export type PersonWithExclude = Person & { exclude: Person[] };
 
 export function getPerson(id: string) {
   return prisma.person.findUnique({
@@ -78,7 +81,7 @@ export function updatePerson({
     | "bio"
     | "picture"
   > & {
-    exclude?: string[];
+    exclude: string[];
   }
 >) {
   return prisma.person.update({

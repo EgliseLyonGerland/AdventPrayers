@@ -1,6 +1,7 @@
 import type * as Client from "@prisma/client";
 import { shuffle } from "lodash";
 
+import { type PersonWithExclude } from "~/models/person.server";
 import { type WithRequired } from "~/types";
 
 import { inGroup, parseGroups } from "./groups";
@@ -12,9 +13,7 @@ export type Draw = WithRequired<Client.Draw, "groups"> & {
   players: Player[];
 };
 
-export type Person = WithRequired<Client.Person, "id" | "lastName"> & {
-  exclude: Pick<Client.Person, "id">[];
-};
+type Person = PersonWithExclude;
 
 function findPerson(id: string, persons: Person[]) {
   return persons.find((person) => person.id === id) as Person;
