@@ -22,7 +22,7 @@ export default function PictureField() {
       {picture ? (
         <img
           alt="selected"
-          className="h-full w-full object-contain"
+          className="h-full w-full object-cover"
           src={picture}
         />
       ) : (
@@ -34,14 +34,14 @@ export default function PictureField() {
 
       {picture ? (
         <button
-          className="btn btn-circle absolute right-4 top-4"
+          className="btn btn-circle btn-sm absolute right-4 top-4 md:btn-md"
           onClick={() => {
             onChange(null);
             trigger();
           }}
           type="button"
         >
-          <TrashIcon className="h-6" />
+          <TrashIcon className="h-4 md:h-6" />
         </button>
       ) : null}
 

@@ -16,6 +16,7 @@ import {
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
+import clsx from "clsx";
 import { type Variants, motion } from "framer-motion";
 import { type FC, useState } from "react";
 import {
@@ -54,26 +55,29 @@ import {
 import { sendEmail } from "~/utils/email.server";
 
 const schema = object({
-  firstName: string([minLength(1, "Tu dois bien avoir un prénom...")]),
+  firstName: string([minLength(1, "Tu dois bien avoir un prénom !")]),
   lastName: string([
-    minLength(1, "Je ne peux pas croire que tu n'aies pas de nom..."),
+    minLength(1, "Non je ne peux pas croire que tu n'aies pas de nom !"),
   ]),
   email: string([
-    minLength(1, "J’ai vraiment de ton email 🙏"),
+    minLength(1, "J’ai vraiment de ton adresse email 🙏"),
     email("Hmm, ça ressemble pas à une adresse email ça 🤔"),
   ]),
-  gender: string([minLength(1)]),
-  age: string([minLength(1)]),
+  gender: string("Allez un p’tit effort 😌", [minLength(1)]),
+  age: string(
+    "Je voudrais bien essayer de deviner mais j’ai peur de pas réussir",
+    [minLength(1)],
+  ),
   bio: string(),
   picture: any([
     (input: File | undefined) => {
       if (input) {
-        if (input.size > 3_000_000) {
+        if (input.size > 5_000_000) {
           return getPipeIssues(
             "custom",
-            `La photo ne doit pas dépasser 3 Mo (> ${Math.floor(
+            `Ta photo est supérieur à ${Math.floor(
               input.size / 1000000,
-            )})`,
+            )} Mo mais ne doit pas dépasser 5 Mo. Il faudrait que tu réduises un peu sa taille.`,
             input,
           );
         }
@@ -144,6 +148,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     request.clone(),
     unstable_createFileUploadHandler({
       directory: process.env.UPLOADS_DIR,
+      maxPartSize: 5_000_000,
     }),
   );
 
@@ -249,7 +254,7 @@ export default function Register() {
   });
 
   const {
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     setFocus,
     clearErrors,
@@ -312,7 +317,7 @@ export default function Register() {
               <motion.div className="flex gap-2" variants={itemVariants}>
                 <button
                   className="btn btn-ghost md:btn-lg"
-                  disabled={isSubmitting || !isValid}
+                  disabled={isSubmitting}
                   onClick={() => {
                     setCurrentStep(0);
                   }}
@@ -322,7 +327,7 @@ export default function Register() {
                 </button>
                 <button
                   className="btn btn-secondary btn-outline md:btn-lg"
-                  disabled={isSubmitting || !isValid}
+                  disabled={isSubmitting}
                   type="submit"
                 >
                   {isSubmitting ? (
@@ -373,16 +378,13 @@ export default function Register() {
                     <Component />
                   </div>
 
-                  {errors[step] ? (
-                    <div className="m-4 text-center text-error">
-                      {errors[step]?.message?.toString()}
-                    </div>
-                  ) : null}
-
-                  {defs[step] ? (
+                  {defs[step] || errors[step] ? (
                     <motion.div
                       animate={variant}
-                      className="z-10 my-auto space-y-8 whitespace-pre-wrap text-center text-[3svh] leading-tight text-base-content/80 wrap-balance md:text-[2.8svh] md:leading-normal"
+                      className={clsx(
+                        "z-10 my-auto space-y-8 whitespace-pre-wrap text-center text-[3svh] leading-tight text-base-content/80 wrap-balance md:text-[2.8svh] md:leading-normal",
+                        errors[step] && "text-red-400",
+                      )}
                       initial="incoming"
                       key={step}
                       transition={{
@@ -397,9 +399,11 @@ export default function Register() {
                         outgoing: { opacity: 0 },
                       }}
                     >
-                      {defs[step].split("\n\n").map((part) => (
-                        <div key={part}>{part}</div>
-                      ))}
+                      {(errors[step]?.message?.toString() || defs[step])
+                        .split("\n\n")
+                        .map((part) => (
+                          <div key={part}>{part}</div>
+                        ))}
                     </motion.div>
                   ) : null}
                 </motion.div>
