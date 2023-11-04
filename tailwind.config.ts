@@ -38,7 +38,7 @@ export default {
     }),
   ],
   daisyui: {
-    themes: false,
+    themes: ["dark"],
     logs: false,
   },
 } satisfies Config;

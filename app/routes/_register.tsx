@@ -31,7 +31,7 @@ export default function Index() {
       <motion.div
         className={clsx(
           "fixed inset-x-8 h-0 flex-center",
-          ready ? "top-16 md:top-[12vh]" : "top-[50vh]",
+          ready ? "top-16 md:top-[12svh]" : "top-[50svh]",
         )}
         layout={true}
         layoutId="logo"
@@ -45,7 +45,7 @@ export default function Index() {
           animate={withIntro ? !complete : false}
           className={clsx(
             "max-w-full transition-[height] duration-1000 ease-in-out",
-            complete ? "h-16 md:h-[12vh]" : "h-40",
+            complete ? "h-16 md:h-[12svh]" : "h-40",
           )}
           onAnimationComplete={() => {
             setTimeout(() => {
