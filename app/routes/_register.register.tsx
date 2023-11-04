@@ -10,7 +10,12 @@ import {
   unstable_createFileUploadHandler,
   type NodeOnDiskFile,
 } from "@remix-run/node";
-import { Form, useSearchParams, useSubmit } from "@remix-run/react";
+import {
+  Form,
+  useNavigation,
+  useSearchParams,
+  useSubmit,
+} from "@remix-run/react";
 import { type Variants, motion } from "framer-motion";
 import { type FC, useState } from "react";
 import {
@@ -213,6 +218,7 @@ export default function Register() {
   const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(0);
   const submit = useSubmit();
+  const { state } = useNavigation();
 
   const finalStep = currentStep === steps.length;
 
@@ -243,7 +249,7 @@ export default function Register() {
   });
 
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     setFocus,
     clearErrors,
@@ -261,6 +267,8 @@ export default function Register() {
     clearErrors();
     setCurrentStep(newStep);
   };
+
+  const isSubmitting = state === "submitting" || state === "loading";
 
   return (
     <RemixFormProvider {...form}>
@@ -304,6 +312,7 @@ export default function Register() {
               <motion.div className="flex gap-2" variants={itemVariants}>
                 <button
                   className="btn btn-ghost md:btn-lg"
+                  disabled={isSubmitting || !isValid}
                   onClick={() => {
                     setCurrentStep(0);
                   }}
@@ -313,10 +322,20 @@ export default function Register() {
                 </button>
                 <button
                   className="btn btn-secondary btn-outline md:btn-lg"
+                  disabled={isSubmitting || !isValid}
                   type="submit"
                 >
-                  <span className="hidden md:inline">C’est tout bon, </span>je
-                  m’inscris !
+                  {isSubmitting ? (
+                    <>
+                      <span className="loading loading-dots loading-md" />
+                      Let’s go!
+                    </>
+                  ) : (
+                    <>
+                      <span className="hidden md:inline">C’est tout bon, </span>
+                      je m’inscris !
+                    </>
+                  )}
                 </button>
               </motion.div>
             </motion.div>
@@ -399,7 +418,7 @@ export default function Register() {
             >
               <button
                 className="btn btn-circle btn-outline btn-lg"
-                disabled={currentStep === 0}
+                disabled={currentStep === 0 || isSubmitting}
                 onClick={previousStep}
                 type="button"
               >
@@ -410,6 +429,7 @@ export default function Register() {
               </span>
               <button
                 className="btn btn-circle btn-outline btn-lg"
+                disabled={isSubmitting}
                 type="submit"
               >
                 <ArrowRightIcon className="h-8" />
