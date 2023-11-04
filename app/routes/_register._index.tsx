@@ -25,7 +25,7 @@ function RegisterIndex() {
         Ce n’est qu’ensuite que tu pourras te faire connâitre à la personne en
         lui offrant si possible un petit cadeau en fonction des tes moyens 🎁.
       </div>
-      <div>C’est cool non ?! N’attends plus et inscris-toi !</div>
+      <div>C’est cool non ?! N’attends plus et inscris-toi{" "}!</div>
 
       <button
         className="btn btn-secondary btn-outline btn-lg mt-8 w-full max-w-md shadow-lg"

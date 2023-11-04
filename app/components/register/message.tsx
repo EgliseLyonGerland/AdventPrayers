@@ -23,7 +23,7 @@ export default function Message({ heading, children }: Props) {
       <div className="flex flex-col items-center">
         <motion.div
           animate="show"
-          className="max-w-2xl space-y-8 text-center text-lg leading-relaxed wrap-balance md:text-xl"
+          className="max-w-2xl space-y-8 text-center wrap-balance md:text-xl"
           initial="hidden"
           transition={{ staggerChildren: 0.1 }}
         >
