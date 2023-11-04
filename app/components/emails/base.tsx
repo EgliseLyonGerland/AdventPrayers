@@ -49,12 +49,12 @@ export function Button({
 }
 
 interface Props {
-  content: ReactNode;
-  preview?: string;
   heading?: string;
+  preview?: string;
+  children: ReactNode;
 }
 
-export default function Email({ preview, heading, content }: Props) {
+export default function Email({ preview, heading, children }: Props) {
   return (
     <ReactEmail.Html>
       <ReactEmail.Head>
@@ -115,6 +115,7 @@ export default function Email({ preview, heading, content }: Props) {
           }
         `}</style>
       </ReactEmail.Head>
+
       {preview ? <ReactEmail.Preview>{preview}</ReactEmail.Preview> : null}
 
       <ReactEmail.Body>
@@ -139,7 +140,7 @@ export default function Email({ preview, heading, content }: Props) {
           {heading ? (
             <ReactEmail.Heading
               style={{
-                fontSize: 22,
+                fontSize: 18,
                 fontWeight: 400,
               }}
             >
@@ -147,7 +148,7 @@ export default function Email({ preview, heading, content }: Props) {
             </ReactEmail.Heading>
           ) : null}
 
-          {content}
+          {children}
 
           <Text style={{ marginTop: 48 }}>Fraternellement,</Text>
           <Text>— Nicolas de {AppNameQuoted}</Text>

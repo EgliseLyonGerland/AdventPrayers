@@ -13,7 +13,6 @@ import {
   redirect,
 } from "@remix-run/node";
 import {
-  type Params,
   Form,
   NavLink,
   useLoaderData,
@@ -23,7 +22,6 @@ import {
   useSubmit,
 } from "@remix-run/react";
 import { Fragment } from "react";
-import invariant from "tiny-invariant";
 
 import EntitySelector from "~/components/entitySelector";
 import PersonModalForm from "~/components/personModalForm";
@@ -39,7 +37,7 @@ import {
   updatePlayerAge,
 } from "~/models/draw.server";
 import { createPerson, getPersons, updatePerson } from "~/models/person.server";
-import { pluralize } from "~/utils";
+import { getYearParam, pluralize } from "~/utils";
 import { resolveGroup } from "~/utils/groups";
 
 type SortBy = "date" | "firstName" | "lastName";
@@ -93,14 +91,6 @@ function toQueryString(
   }
 
   return `${searchParams}`;
-}
-
-function getYearParam(params: Params): number {
-  invariant(params.year, `Year is required`);
-  const year = Number(params.year);
-  invariant(Number.isInteger(year), "Year must be a integer");
-
-  return year;
 }
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {

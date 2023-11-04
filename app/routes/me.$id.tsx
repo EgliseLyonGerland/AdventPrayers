@@ -69,7 +69,7 @@ export const action = async ({ params }: ActionFunctionArgs) => {
   if (person.email) {
     await sendEmail({
       body: render(<UnregisteredEmail person={person} />),
-      subject: "Tu es désinscris 🥺",
+      subject: UnregisteredEmail.title,
       to: {
         address: person.email,
         name: person.firstName,

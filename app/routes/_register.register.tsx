@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { render } from "@react-email/render";
 import {
   json,
   type ActionFunctionArgs,
@@ -36,7 +35,6 @@ import {
   string,
 } from "valibot";
 
-import RegisteredEmail from "~/components/emails/registered";
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
 import EmailField from "~/components/register/fields/emailNameField";
@@ -46,13 +44,8 @@ import LastNameField from "~/components/register/fields/lastNameField";
 import PictureField from "~/components/register/fields/pictureField";
 import Recap from "~/components/register/recap";
 import { Wrapper } from "~/components/register/wrapper";
-import { addPlayer, getCurrentDraw } from "~/models/draw.server";
-import {
-  createPerson,
-  getSimilarPerson,
-  updatePerson,
-} from "~/models/person.server";
-import { sendEmail } from "~/utils/email.server";
+import { getCurrentDraw } from "~/models/draw.server";
+import { register } from "~/models/registration.server";
 
 const schema = object({
   firstName: string([minLength(1, "Tu dois bien avoir un prénom !")]),
@@ -65,7 +58,7 @@ const schema = object({
   ]),
   gender: string("Allez un p’tit effort 😌", [minLength(1)]),
   age: string(
-    "Je voudrais bien essayer de deviner mais j’ai peur de pas réussir",
+    "Je voudrais bien essayer de deviner mais j’ai peur de ne pas réussir",
     [minLength(1)],
   ),
   bio: string(),
@@ -167,34 +160,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const picture = formData.get("picture") as NodeOnDiskFile | null;
 
-  const twin = await getSimilarPerson({
-    firstName: data.firstName,
-    lastName: data.lastName,
-    email: data.email,
-    gender: data.gender,
-  });
-
-  const person = twin
-    ? await updatePerson({
-        id: twin.id,
-        ...data,
-        ...(picture ? { picture: picture.name } : null),
-      })
-    : await createPerson({
-        ...data,
-        picture: picture?.name || null,
-        exclude: [],
-      });
-
-  await addPlayer({ id: person.id, age: person.age, year: draw.year });
-
-  await sendEmail({
-    body: render(<RegisteredEmail person={person} />),
-    subject: "Tu es inscris ✅",
-    to: {
-      address: data.email,
-      name: data.firstName,
-    },
+  await register({
+    ...data,
+    picture: picture?.name || null,
   });
 
   return redirect("/registered");

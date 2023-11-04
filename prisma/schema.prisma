@@ -41,12 +41,27 @@ model Person {
   assignments Player[] @relation("Assigned")
 }
 
+model Registration {
+  id           String   @id @default(cuid())
+  draw         Draw     @relation(fields: [drawYear], references: [year])
+  drawYear     Int
+  firstName    String
+  lastName     String
+  gender       String
+  email        String?
+  age          String   @default("18+")
+  bio          String?
+  picture      String?
+  registeredAt DateTime @default(now())
+}
+
 model Draw {
-  year    Int      @id
-  drawn   Boolean  @default(false)
-  ages    String   @default("6,10,14,18")
-  groups  String   @default("6,10,14,18")
-  players Player[]
+  year         Int            @id
+  drawn        Boolean        @default(false)
+  ages         String         @default("6,10,14,18")
+  groups       String         @default("6,10,14,18")
+  players      Player[]
+  Registration Registration[]
 }
 
 model Player {

@@ -8,21 +8,17 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
-import RegisteredEmail from "~/components/emails/registered";
+import RegistrationApprovedEmail from "~/components/emails/registationApproved";
+import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import UnregisteredEmail from "~/components/emails/unregistered";
 import { type Person } from "~/models/person.server";
 import { getUser } from "~/session.server";
 import { sendEmail } from "~/utils/email.server";
 
 const templates = {
-  registered: {
-    label: "Confirmation d’inscription",
-    Component: RegisteredEmail,
-  },
-  unregistered: {
-    label: "Confirmation de désinscription",
-    Component: UnregisteredEmail,
-  },
+  registered: RegistrationRecordedEmail,
+  registrationValidated: RegistrationApprovedEmail,
+  unregistered: UnregisteredEmail,
 } as const;
 
 function isTemplate(name: string): name is keyof typeof templates {
@@ -43,11 +39,15 @@ function renderTemplate(name: keyof typeof templates) {
 
   switch (name) {
     case "registered": {
-      const { Component } = templates[name];
+      const Component = templates[name];
+      return render(<Component person={person} />);
+    }
+    case "registrationValidated": {
+      const Component = templates[name];
       return render(<Component person={person} />);
     }
     case "unregistered": {
-      const { Component } = templates[name];
+      const Component = templates[name];
       return render(<Component person={person} />);
     }
 
@@ -66,11 +66,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   invariant(isTemplate(template), "Template not found (2)");
   invariant(user);
 
-  const { label } = templates[template];
+  const Component = templates[template];
 
   sendEmail({
     body: renderTemplate(template),
-    subject: `Template: ${label}`,
+    subject: `Template: ${Component.title}`,
     to: {
       address: user.email,
       name: user.email,
@@ -107,7 +107,7 @@ export default function Email() {
         >
           {Object.entries(templates).map(([name, template]) => (
             <option key={name} value={name}>
-              {template.label}
+              {template.title}
             </option>
           ))}
         </select>
