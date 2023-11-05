@@ -23,6 +23,7 @@ import {
 } from "@remix-run/react";
 import { Fragment } from "react";
 
+import PersonRecord from "~/components/admin/personRecord";
 import EntitySelector from "~/components/entitySelector";
 import PersonModalForm from "~/components/personModalForm";
 import {
@@ -259,58 +260,12 @@ function Players({
             ) : null}
 
             <tbody>
-              {group.players.map(({ person, assigned, age }) => (
+              {group.players.map(({ person, assigned }) => (
                 <tr className="group hover" key={person.id}>
-                  <td className="align-middle">
-                    {person.picture ? (
-                      <div className="avatar">
-                        <div className="w-10 rounded-full">
-                          <img
-                            alt={person.picture}
-                            src={`/uploads/${person.picture}`}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="avatar placeholder">
-                        <div className="w-10 rounded-full bg-neutral-focus text-neutral-content">
-                          <span>
-                            {`${person.firstName[0]}${person.lastName[0]}`.toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </td>
                   <td className="whitespace-nowrap">
                     <div className="flex items-center gap-8">
-                      <div>
-                        <div>
-                          {`${person.firstName} ${person.lastName}`}{" "}
-                          <span className="ml-2 text-base-content/50">
-                            {age}
-                          </span>
-                        </div>
-                        <div className="flex gap-2 text-base-content/30">
-                          <span>{person.email}</span>
-                          {person.exclude.length > 0 ? (
-                            <>
-                              <span>•</span>
-                              <span
-                                className="tooltip tooltip-secondary"
-                                data-tip={person.exclude
-                                  .map(
-                                    (item) =>
-                                      `${item.firstName} ${item.lastName}`,
-                                  )
-                                  .join(`, `)}
-                              >
-                                {person.exclude.length}{" "}
-                                {pluralize("exclusion", person.exclude)}
-                              </span>
-                            </>
-                          ) : null}
-                        </div>
-                      </div>
+                      <PersonRecord person={person} />
+
                       <button
                         className="btn btn-circle btn-ghost invisible group-hover:visible"
                         onClick={() => onNewPersonClick(person.id)}

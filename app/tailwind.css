@@ -8,6 +8,9 @@
 .btn-sm:not(.btn-circle) {
   @apply px-4;
 }
+.btn-xs:not(.btn-circle) {
+  @apply px-2;
+}
 .input:not(textarea) {
   @apply rounded-full px-4;
 }
