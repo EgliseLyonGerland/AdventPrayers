@@ -61,8 +61,8 @@ export default function Index() {
       {!draw ? (
         <Message heading="Déjà là ?! 😮" key="too-soon">
           <div>
-            Ça me fait très plaisir de te voir ici mais il semble que tu sois un
-            peu trop pressé•e de participer à l’édition {getCurrentYear()} de{" "}
+            Ça me fait très plaisir de te voir ici mais il semble que tu arrives
+            un peu tôt pour participer à l’édition {getCurrentYear()} de{" "}
             {AppNameQuoted}.
           </div>
           <div>

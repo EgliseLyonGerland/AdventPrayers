@@ -35,4 +35,4 @@ export default function RegistrationApprovedEmail({ person }: Props) {
   );
 }
 
-RegistrationApprovedEmail.title = "Inscription validée ✅";
+RegistrationApprovedEmail.title = "Ton inscription est validée ✅";

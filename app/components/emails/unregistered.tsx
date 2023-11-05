@@ -35,4 +35,4 @@ export default function UnregisteredEmail({ person }: Props) {
   );
 }
 
-UnregisteredEmail.title = "Tu es désinscris 🥺";
+UnregisteredEmail.title = "Tu nous quittes déjà 🥺";
