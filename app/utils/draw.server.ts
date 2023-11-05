@@ -1,17 +1,10 @@
-import type * as Client from "@prisma/client";
 import { shuffle } from "lodash";
 
+import { type Draw } from "~/models/draw.server";
 import { type PersonWithExclude } from "~/models/person.server";
-import { type WithRequired } from "~/types";
 
 import { inGroup, parseGroups } from "./groups";
 import HamiltonianCycle from "./HamiltonianCycle";
-
-export type Player = WithRequired<Client.Player, "personId" | "age">;
-
-export type Draw = WithRequired<Client.Draw, "groups"> & {
-  players: Player[];
-};
 
 type Person = PersonWithExclude;
 

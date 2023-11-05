@@ -1,8 +1,12 @@
-import { type Person, type PersonWithExclude } from "~/models/person.server";
+import { type Player } from "~/models/draw.server";
+import { type Person } from "~/models/person.server";
 import { pluralize } from "~/utils";
 
 interface Props {
-  person: Person | PersonWithExclude;
+  person: Person & {
+    exclude?: Person[];
+    players?: Player[];
+  };
 }
 
 export default function PersonRecord({ person }: Props) {
@@ -22,7 +26,7 @@ export default function PersonRecord({ person }: Props) {
         </div>
       )}
 
-      <div className="flex-1">
+      <div>
         <div className="mb-1 truncate">
           {person.firstName} {person.lastName}
           <span className="ml-2 text-base-content/50">{person.age}</span>
@@ -31,16 +35,28 @@ export default function PersonRecord({ person }: Props) {
           <span className="opacity-60">
             {person.email || <i>No email address</i>}
           </span>
+          {person.players && person.players.length > 0 ? (
+            <div
+              className="tooltip tooltip-info whitespace-nowrap"
+              data-tip={person.players.map((item) => item.drawYear).join(`, `)}
+            >
+              <div className="badge badge-outline badge-sm cursor-default opacity-30 hover:opacity-100">
+                {person.players.length} {pluralize("edition", person.players)}
+              </div>
+            </div>
+          ) : null}
 
-          {"exclude" in person && person.exclude.length > 0 ? (
-            <span
-              className="badge badge-neutral tooltip tooltip-accent block"
+          {person.exclude && person.exclude.length > 0 ? (
+            <div
+              className="tooltip tooltip-info whitespace-nowrap"
               data-tip={person.exclude
                 .map((item) => `${item.firstName} ${item.lastName}`)
                 .join(`, `)}
             >
-              {person.exclude.length} {pluralize("exclusion", person.exclude)}
-            </span>
+              <div className="badge badge-outline badge-sm cursor-default opacity-30 hover:opacity-100">
+                {person.exclude.length} {pluralize("exclusion", person.exclude)}
+              </div>
+            </div>
           ) : null}
         </div>
       </div>

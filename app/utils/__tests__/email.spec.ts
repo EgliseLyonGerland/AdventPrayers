@@ -1,3 +1,4 @@
+import { type Draw } from "~/models/draw.server";
 import { type PersonWithExclude } from "~/models/person.server";
 
 import { generate } from "../email";
@@ -30,12 +31,16 @@ const persons = [
 test("generate()", () => {
   const text = `Tu t'appelles %src.firstName% %src.lastName% et %dst.pronoun% s'appelle %dst.firstName% %dst.lastName%`;
 
-  const draw = {
+  const draw: Draw = {
     year: 2022,
     groups: "",
+    ages: "",
+    drawn: false,
     players: persons.map((person) => ({
       age: person.age,
       personId: person.id,
+      assignedId: "",
+      drawYear: 2023,
     })),
   };
 

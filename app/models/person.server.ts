@@ -23,6 +23,7 @@ export function getPersons() {
       bio: true,
       picture: true,
       exclude: true,
+      players: true,
     },
   });
 }

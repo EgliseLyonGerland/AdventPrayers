@@ -1,6 +1,7 @@
+import { type Draw } from "~/models/draw.server";
 import { type PersonWithExclude } from "~/models/person.server";
 
-import { type Draw, letsDraw } from "../draw.server";
+import { letsDraw } from "../draw.server";
 
 vi.mock("lodash", () => ({
   shuffle: (entry: unknown) => entry,
@@ -65,24 +66,30 @@ const persons: PersonWithExclude[] = [
 ];
 
 const draw: Draw = {
+  year: 2023,
+  ages: "",
+  drawn: false,
   groups: "6,10,14,18",
   players: [
-    { personId: "asa", age: "6-9" },
-    { personId: "mba", age: "6-9" },
-    { personId: "lba", age: "6-9" },
-    { personId: "lva", age: "6-9" },
-    { personId: "vsa", age: "6-9" },
+    { personId: "asa", age: "6-9", drawYear: 2023, assignedId: "" },
+    { personId: "mba", age: "6-9", drawYear: 2023, assignedId: "" },
+    { personId: "lba", age: "6-9", drawYear: 2023, assignedId: "" },
+    { personId: "lva", age: "6-9", drawYear: 2023, assignedId: "" },
+    { personId: "vsa", age: "6-9", drawYear: 2023, assignedId: "" },
   ],
 };
 
 const pastDraws: Draw[] = [
   {
+    year: 2023,
+    ages: "",
+    drawn: true,
     groups: "6,10,14,18",
     players: [
-      { personId: "asa", assignedId: "mba", age: "6-9" },
-      { personId: "lba", assignedId: "asa", age: "6-9" },
-      { personId: "mba", assignedId: "vsa", age: "6-9" },
-      { personId: "vsa", assignedId: "lba", age: "6-9" },
+      { personId: "asa", assignedId: "mba", age: "6-9", drawYear: 2023 },
+      { personId: "lba", assignedId: "asa", age: "6-9", drawYear: 2023 },
+      { personId: "mba", assignedId: "vsa", age: "6-9", drawYear: 2023 },
+      { personId: "vsa", assignedId: "lba", age: "6-9", drawYear: 2023 },
     ],
   },
 ];
