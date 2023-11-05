@@ -30,7 +30,7 @@ export function getPersons() {
 export function getSimilarPerson(where: Prisma.PersonWhereInput) {
   return prisma.person.findFirst({
     select: { id: true },
-    where: where,
+    where,
   });
 }
 
@@ -39,14 +39,14 @@ export function createPerson(
     Person,
     "firstName" | "lastName" | "age" | "gender" | "email" | "bio" | "picture"
   > & {
-    exclude: string[];
+    exclude?: string[];
   },
 ) {
   return prisma.person.create({
     data: {
       ...data,
       exclude: {
-        connect: data.exclude.map((personId) => ({
+        connect: (data.exclude || []).map((personId) => ({
           id: personId,
         })),
       },
@@ -65,25 +65,20 @@ export function createPerson(
   });
 }
 
-export function updatePerson({
-  id,
-  exclude,
-  ...data
-}: Partial<
-  Pick<
-    Person,
-    | "id"
-    | "firstName"
-    | "lastName"
-    | "age"
-    | "gender"
-    | "email"
-    | "bio"
-    | "picture"
-  > & {
-    exclude: string[];
-  }
->) {
+export function updatePerson(
+  id: string,
+  {
+    exclude,
+    ...data
+  }: Partial<
+    Pick<
+      Person,
+      "firstName" | "lastName" | "age" | "gender" | "email" | "bio" | "picture"
+    > & {
+      exclude: string[];
+    }
+  >,
+) {
   return prisma.person.update({
     where: { id },
     data: exclude

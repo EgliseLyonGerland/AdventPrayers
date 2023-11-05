@@ -55,7 +55,7 @@ module.exports = {
           { avoidEscape: true, allowTemplateLiterals: false },
         ],
         "prefer-template": "error",
-
+        "object-shorthand": ["error", "always", { avoidQuotes: true }],
         // react plugin rules
         "react/sort-default-props": 1,
         "react/jsx-sort-props": 1,

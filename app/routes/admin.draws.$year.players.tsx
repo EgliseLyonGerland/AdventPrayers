@@ -153,8 +153,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     }
 
     case "editPerson":
-      await updatePerson({
-        id: `${formData.get("id")}`,
+      await updatePerson(`${formData.get("id")}`, {
         firstName: `${formData.get("firstName")}`,
         lastName: `${formData.get("lastName")}`,
         email: `${formData.get("email")}`,
@@ -353,7 +352,7 @@ function Players({
                 C’est {missing < 3 ? "toujours" : null} un peu vide ici !
               </h1>
               <p className="py-6 text-lg opacity-70 wrap-balance">
-                Ajoute
+                Il faut
                 {missing === 3
                   ? " au moins 3 participants "
                   : ` encore ${missing} ${pluralize("participant", missing)} `}
@@ -395,7 +394,7 @@ export default function Index() {
 
   return (
     <>
-      <div className="w-full max-w-7xl">
+      <div className="w-full ">
         {draw ? (
           <>
             <div className="mb-4 flex items-center gap-4">

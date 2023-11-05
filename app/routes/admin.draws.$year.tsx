@@ -35,9 +35,10 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 const routes = [
-  { path: `players`, label: "Participants" },
-  { path: `mails`, label: "Messages" },
-  { path: `print`, label: "Impression" },
+  { path: "players", label: "Participants" },
+  { path: "registration", label: "Inscriptions" },
+  { path: "mails", label: "Messages" },
+  { path: "print", label: "Impression" },
 ];
 
 export default function Index() {
@@ -54,7 +55,7 @@ export default function Index() {
   return (
     <div className="flex min-h-full flex-col overflow-x-hidden pb-8">
       <div className="navbar sticky top-0 z-30 mb-8 border-b border-b-base-content/10 bg-base-100 px-0 text-neutral-content">
-        <div className="w-full max-w-7xl space-x-4">
+        <div className="w-full space-x-4">
           <Listbox
             as="div"
             className="dropdown dropdown-open"
@@ -114,7 +115,7 @@ export default function Index() {
           <Outlet />
         ) : (
           <Form method="post">
-            <div className="container hero mx-auto bg-base-200 p-8">
+            <div className="container hero bg-base-200 p-8">
               <div className="hero-content text-center">
                 <div className="max-w-md">
                   <h1 className="text-2xl font-bold">

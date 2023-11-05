@@ -7,17 +7,28 @@ export function register(
   data: Omit<Registration, "id" | "drawYear" | "registeredAt">,
 ) {
   return prisma.registration.create({
-    data: {
-      ...data,
-      drawYear: getCurrentYear(),
-    },
+    data: { ...data, drawYear: getCurrentYear() },
   });
 }
 
 export function getRegiration(year: number) {
   return prisma.registration.findMany({
-    where: {
-      drawYear: year,
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      gender: true,
+      age: true,
+      bio: true,
+      picture: true,
     },
+    where: { drawYear: year },
+  });
+}
+
+export function deleteRegistration(id: string) {
+  return prisma.registration.delete({
+    where: { id },
   });
 }

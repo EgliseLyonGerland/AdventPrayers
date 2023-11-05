@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { valibotResolver } from "@hookform/resolvers/valibot";
+import { render } from "@react-email/components";
 import {
   json,
   type ActionFunctionArgs,
@@ -35,6 +36,7 @@ import {
   string,
 } from "valibot";
 
+import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
 import EmailField from "~/components/register/fields/emailNameField";
@@ -46,6 +48,7 @@ import Recap from "~/components/register/recap";
 import { Wrapper } from "~/components/register/wrapper";
 import { getCurrentDraw } from "~/models/draw.server";
 import { register } from "~/models/registration.server";
+import { sendEmail } from "~/utils/email.server";
 
 const schema = object({
   firstName: string([minLength(1, "Tu dois bien avoir un prénom !")]),
@@ -160,9 +163,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const picture = formData.get("picture") as NodeOnDiskFile | null;
 
-  await register({
+  const person = await register({
     ...data,
     picture: picture?.name || null,
+  });
+
+  await sendEmail({
+    body: render(<RegistrationRecordedEmail person={person} />),
+    subject: RegistrationRecordedEmail.title,
+    to: {
+      address: data.email,
+      name: data.firstName,
+    },
   });
 
   return redirect("/registered");
