@@ -1,10 +1,11 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { render } from "@react-email/components";
 import {
   type ActionFunctionArgs,
   json,
   type LoaderFunctionArgs,
 } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, useLoaderData, useSubmit } from "@remix-run/react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -31,32 +32,46 @@ export async function action({ params, request }: ActionFunctionArgs) {
   const year = getYearParam(params);
   const formData = await request.formData();
 
-  const registrationId = formData.get("registrationId");
-  const linkTo = formData.get("linkTo")?.toString();
-  const data = JSON.parse(formData.get("data")?.toString() || "{}") as Person;
+  switch (formData.get("_action")) {
+    case "approve": {
+      const registrationId = formData.get("id");
+      const linkTo = formData.get("linkTo")?.toString();
+      const data = JSON.parse(
+        formData.get("data")?.toString() || "{}",
+      ) as Person;
 
-  invariant(registrationId);
+      invariant(registrationId);
 
-  let person;
+      let person;
 
-  if (linkTo) {
-    person = await updatePerson(linkTo, data);
-  } else {
-    person = await createPerson(data);
-  }
+      if (linkTo) {
+        person = await updatePerson(linkTo, data);
+      } else {
+        person = await createPerson(data);
+      }
 
-  await addPlayer({ year, id: person.id, age: person.age });
-  await deleteRegistration(registrationId.toString());
+      await addPlayer({ year, id: person.id, age: person.age });
+      await deleteRegistration(registrationId.toString());
 
-  if (person.email) {
-    sendEmail({
-      body: render(<RegistrationApprovedEmail person={person} />),
-      subject: RegistrationApprovedEmail.title,
-      to: {
-        address: person.email,
-        name: person.firstName,
-      },
-    });
+      if (person.email) {
+        sendEmail({
+          body: render(<RegistrationApprovedEmail person={person} />),
+          subject: RegistrationApprovedEmail.title,
+          to: {
+            address: person.email,
+            name: person.firstName,
+          },
+        });
+      }
+      break;
+    }
+
+    case "delete": {
+      const registrationId = formData.get("id");
+      invariant(registrationId);
+      await deleteRegistration(registrationId.toString());
+      break;
+    }
   }
 
   return json({});
@@ -87,44 +102,65 @@ export default function Registrations() {
 
   return (
     <div className="flex flex-1 gap-6">
-      <table className="table table-zebra z-0 w-full self-start rounded-xl text-base">
+      <table className="table table-zebra z-0 w-full self-start text-base">
         <tbody>
-          {registrations.map((person) => (
-            <tr key={person.id}>
+          {registrations.map((registration) => (
+            <tr
+              className={clsx(
+                "hover cursor-pointer",
+                currentPerson === registration && "ring-2 ring-inset",
+              )}
+              key={registration.id}
+              onClick={() => {
+                setCurrentPerson(
+                  currentPerson === registration ? undefined : registration,
+                );
+              }}
+            >
               <td className="w-full align-middle">
-                <PersonRecord person={person} />
+                <PersonRecord person={registration} />
               </td>
               <td>
-                <button
-                  className={clsx(
-                    "btn btn-sm",
-                    currentPerson === person && "btn-secondary btn-outline",
-                  )}
-                  onClick={() => {
-                    setCurrentPerson(
-                      currentPerson === person ? undefined : person,
-                    );
-                  }}
-                >
-                  Approuver
-                </button>
+                <Form method="post">
+                  <input name="id" type="hidden" value={registration.id} />
+                  <button
+                    className="btn btn-circle btn-ghost"
+                    name="_action"
+                    onClick={() => {
+                      setCurrentPerson(
+                        currentPerson === registration
+                          ? undefined
+                          : registration,
+                      );
+                    }}
+                    type="submit"
+                    value="delete"
+                  >
+                    <XMarkIcon className="h-6" />
+                  </button>
+                </Form>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
       {currentPerson ? (
-        <div className="min-h-full w-[40vw] min-w-[500px] overflow-y-auto bg-base-200 p-8">
+        <div className="rounded-box h-full w-[40vw] min-w-[500px] overflow-hidden bg-base-200">
           <motion.div
             animate={{ opacity: 1 }}
+            className="overflow-y-auto"
             initial={{ opacity: 0 }}
             transition={{ delay: 0.3 }}
           >
             <CheckForm
               checkingPerson={currentPerson}
+              onClose={() => {
+                setCurrentPerson(undefined);
+              }}
               onSubmit={(data, linkTo) => {
                 const formData = new FormData();
-                formData.set("registrationId", currentPerson.id);
+                formData.set("_action", "approve");
+                formData.set("id", currentPerson.id);
                 formData.set("data", JSON.stringify(data));
 
                 if (linkTo) {

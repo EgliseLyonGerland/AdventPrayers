@@ -43,7 +43,6 @@ function SidePanel({ children, open, closable = true, onClose }: Props) {
         >
           <motion.div
             animate={{ opacity: open ? 1 : 0 }}
-            className="p-8"
             transition={{ delay: 1 }}
           >
             {children}
