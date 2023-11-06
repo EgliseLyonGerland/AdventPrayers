@@ -73,7 +73,7 @@ export default function Index() {
               rel="noreferrer"
               target="_blank"
             >
-              église Lyon-Gerland
+              Église Lyon-Gerland
             </a>{" "}
             et/ou que tu t’y rends régulièrement, alors il y a de grandes
             chances que tu apprennes le moment où les inscriptions débuteront.

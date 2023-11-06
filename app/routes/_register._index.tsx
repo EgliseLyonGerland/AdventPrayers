@@ -12,7 +12,7 @@ function RegisterIndex() {
     <Message>
       <div>
         L’opération {AppNameQuoted} est une occasion pour toi de porter dans tes
-        prières un frère ou une soeur de l’église en particulier pendant toute
+        prières un frère ou une soeur de l’Église en particulier pendant toute
         la période de l’Avent.
       </div>
       <div>
@@ -22,7 +22,7 @@ function RegisterIndex() {
         grand secret 🤫.
       </div>
       <div>
-        Ce n’est qu’ensuite que tu pourras te faire connâitre à la personne en
+        Ce n’est qu’ensuite que tu pourras te faire connaître à la personne en
         lui offrant si possible un petit cadeau en fonction des tes moyens 🎁.
       </div>
       <div>C’est cool non ?! N’attends plus et inscris-toi{" "}!</div>

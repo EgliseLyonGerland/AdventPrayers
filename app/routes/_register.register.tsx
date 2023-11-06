@@ -34,13 +34,14 @@ import {
   minLength,
   object,
   string,
+  toTrimmed,
 } from "valibot";
 
 import RegistrationAdded from "~/components/emails/registationAdded";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
-import EmailField from "~/components/register/fields/emailNameField";
+import EmailField from "~/components/register/fields/emailField";
 import FirstNameField from "~/components/register/fields/firstNameField";
 import GenderField from "~/components/register/fields/genderField";
 import LastNameField from "~/components/register/fields/lastNameField";
@@ -58,7 +59,8 @@ const schema = object({
     minLength(1, "Non je ne peux pas croire que tu n'aies pas de nom !"),
   ]),
   email: string([
-    minLength(1, "J’ai vraiment de ton adresse email 🙏"),
+    minLength(1, "J’ai vraiment besoin de ton adresse email 🙏"),
+    toTrimmed(),
     email("Hmm, ça ressemble pas à une adresse email ça 🤔"),
   ]),
   gender: string("Allez un p’tit effort 😌", [minLength(1)]),
@@ -118,7 +120,7 @@ const defs: Record<Step, string> = {
   age: "On avance !\n\nPrécise maintenant dans quelle tranche d’âge tu te situes. Cela permettra de créer des groupes de participants spécifiques si nécessaire.",
   picture:
     "Une dernière chose. Est-ce que tu peux mettre une photo de toi ?\n\nCette étape non plus n'est pas obligatoire mais elle aidera ton prieur mystère à te reconnaître s’il ne t’a jamais vu. Sache d’ailleurs que cette information ne sera visible que par cette personne.",
-  bio: "Peux-tu écrire quelques mots te concernant ?\n\nCette étape n’est pas obligatoire mais pourrait être très utile à la personne qui te portera dans ses prières si elle ne te connait pas, surtout au début de l’opération.",
+  bio: "Peux-tu écrire quelques mots te concernant ?\n\nCette étape n’est pas obligatoire mais pourrait être très utile à la personne qui te portera dans ses prières si elle ne te connaît pas, surtout au début de l’opération.",
 };
 
 const autoFocus: Partial<Record<Step, true>> = {
