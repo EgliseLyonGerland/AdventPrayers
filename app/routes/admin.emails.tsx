@@ -8,6 +8,7 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
+import RegistrationAdded from "~/components/emails/registationAdded";
 import RegistrationApprovedEmail from "~/components/emails/registationApproved";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import UnregisteredEmail from "~/components/emails/unregistered";
@@ -18,6 +19,7 @@ import { sendEmail } from "~/utils/email.server";
 const templates = {
   registered: RegistrationRecordedEmail,
   registrationValidated: RegistrationApprovedEmail,
+  registrationAdded: RegistrationAdded,
   unregistered: UnregisteredEmail,
 } as const;
 
@@ -33,27 +35,14 @@ function renderTemplate(name: keyof typeof templates) {
     age: "18+",
     gender: "female",
     email: "marie.bonneville@example.com",
-    bio: null,
-    picture: null,
+    bio: `Tempor in aute ut ullamco commodo deserunt voluptate non Lorem fugiat veniam laborum deserunt nisi. Consectetur aliqua qui nulla aliqua sunt quis deserunt aliquip. Elit aute minim nulla incididunt minim ad enim deserunt. Et consequat adipisicing consequat qui proident nulla anim irure non cillum Lorem sit deserunt.
+
+Lorem esse occaecat nostrud adipisicing voluptate do nulla. Duis ex elit dolore magna velit exercitation reprehenderit qui anim duis excepteur esse aliquip eu. Sint nulla excepteur cupidatat exercitation pariatur nostrud consequat dolore eiusmod. Lorem proident culpa pariatur incididunt duis non duis ex cillum dolore quis. Nisi cillum officia aliquip aliquip incididunt et.`,
+    picture: "clo6yrcoy000a3b6qo3qaw5k7.png",
   };
 
-  switch (name) {
-    case "registered": {
-      const Component = templates[name];
-      return render(<Component person={person} />);
-    }
-    case "registrationValidated": {
-      const Component = templates[name];
-      return render(<Component person={person} />);
-    }
-    case "unregistered": {
-      const Component = templates[name];
-      return render(<Component person={person} />);
-    }
-
-    default:
-      return "";
-  }
+  const Component = templates[name];
+  return render(<Component person={person} />);
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -71,10 +60,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   sendEmail({
     body: renderTemplate(template),
     subject: `Template: ${Component.title}`,
-    to: {
-      address: user.email,
-      name: user.email,
-    },
+    to: { address: user.email, name: user.email },
     test: true,
   });
 

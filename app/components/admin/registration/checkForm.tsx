@@ -153,7 +153,10 @@ export default function CheckForm({
       >
         {linkTo ? (
           <MergeForm
-            onSubmit={(data) => onSubmit(data, linkTo.id)}
+            onSubmit={(data) => {
+              onSubmit(data, linkTo.id);
+              setLinkTo(undefined);
+            }}
             persons={[checkingPerson, linkTo]}
           />
         ) : null}

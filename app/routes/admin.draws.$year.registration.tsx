@@ -49,7 +49,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
   await deleteRegistration(registrationId.toString());
 
   if (person.email) {
-    await sendEmail({
+    sendEmail({
       body: render(<RegistrationApprovedEmail person={person} />),
       subject: RegistrationApprovedEmail.title,
       to: {
@@ -132,6 +132,7 @@ export default function Registration() {
                 }
 
                 submit(formData, { method: "post" });
+                setCurrentPerson(undefined);
               }}
               persons={persons}
             />

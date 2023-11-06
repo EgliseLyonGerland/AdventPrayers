@@ -3,11 +3,7 @@ import * as ReactEmail from "@react-email/components";
 import { type ReactNode, type CSSProperties } from "react";
 
 import { AppName, AppNameQuoted } from "~/config";
-
-const baseUrl =
-  typeof process !== "undefined" && process.env.BASE_URL
-    ? process.env.BASE_URL
-    : "http://localhost:1234";
+import { toAbsoluteUrl } from "~/utils";
 
 const primaryColor = "rgb(217, 38, 169)";
 const buttonPadding = "16px 24px";
@@ -39,7 +35,7 @@ export function Button({
     <ReactEmail.Button
       {...props}
       className="button"
-      href={`${baseUrl}${href}`}
+      href={href ? toAbsoluteUrl(href) : undefined}
       style={{
         display: "block",
         padding: buttonPadding,
@@ -48,13 +44,21 @@ export function Button({
   );
 }
 
+export const Image = ReactEmail.Img;
+
 interface Props {
   heading?: string;
   preview?: string;
+  signature?: boolean;
   children: ReactNode;
 }
 
-export default function Email({ preview, heading, children }: Props) {
+export default function Email({
+  preview,
+  heading,
+  signature = true,
+  children,
+}: Props) {
   return (
     <ReactEmail.Html>
       <ReactEmail.Head>
@@ -124,7 +128,7 @@ export default function Email({ preview, heading, children }: Props) {
             <ReactEmail.Img
               alt={AppName}
               height="76"
-              src={`${baseUrl}/assets/images/logo-ealp.png`}
+              src={toAbsoluteUrl(`/assets/images/logo-ealp.png`)}
               style={{ marginLeft: "auto", marginRight: "auto" }}
             />
           </ReactEmail.Section>
@@ -150,8 +154,12 @@ export default function Email({ preview, heading, children }: Props) {
 
           {children}
 
-          <Text style={{ marginTop: 48 }}>Fraternellement,</Text>
-          <Text>— Nicolas de {AppNameQuoted}</Text>
+          {signature ? (
+            <>
+              <Text style={{ marginTop: 48 }}>Fraternellement,</Text>
+              <Text>— Nicolas de {AppNameQuoted}</Text>
+            </>
+          ) : null}
 
           <ReactEmail.Section
             style={{
@@ -164,7 +172,7 @@ export default function Email({ preview, heading, children }: Props) {
               <ReactEmail.Img
                 alt={AppName}
                 height="27"
-                src={`${baseUrl}/assets/images/logo-elgre.png`}
+                src={toAbsoluteUrl(`/assets/images/logo-elgre.png`)}
                 style={{
                   marginLeft: "auto",
                   marginRight: "auto",

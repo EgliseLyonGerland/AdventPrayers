@@ -36,6 +36,7 @@ import {
   string,
 } from "valibot";
 
+import RegistrationAdded from "~/components/emails/registationAdded";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
@@ -46,6 +47,7 @@ import LastNameField from "~/components/register/fields/lastNameField";
 import PictureField from "~/components/register/fields/pictureField";
 import Recap from "~/components/register/recap";
 import { Wrapper } from "~/components/register/wrapper";
+import { AppName } from "~/config";
 import { getCurrentDraw } from "~/models/draw.server";
 import { register } from "~/models/registration.server";
 import { sendEmail } from "~/utils/email.server";
@@ -168,13 +170,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     picture: picture?.name || null,
   });
 
-  await sendEmail({
+  sendEmail({
     body: render(<RegistrationRecordedEmail person={person} />),
     subject: RegistrationRecordedEmail.title,
-    to: {
-      address: data.email,
-      name: data.firstName,
-    },
+    to: [{ address: data.email, name: data.firstName }],
+  });
+
+  sendEmail({
+    body: render(<RegistrationAdded person={person} />),
+    subject: RegistrationAdded.title,
+    to: [{ address: "enaventlapriere@egliselyongerland.org", name: AppName }],
   });
 
   return redirect("/registered");

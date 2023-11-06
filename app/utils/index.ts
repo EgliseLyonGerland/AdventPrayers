@@ -137,3 +137,20 @@ export function formatDate(date: Dayjs) {
 
   return date.format("D MMMM");
 }
+
+export function trimPath(path: string) {
+  if (path[0] === "/") {
+    return path.substring(1);
+  }
+
+  return path;
+}
+
+export function toAbsoluteUrl(path: string) {
+  const baseUrl =
+    typeof process !== "undefined" && process.env.BASE_URL
+      ? process.env.BASE_URL
+      : "http://localhost:1234";
+
+  return `${baseUrl}/${trimPath(path)}`;
+}
