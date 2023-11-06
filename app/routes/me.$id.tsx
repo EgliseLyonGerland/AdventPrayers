@@ -10,9 +10,10 @@ import { useRef } from "react";
 import invariant from "tiny-invariant";
 
 import Box from "~/components/box";
+import AdminRegistationDeleted from "~/components/emails/AdminRegistationDeleted";
 import UnregisteredEmail from "~/components/emails/unregistered";
 import Logo from "~/components/logo";
-import { AppNameQuoted } from "~/config";
+import { AppName, AppNameQuoted } from "~/config";
 import { deletePlayer, getCurrentDraw } from "~/models/draw.server";
 import { getPerson } from "~/models/person.server";
 import { genderize, getCurrentYear } from "~/utils";
@@ -67,7 +68,7 @@ export const action = async ({ params }: ActionFunctionArgs) => {
   await deletePlayer({ id, year });
 
   if (person.email) {
-    await sendEmail({
+    sendEmail({
       body: render(<UnregisteredEmail person={person} />),
       subject: UnregisteredEmail.title,
       to: {
@@ -76,6 +77,12 @@ export const action = async ({ params }: ActionFunctionArgs) => {
       },
     });
   }
+
+  sendEmail({
+    body: render(<AdminRegistationDeleted person={person} />),
+    subject: AdminRegistationDeleted.title,
+    to: [{ address: "enaventlapriere@egliselyongerland.org", name: AppName }],
+  });
 
   return redirect("/me/unregistered");
 };

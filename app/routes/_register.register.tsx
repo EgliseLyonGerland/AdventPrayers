@@ -37,7 +37,7 @@ import {
   toTrimmed,
 } from "valibot";
 
-import RegistrationAdded from "~/components/emails/registationAdded";
+import AdminRegistationAdded from "~/components/emails/AdminRegistationAdded";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
@@ -179,8 +179,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   });
 
   sendEmail({
-    body: render(<RegistrationAdded person={person} />),
-    subject: RegistrationAdded.title,
+    body: render(<AdminRegistationAdded person={person} />),
+    subject: AdminRegistationAdded.title,
     to: [{ address: "enaventlapriere@egliselyongerland.org", name: AppName }],
   });
 

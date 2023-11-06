@@ -8,7 +8,8 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
-import RegistrationAdded from "~/components/emails/registationAdded";
+import AdminRegistationAdded from "~/components/emails/AdminRegistationAdded";
+import AdminRegistationDeleted from "~/components/emails/AdminRegistationDeleted";
 import RegistrationApprovedEmail from "~/components/emails/registationApproved";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import UnregisteredEmail from "~/components/emails/unregistered";
@@ -17,9 +18,10 @@ import { getUser } from "~/session.server";
 import { sendEmail } from "~/utils/email.server";
 
 const templates = {
+  adminRegistrationAdded: AdminRegistationAdded,
+  adminRegistrationDeleted: AdminRegistationDeleted,
   registered: RegistrationRecordedEmail,
   registrationValidated: RegistrationApprovedEmail,
-  registrationAdded: RegistrationAdded,
   unregistered: UnregisteredEmail,
 } as const;
 

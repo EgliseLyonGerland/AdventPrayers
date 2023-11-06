@@ -8,9 +8,9 @@ interface Props {
   person: Person;
 }
 
-export default function RegistrationAdded({ person }: Props) {
+export default function AdminRegistationAdded({ person }: Props) {
   return (
-    <Email heading={`Nouvelle inscription`} signature={false}>
+    <Email heading="Nouvelle inscription" signature={false}>
       <Text>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
@@ -70,4 +70,4 @@ export default function RegistrationAdded({ person }: Props) {
   );
 }
 
-RegistrationAdded.title = "Nouvelle inscription";
+AdminRegistationAdded.title = "[Admin] Nouvelle inscription";
