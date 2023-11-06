@@ -17,6 +17,7 @@ import clsx from "clsx";
 import { Fragment } from "react";
 
 import { createDraw, getDraw, getDraws } from "~/models/draw.server";
+import { countRegistrations } from "~/models/registrations.server";
 import { getCurrentYear, getYearParam } from "~/utils";
 
 export const action = async ({ params }: ActionFunctionArgs) => {
@@ -30,18 +31,20 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   const draw = await getDraw({ year });
   const draws = await getDraws();
+  const registrationsCount = await countRegistrations(year);
 
-  return json({ year, draw, draws });
+  return json({ year, draw, draws, registrationsCount });
 };
 
 const routes = [
   { path: "", label: "Tirage" },
   { path: "/registrations", label: "Inscriptions" },
   { path: "/mails", label: "Messages" },
-];
+] as const;
 
 export default function Index() {
-  const { year, draw, draws } = useLoaderData<typeof loader>();
+  const { year, draw, draws, registrationsCount } =
+    useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const navigate = useNavigate();
 
@@ -104,6 +107,11 @@ export default function Index() {
                 to={`/admin/draws/${year}${route.path}`}
               >
                 {route.label}
+                {route.label === "Inscriptions" ? (
+                  <span className="badge badge-neutral badge-sm ml-2">
+                    {registrationsCount}
+                  </span>
+                ) : null}
               </NavLink>
             ))}
           </div>

@@ -27,6 +27,12 @@ export function getRegistrations(year: number) {
   });
 }
 
+export function countRegistrations(year: number) {
+  return prisma.registration.count({
+    where: { drawYear: year },
+  });
+}
+
 export function deleteRegistration(id: string) {
   return prisma.registration.delete({
     where: { id },
