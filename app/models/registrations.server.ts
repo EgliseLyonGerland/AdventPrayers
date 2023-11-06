@@ -11,7 +11,7 @@ export function register(
   });
 }
 
-export function getRegiration(year: number) {
+export function getRegistrations(year: number) {
   return prisma.registration.findMany({
     select: {
       id: true,

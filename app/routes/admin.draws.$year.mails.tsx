@@ -26,6 +26,8 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   const year = getYearParam(params);
   const draw = await getDraw({ year });
 
+  invariant(draw);
+
   return json({ draw });
 };
 
@@ -190,8 +192,12 @@ const Mails = () => {
 
   const ready = recipients.length > 0 && subject.trim() && body.trim();
 
-  if (!draw) {
-    return;
+  if (players.length === 0) {
+    return (
+      <div className="hero mt-4 bg-base-200 p-8">
+        <div className="hero-content text-center">Aucun participant</div>
+      </div>
+    );
   }
 
   const generatePreview = (text: string) => {

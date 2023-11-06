@@ -27,7 +27,7 @@ export default function PersonRecord({ person }: Props) {
       )}
 
       <div>
-        <div className="mb-1 truncate">
+        <div className="mb-0.5 truncate">
           {person.firstName} {person.lastName}
           <span className="ml-2 text-base-content/50">{person.age}</span>
         </div>

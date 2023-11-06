@@ -50,7 +50,7 @@ import Recap from "~/components/register/recap";
 import { Wrapper } from "~/components/register/wrapper";
 import { AppName } from "~/config";
 import { getCurrentDraw } from "~/models/draw.server";
-import { register } from "~/models/registration.server";
+import { register } from "~/models/registrations.server";
 import { sendEmail } from "~/utils/email.server";
 
 const schema = object({

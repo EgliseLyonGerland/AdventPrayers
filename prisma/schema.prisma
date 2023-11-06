@@ -56,12 +56,12 @@ model Registration {
 }
 
 model Draw {
-  year         Int            @id
-  drawn        Boolean        @default(false)
-  ages         String         @default("6,10,14,18")
-  groups       String         @default("6,10,14,18")
-  players      Player[]
-  Registration Registration[]
+  year          Int            @id
+  drawn         Boolean        @default(false)
+  ages          String         @default("6,10,14,18")
+  groups        String         @default("6,10,14,18")
+  players       Player[]
+  registrations Registration[]
 }
 
 model Player {

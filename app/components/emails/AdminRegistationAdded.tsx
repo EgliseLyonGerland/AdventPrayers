@@ -63,7 +63,7 @@ export default function AdminRegistationAdded({ person }: Props) {
           )}
         </div>
       </Text>
-      <Button href={`/admin/draws/${getCurrentYear()}/registration`}>
+      <Button href={`/admin/draws/${getCurrentYear()}/registrations`}>
         Gérer
       </Button>
     </Email>

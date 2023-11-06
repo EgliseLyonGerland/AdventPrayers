@@ -35,10 +35,9 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 const routes = [
-  { path: "players", label: "Participants" },
-  { path: "registration", label: "Inscriptions" },
-  { path: "mails", label: "Messages" },
-  { path: "print", label: "Impression" },
+  { path: "", label: "Tirage" },
+  { path: "/registrations", label: "Inscriptions" },
+  { path: "/mails", label: "Messages" },
 ];
 
 export default function Index() {
@@ -100,8 +99,9 @@ export default function Index() {
                     !draw && "pointer-events-none opacity-40",
                   )
                 }
+                end={true}
                 key={route.path}
-                to={`/admin/draws/${year}/${route.path}`}
+                to={`/admin/draws/${year}${route.path}`}
               >
                 {route.label}
               </NavLink>

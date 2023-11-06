@@ -11,7 +11,7 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 
 import PersonRecord from "~/components/admin/personRecord";
-import CheckForm from "~/components/admin/registration/checkForm";
+import CheckForm from "~/components/admin/registrations/checkForm";
 import RegistrationApprovedEmail from "~/components/emails/registationApproved";
 import { addPlayer } from "~/models/draw.server";
 import {
@@ -22,8 +22,8 @@ import {
 } from "~/models/person.server";
 import {
   deleteRegistration,
-  getRegiration,
-} from "~/models/registration.server";
+  getRegistrations,
+} from "~/models/registrations.server";
 import { getYearParam } from "~/utils";
 import { sendEmail } from "~/utils/email.server";
 
@@ -64,18 +64,18 @@ export async function action({ params, request }: ActionFunctionArgs) {
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const year = getYearParam(params);
-  const registration = await getRegiration(year);
+  const registrations = await getRegistrations(year);
   const persons = await getPersons();
 
-  return json({ registration, persons });
+  return json({ registrations, persons });
 }
 
-export default function Registration() {
-  const { registration, persons } = useLoaderData<typeof loader>();
+export default function Registrations() {
+  const { registrations, persons } = useLoaderData<typeof loader>();
   const submit = useSubmit();
   const [currentPerson, setCurrentPerson] = useState<Person>();
 
-  if (registration.length === 0) {
+  if (registrations.length === 0) {
     return (
       <div className="hero mt-4 bg-base-200 p-8">
         <div className="hero-content text-center">
@@ -89,7 +89,7 @@ export default function Registration() {
     <div className="flex flex-1 gap-6">
       <table className="table table-zebra z-0 w-full self-start rounded-xl text-base">
         <tbody>
-          {registration.map((person) => (
+          {registrations.map((person) => (
             <tr key={person.id}>
               <td className="w-full align-middle">
                 <PersonRecord person={person} />
