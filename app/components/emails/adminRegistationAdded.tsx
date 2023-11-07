@@ -41,9 +41,9 @@ export default function AdminRegistationAdded({ person }: Props) {
       ) : (
         <div style={{ opacity: 0.7, fontStyle: "italic" }}>Non-renseignée</div>
       )}
-      {person.picture ? (
-        <Text>
-          <div style={{ fontWeight: "bold", marginBottom: 8 }}>Photo</div>
+      <Text>
+        <div style={{ fontWeight: "bold", marginBottom: 8 }}>Photo</div>
+        {person.picture ? (
           <div>
             <Image
               alt={`${person.firstName} ${person.lastName}`}
@@ -51,10 +51,12 @@ export default function AdminRegistationAdded({ person }: Props) {
               style={{ height: 150 }}
             />
           </div>
-        </Text>
-      ) : (
-        <div style={{ opacity: 0.7, fontStyle: "italic" }}>Non-renseignée</div>
-      )}
+        ) : (
+          <div style={{ opacity: 0.7, fontStyle: "italic" }}>
+            Non-renseignée
+          </div>
+        )}
+      </Text>
       <Button href={`/admin/draws/${getCurrentYear()}/registrations`}>
         Gérer
       </Button>

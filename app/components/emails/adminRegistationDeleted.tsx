@@ -18,4 +18,4 @@ export default function AdminRegistationDeleted({ person }: Props) {
   );
 }
 
-AdminRegistationDeleted.title = "[Admin] Désinscriptioin";
+AdminRegistationDeleted.title = "[Admin] Désinscription";

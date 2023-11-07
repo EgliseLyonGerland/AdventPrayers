@@ -37,7 +37,7 @@ import {
   toTrimmed,
 } from "valibot";
 
-import AdminRegistationAdded from "~/components/emails/AdminRegistationAdded";
+import AdminRegistationAdded from "~/components/emails/adminRegistationAdded";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import AgeField from "~/components/register/fields/ageField";
 import BioField from "~/components/register/fields/bioField";
@@ -167,19 +167,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const picture = formData.get("picture") as NodeOnDiskFile | null;
 
-  const person = await register({
+  const registration = await register({
     ...data,
     picture: picture?.name || null,
   });
 
   sendEmail({
-    body: render(<RegistrationRecordedEmail person={person} />),
+    body: render(<RegistrationRecordedEmail registration={registration} />),
     subject: RegistrationRecordedEmail.title,
     to: [{ address: data.email, name: data.firstName }],
   });
 
   sendEmail({
-    body: render(<AdminRegistationAdded person={person} />),
+    body: render(<AdminRegistationAdded person={registration} />),
     subject: AdminRegistationAdded.title,
     to: [{ address: "enaventlapriere@egliselyongerland.org", name: AppName }],
   });

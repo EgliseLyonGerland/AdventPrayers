@@ -53,6 +53,8 @@ model Registration {
   bio          String?
   picture      String?
   registeredAt DateTime @default(now())
+  approved     Boolean  @default(false)
+  personId     String?
 }
 
 model Draw {

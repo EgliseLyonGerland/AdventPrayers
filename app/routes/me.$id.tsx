@@ -9,10 +9,9 @@ import { useLoaderData } from "@remix-run/react";
 import { useRef } from "react";
 import invariant from "tiny-invariant";
 
-import Box from "~/components/box";
-import AdminRegistationDeleted from "~/components/emails/AdminRegistationDeleted";
+import AdminRegistationDeleted from "~/components/emails/adminRegistationDeleted";
 import UnregisteredEmail from "~/components/emails/unregistered";
-import Logo from "~/components/logo";
+import SimplePage from "~/components/simplePage";
 import { AppName, AppNameQuoted } from "~/config";
 import { deletePlayer, getCurrentDraw } from "~/models/draw.server";
 import { getPerson } from "~/models/person.server";
@@ -28,7 +27,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!person) {
     throw new Response(null, {
       status: 404,
-      statusText: "Not Found",
+      statusText: "On ne se connaît pas je pense",
     });
   }
 
@@ -43,7 +42,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!isRegistered) {
     throw new Response(null, {
       status: 404,
-      statusText: "You are not registered",
+      statusText: `Tu n’es pas encore ${genderize("inscrit", person.gender)}`,
     });
   }
 
@@ -59,7 +58,7 @@ export const action = async ({ params }: ActionFunctionArgs) => {
   if (!person) {
     throw new Response(null, {
       status: 404,
-      statusText: "Not Found",
+      statusText: "On ne se connaît pas je pense",
     });
   }
 
@@ -92,27 +91,23 @@ export default function Me() {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   return (
-    <div className="h-screen flex-col gap-8 p-8 text-lg flex-center md:text-xl">
-      <Logo className="h-16 md:h-24" />
-
-      <Box title={`👋 Hey ${person.firstName} !`}>
-        <div>
-          Tu es {genderize("inscrit", person.gender)} pour l’édition {draw.year}{" "}
-          de {AppNameQuoted}.
-        </div>
-        <div>
-          L’oépration n’a pas encore démarré, tu peux encore te désinscrire si
-          tu le souhaites.
-        </div>
-        <button
-          className="btn btn-secondary btn-outline md:btn-lg"
-          onClick={() => {
-            modalRef.current?.showModal();
-          }}
-        >
-          Me désinscrire 🥲
-        </button>
-      </Box>
+    <SimplePage heading={`👋 Hey ${person.firstName} !`}>
+      <div>
+        Tu es {genderize("inscrit", person.gender)} pour l’édition {draw.year}{" "}
+        de {AppNameQuoted}.
+      </div>
+      <div>
+        L’oépration n’a pas encore démarré, tu peux encore te désinscrire si tu
+        le souhaites.
+      </div>
+      <button
+        className="btn btn-secondary btn-outline md:btn-lg"
+        onClick={() => {
+          modalRef.current?.showModal();
+        }}
+      >
+        Me désinscrire 🥲
+      </button>
 
       <dialog className="modal" ref={modalRef}>
         <div className="modal-box">
@@ -131,6 +126,6 @@ export default function Me() {
           <button>close</button>
         </form>
       </dialog>
-    </div>
+    </SimplePage>
   );
 }

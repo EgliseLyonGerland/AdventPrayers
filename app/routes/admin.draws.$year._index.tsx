@@ -23,9 +23,9 @@ import {
 } from "@remix-run/react";
 import { Fragment } from "react";
 
+import EntitySelector from "~/components/admin/entitySelector";
+import PersonModalForm from "~/components/admin/personModalForm";
 import PersonRecord from "~/components/admin/personRecord";
-import EntitySelector from "~/components/entitySelector";
-import PersonModalForm from "~/components/personModalForm";
 import {
   addPlayer,
   cancelDraw,

@@ -19,8 +19,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const devAddresses: Address[] = [
-  "oltodo@msn.com",
   "nicolas@bazille.fr",
+  "oltodo@msn.com",
   "nbazille@synthesio.com",
   "nicolas.bazille@ipsos.com",
   "nicolas.bazille@egliselyongerland.org",

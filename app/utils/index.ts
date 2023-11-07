@@ -154,3 +154,11 @@ export function toAbsoluteUrl(path: string) {
 
   return `${baseUrl}/${trimPath(path)}`;
 }
+
+export function ensureArray<T>(value: T | T[]): T[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  return [value];
+}

@@ -22,6 +22,7 @@ import {
   createPerson,
 } from "~/models/person.server";
 import {
+  approveRegistration,
   deleteRegistration,
   getRegistrations,
 } from "~/models/registrations.server";
@@ -34,7 +35,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
 
   switch (formData.get("_action")) {
     case "approve": {
-      const registrationId = formData.get("id");
+      const registrationId = formData.get("id")?.toString();
       const linkTo = formData.get("linkTo")?.toString();
       const data = JSON.parse(
         formData.get("data")?.toString() || "{}",
@@ -51,7 +52,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
       }
 
       await addPlayer({ year, id: person.id, age: person.age });
-      await deleteRegistration(registrationId.toString());
+      await approveRegistration(registrationId, person.id);
 
       if (person.email) {
         sendEmail({
@@ -67,9 +68,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
     }
 
     case "delete": {
-      const registrationId = formData.get("id");
+      const registrationId = formData.get("id")?.toString();
       invariant(registrationId);
-      await deleteRegistration(registrationId.toString());
+      await deleteRegistration(registrationId);
       break;
     }
   }
@@ -87,94 +88,150 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function Registrations() {
   const { registrations, persons } = useLoaderData<typeof loader>();
+  const [currentTab, setCurrentTab] = useState<"pending" | "approved">(
+    "pending",
+  );
   const submit = useSubmit();
   const [currentPerson, setCurrentPerson] = useState<Person>();
 
-  if (registrations.length === 0) {
-    return (
-      <div className="hero mt-4 bg-base-200 p-8">
-        <div className="hero-content text-center">
-          Aucune inscription en attente
-        </div>
-      </div>
-    );
-  }
+  const filteredRegistrations = registrations.filter(
+    (registration) =>
+      registration.approved === Boolean(currentTab === "approved"),
+  );
 
   return (
-    <div className="flex flex-1 gap-6">
-      <table className="table table-zebra z-0 w-full self-start text-base">
-        <tbody>
-          {registrations.map((registration) => (
-            <tr
-              className={clsx(
-                "hover cursor-pointer",
-                currentPerson === registration && "ring-2 ring-inset",
-              )}
-              key={registration.id}
-              onClick={() => {
-                setCurrentPerson(
-                  currentPerson === registration ? undefined : registration,
-                );
-              }}
+    <div>
+      <div className="tabs mb-6">
+        <button
+          className={clsx(
+            "tab tab-bordered",
+            currentTab === "pending" && "tab-active",
+          )}
+          onClick={() => {
+            setCurrentTab("pending");
+          }}
+        >
+          En attente
+          <span className="badge badge-neutral badge-sm ml-2">
+            {currentTab === "pending"
+              ? filteredRegistrations.length
+              : registrations.length - filteredRegistrations.length}
+          </span>
+        </button>
+        <button
+          className={clsx(
+            "tab tab-bordered",
+            currentTab === "approved" && "tab-active",
+          )}
+          onClick={() => {
+            setCurrentTab("approved");
+          }}
+        >
+          Approuvée
+          <span className="badge badge-neutral badge-sm ml-2">
+            {currentTab === "approved"
+              ? filteredRegistrations.length
+              : registrations.length - filteredRegistrations.length}
+          </span>
+        </button>
+      </div>
+
+      <div className="flex flex-1 gap-6">
+        <table className="table table-zebra z-0 w-full self-start text-base">
+          <tbody>
+            {filteredRegistrations.length === 0 ? (
+              <div className="hero mt-4 bg-base-200 p-8">
+                <div className="hero-content text-center">
+                  Aucune inscription
+                </div>
+              </div>
+            ) : (
+              filteredRegistrations.map((registration) => (
+                <tr
+                  className={clsx(
+                    !registration.approved && "hover cursor-pointer",
+                    currentPerson === registration && "ring-2 ring-inset",
+                  )}
+                  key={registration.id}
+                  onClick={
+                    registration.approved
+                      ? undefined
+                      : () => {
+                          setCurrentPerson(
+                            currentPerson === registration
+                              ? undefined
+                              : registration,
+                          );
+                        }
+                  }
+                >
+                  <td className="w-full align-middle">
+                    <PersonRecord person={registration} />
+                  </td>
+                  <td>
+                    {registration.approved ? (
+                      <div className="badge badge-success badge-outline">
+                        Approuvé
+                      </div>
+                    ) : null}
+                  </td>
+                  <td>
+                    <Form method="post">
+                      <input name="id" type="hidden" value={registration.id} />
+                      <button
+                        className="btn btn-circle btn-ghost"
+                        name="_action"
+                        onClick={() => {
+                          setCurrentPerson(
+                            currentPerson === registration
+                              ? undefined
+                              : registration,
+                          );
+                        }}
+                        type="submit"
+                        value="delete"
+                      >
+                        <XMarkIcon className="h-6" />
+                      </button>
+                    </Form>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+        {currentPerson ? (
+          <div className="rounded-box h-full w-[40vw] min-w-[500px] overflow-hidden bg-base-200">
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="overflow-y-auto"
+              initial={{ opacity: 0 }}
+              transition={{ delay: 0.3 }}
             >
-              <td className="w-full align-middle">
-                <PersonRecord person={registration} />
-              </td>
-              <td>
-                <Form method="post">
-                  <input name="id" type="hidden" value={registration.id} />
-                  <button
-                    className="btn btn-circle btn-ghost"
-                    name="_action"
-                    onClick={() => {
-                      setCurrentPerson(
-                        currentPerson === registration
-                          ? undefined
-                          : registration,
-                      );
-                    }}
-                    type="submit"
-                    value="delete"
-                  >
-                    <XMarkIcon className="h-6" />
-                  </button>
-                </Form>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {currentPerson ? (
-        <div className="rounded-box h-full w-[40vw] min-w-[500px] overflow-hidden bg-base-200">
-          <motion.div
-            animate={{ opacity: 1 }}
-            className="overflow-y-auto"
-            initial={{ opacity: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <CheckForm
-              checkingPerson={currentPerson}
-              onClose={() => {
-                setCurrentPerson(undefined);
-              }}
-              onSubmit={(data, linkTo) => {
-                const formData = new FormData();
-                formData.set("_action", "approve");
-                formData.set("id", currentPerson.id);
-                formData.set("data", JSON.stringify(data));
+              <CheckForm
+                checkingPerson={currentPerson}
+                onClose={() => {
+                  setCurrentPerson(undefined);
+                }}
+                onSubmit={(data, linkTo) => {
+                  const formData = new FormData();
+                  formData.set("_action", "approve");
+                  formData.set("id", currentPerson.id);
+                  formData.set("data", JSON.stringify(data));
 
-                if (linkTo) {
-                  formData.set("linkTo", linkTo);
-                }
+                  if (linkTo) {
+                    formData.set("linkTo", linkTo);
+                  }
 
-                submit(formData, { method: "post" });
-                setCurrentPerson(undefined);
-              }}
-              persons={persons}
-            />
-          </motion.div>
-        </div>
-      ) : null}
+                  submit(formData, { method: "post" });
+                  setCurrentPerson(undefined);
+                }}
+                persons={persons}
+              />
+            </motion.div>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

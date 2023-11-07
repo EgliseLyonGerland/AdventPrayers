@@ -8,40 +8,54 @@ import { Form } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
-import AdminRegistationAdded from "~/components/emails/AdminRegistationAdded";
-import AdminRegistationDeleted from "~/components/emails/AdminRegistationDeleted";
+import AdminRegistationAdded from "~/components/emails/adminRegistationAdded";
+import AdminRegistationDeleted from "~/components/emails/adminRegistationDeleted";
 import RegistrationApprovedEmail from "~/components/emails/registationApproved";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import UnregisteredEmail from "~/components/emails/unregistered";
 import { type Person } from "~/models/person.server";
+import { type Registration } from "~/models/registrations.server";
 import { getUser } from "~/session.server";
 import { sendEmail } from "~/utils/email.server";
 
 const templates = {
   adminRegistrationAdded: AdminRegistationAdded,
   adminRegistrationDeleted: AdminRegistationDeleted,
-  registered: RegistrationRecordedEmail,
-  registrationValidated: RegistrationApprovedEmail,
+  registrationRecorded: RegistrationRecordedEmail,
+  registrationApproved: RegistrationApprovedEmail,
   unregistered: UnregisteredEmail,
 } as const;
+
+const person: Person = {
+  id: "123456",
+  firstName: "Marie",
+  lastName: "Bonneville",
+  age: "18+",
+  gender: "female",
+  email: "marie.bonneville@example.com",
+  bio: `Tempor in aute ut ullamco commodo deserunt voluptate non Lorem fugiat veniam laborum deserunt nisi. Consectetur aliqua qui nulla aliqua sunt quis deserunt aliquip. Elit aute minim nulla incididunt minim ad enim deserunt. Et consequat adipisicing consequat qui proident nulla anim irure non cillum Lorem sit deserunt.
+
+Lorem esse occaecat nostrud adipisicing voluptate do nulla. Duis ex elit dolore magna velit exercitation reprehenderit qui anim duis excepteur esse aliquip eu. Sint nulla excepteur cupidatat exercitation pariatur nostrud consequat dolore eiusmod. Lorem proident culpa pariatur incididunt duis non duis ex cillum dolore quis. Nisi cillum officia aliquip aliquip incididunt et.`,
+  picture: "clo6yrcoy000a3b6qo3qaw5k7.png",
+};
+
+const registration: Registration = {
+  ...person,
+  drawYear: 2023,
+  registeredAt: new Date(),
+  approved: false,
+  personId: "",
+};
 
 function isTemplate(name: string): name is keyof typeof templates {
   return name in templates;
 }
 
 function renderTemplate(name: keyof typeof templates) {
-  const person: Person = {
-    id: "123456",
-    firstName: "Marie",
-    lastName: "Bonneville",
-    age: "18+",
-    gender: "female",
-    email: "marie.bonneville@example.com",
-    bio: `Tempor in aute ut ullamco commodo deserunt voluptate non Lorem fugiat veniam laborum deserunt nisi. Consectetur aliqua qui nulla aliqua sunt quis deserunt aliquip. Elit aute minim nulla incididunt minim ad enim deserunt. Et consequat adipisicing consequat qui proident nulla anim irure non cillum Lorem sit deserunt.
-
-Lorem esse occaecat nostrud adipisicing voluptate do nulla. Duis ex elit dolore magna velit exercitation reprehenderit qui anim duis excepteur esse aliquip eu. Sint nulla excepteur cupidatat exercitation pariatur nostrud consequat dolore eiusmod. Lorem proident culpa pariatur incididunt duis non duis ex cillum dolore quis. Nisi cillum officia aliquip aliquip incididunt et.`,
-    picture: "clo6yrcoy000a3b6qo3qaw5k7.png",
-  };
+  if (name == "registrationRecorded") {
+    const Component = templates[name];
+    return render(<Component registration={registration} />);
+  }
 
   const Component = templates[name];
   return render(<Component person={person} />);
@@ -77,7 +91,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Email() {
-  const [currentTemplate, setCurrentTemplate] = useState<string>("registered");
+  const [currentTemplate, setCurrentTemplate] = useState<
+    keyof typeof templates
+  >("adminRegistrationAdded");
 
   const doc = isTemplate(currentTemplate)
     ? renderTemplate(currentTemplate)
@@ -89,7 +105,9 @@ export default function Email() {
         <select
           className="select select-bordered select-sm"
           onChange={(event) => {
-            setCurrentTemplate(event.currentTarget.value);
+            if (isTemplate(event.currentTarget.value)) {
+              setCurrentTemplate(event.currentTarget.value);
+            }
           }}
           value={currentTemplate}
         >
