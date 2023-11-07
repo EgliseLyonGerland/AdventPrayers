@@ -63,7 +63,7 @@ export default function Email({
     <ReactEmail.Html>
       <ReactEmail.Head>
         <style type="text/css">{`
-          body {
+          .body {
             font-size: ${defaults.fontSize}px;
             background-color: #1d232a;
             color: white;
@@ -82,7 +82,7 @@ export default function Email({
 
           .button {
             display: block;
-            color: ${primaryColor};
+            color: ${primaryColor} !important;
             border: solid 1px;
             border-radius: 9999px;
             text-transform: uppercase;
@@ -122,7 +122,7 @@ export default function Email({
 
       {preview ? <ReactEmail.Preview>{preview}</ReactEmail.Preview> : null}
 
-      <ReactEmail.Body>
+      <ReactEmail.Body className="body">
         <ReactEmail.Container className="container">
           <ReactEmail.Section>
             <ReactEmail.Img

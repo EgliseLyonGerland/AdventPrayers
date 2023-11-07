@@ -12,57 +12,49 @@ export default function AdminRegistationAdded({ person }: Props) {
   return (
     <Email heading="Nouvelle inscription" signature={false}>
       <Text>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div>
-            <div style={{ fontWeight: "bold" }}>Prénom</div>
-            <div style={{ opacity: 0.7 }}>{person.firstName}</div>
-          </div>
-          <div>
-            <div style={{ fontWeight: "bold" }}>Nom</div>
-            <div style={{ opacity: 0.7 }}>{person.lastName}</div>
-          </div>
-          <div>
-            <div style={{ fontWeight: "bold" }}>Adresse email</div>
-            <div style={{ opacity: 0.7 }}>{person.email}</div>
-          </div>
-          <div>
-            <div style={{ fontWeight: "bold" }}>Genre</div>
-            <div style={{ opacity: 0.7 }}>{t(person.gender)}</div>
-          </div>
-          <div>
-            <div style={{ fontWeight: "bold" }}>Age</div>
-            <div style={{ opacity: 0.7 }}>{t(person.age)}</div>
-          </div>
-          {person.bio ? (
-            <div>
-              <div style={{ fontWeight: "bold" }}>Bio</div>
-              <div style={{ opacity: 0.7, whiteSpace: "pre-wrap" }}>
-                {person.bio}
-              </div>
-            </div>
-          ) : (
-            <div style={{ opacity: 0.7, fontStyle: "italic" }}>
-              Non-renseignée
-            </div>
-          )}
-          {person.picture ? (
-            <div>
-              <div style={{ fontWeight: "bold", marginBottom: 8 }}>Photo</div>
-              <div>
-                <Image
-                  alt={`${person.firstName} ${person.lastName}`}
-                  src={toAbsoluteUrl(`/uploads/${person.picture}`)}
-                  style={{ height: 150 }}
-                />
-              </div>
-            </div>
-          ) : (
-            <div style={{ opacity: 0.7, fontStyle: "italic" }}>
-              Non-renseignée
-            </div>
-          )}
-        </div>
+        <div style={{ fontWeight: "bold" }}>Prénom</div>
+        <div style={{ opacity: 0.7 }}>{person.firstName}</div>
       </Text>
+      <Text>
+        <div style={{ fontWeight: "bold" }}>Nom</div>
+        <div style={{ opacity: 0.7 }}>{person.lastName}</div>
+      </Text>
+      <Text>
+        <div style={{ fontWeight: "bold" }}>Adresse email</div>
+        <div style={{ opacity: 0.7 }}>{person.email}</div>
+      </Text>
+      <Text>
+        <div style={{ fontWeight: "bold" }}>Genre</div>
+        <div style={{ opacity: 0.7 }}>{t(person.gender)}</div>
+      </Text>
+      <Text>
+        <div style={{ fontWeight: "bold" }}>Age</div>
+        <div style={{ opacity: 0.7 }}>{t(person.age)}</div>
+      </Text>
+      {person.bio ? (
+        <Text>
+          <div style={{ fontWeight: "bold" }}>Bio</div>
+          <div style={{ opacity: 0.7, whiteSpace: "pre-wrap" }}>
+            {person.bio}
+          </div>
+        </Text>
+      ) : (
+        <div style={{ opacity: 0.7, fontStyle: "italic" }}>Non-renseignée</div>
+      )}
+      {person.picture ? (
+        <Text>
+          <div style={{ fontWeight: "bold", marginBottom: 8 }}>Photo</div>
+          <div>
+            <Image
+              alt={`${person.firstName} ${person.lastName}`}
+              src={toAbsoluteUrl(`/uploads/${person.picture}`)}
+              style={{ height: 150 }}
+            />
+          </div>
+        </Text>
+      ) : (
+        <div style={{ opacity: 0.7, fontStyle: "italic" }}>Non-renseignée</div>
+      )}
       <Button href={`/admin/draws/${getCurrentYear()}/registrations`}>
         Gérer
       </Button>

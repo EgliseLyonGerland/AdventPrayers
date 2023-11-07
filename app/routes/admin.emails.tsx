@@ -61,7 +61,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   sendEmail({
     body: renderTemplate(template),
-    subject: `Template: ${Component.title}`,
+    subject: Component.title,
     to: { address: user.email, name: user.email },
     test: true,
   });
