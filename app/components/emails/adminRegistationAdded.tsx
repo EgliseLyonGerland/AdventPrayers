@@ -31,16 +31,18 @@ export default function AdminRegistationAdded({ person }: Props) {
         <div style={{ fontWeight: "bold" }}>Age</div>
         <div style={{ opacity: 0.7 }}>{t(person.age)}</div>
       </Text>
-      {person.bio ? (
-        <Text>
-          <div style={{ fontWeight: "bold" }}>Bio</div>
+      <Text>
+        <div style={{ fontWeight: "bold" }}>Bio</div>
+        {person.bio ? (
           <div style={{ opacity: 0.7, whiteSpace: "pre-wrap" }}>
             {person.bio}
           </div>
-        </Text>
-      ) : (
-        <div style={{ opacity: 0.7, fontStyle: "italic" }}>Non-renseignée</div>
-      )}
+        ) : (
+          <div style={{ opacity: 0.7, fontStyle: "italic" }}>
+            Non-renseignée
+          </div>
+        )}
+      </Text>
       <Text>
         <div style={{ fontWeight: "bold", marginBottom: 8 }}>Photo</div>
         {person.picture ? (
