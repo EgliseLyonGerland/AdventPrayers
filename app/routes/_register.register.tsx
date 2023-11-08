@@ -54,8 +54,12 @@ import { register } from "~/models/registrations.server";
 import { sendEmail } from "~/utils/email.server";
 
 const schema = object({
-  firstName: string([minLength(1, "Tu dois bien avoir un prénom !")]),
+  firstName: string([
+    toTrimmed(),
+    minLength(1, "Tu dois bien avoir un prénom !"),
+  ]),
   lastName: string([
+    toTrimmed(),
     minLength(1, "Non je ne peux pas croire que tu n'aies pas de nom !"),
   ]),
   email: string([
@@ -68,7 +72,7 @@ const schema = object({
     "Je voudrais bien essayer de deviner mais j’ai peur de ne pas réussir",
     [minLength(1)],
   ),
-  bio: string(),
+  bio: string([toTrimmed()]),
   picture: any([
     (input: File | undefined) => {
       if (input) {
