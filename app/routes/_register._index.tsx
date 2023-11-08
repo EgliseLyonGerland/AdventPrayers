@@ -23,7 +23,7 @@ function RegisterIndex() {
       </div>
       <div>
         Ce n’est qu’ensuite que tu pourras te faire connaître à la personne en
-        lui offrant si possible un petit cadeau en fonction des tes moyens 🎁.
+        lui offrant si possible un petit cadeau en fonction de tes moyens 🎁.
       </div>
       <div>C’est cool non ?! N’attends plus et inscris-toi{" "}!</div>
 

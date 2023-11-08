@@ -19,7 +19,7 @@ export default function RegistrationRecordedEmail({ registration }: Props) {
         entériner ta participation à l’opération. À la suite de quoi, tu
         recevras un autre email de confirmation dans lequel tu trouveras un lien
         te permettant d’accéder à ton espace “participant”. Dans cet espace, tu
-        auras la possibilité de voir le profile de la personne désignée une fois
+        auras la possibilité de voir le profil de la personne désignée une fois
         le tirage lancé. Mais ne t’inquiète pas, je t’en reparlerai un prochaine
         fois...
       </Text>
