@@ -161,6 +161,12 @@ export async function deletePlayer({
   });
 }
 
+export async function countPlayers(year: number) {
+  return prisma.player.count({
+    where: { drawYear: year },
+  });
+}
+
 export async function makeDraw({ year }: Pick<Draw, "year">) {
   const persons = await prisma.person.findMany({ include: { exclude: true } });
 

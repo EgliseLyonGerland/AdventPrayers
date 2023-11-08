@@ -52,9 +52,9 @@ export function getRegistrations(year: number) {
   });
 }
 
-export function countRegistrations(year: number) {
+export function countPendingRegistrations(year: number) {
   return prisma.registration.count({
-    where: { drawYear: year },
+    where: { drawYear: year, approved: false },
   });
 }
 
