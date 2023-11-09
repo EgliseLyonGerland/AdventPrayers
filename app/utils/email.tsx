@@ -1,6 +1,8 @@
+import { render } from "@react-email/components";
 import { get } from "lodash";
-import { marked } from "marked";
+import { Renderer, marked } from "marked";
 
+import * as Email from "~/components/emails/base";
 import { type Draw } from "~/models/draw.server";
 import { type PersonWithExclude } from "~/models/person.server";
 import { type Nullable } from "~/types";
@@ -16,6 +18,24 @@ type VariableGenerator = (
 interface VariableGenerators {
   [n: string]: VariableGenerator | VariableGenerators;
 }
+
+type Content = (
+  | {
+      type: "text";
+      value: string;
+    }
+  | {
+      type: "button";
+      value: string;
+      href: string;
+    }
+  | {
+      type: "image";
+      src: string;
+    }
+)[];
+
+Renderer.prototype.paragraph = (text) => text;
 
 const variableGenerators: VariableGenerators = {
   year: (draw) => draw.year,
@@ -74,8 +94,63 @@ export function generate(
   });
 }
 
-export function toMarkdown(text: string) {
-  return marked.parse(text, {
-    breaks: true,
-  });
+export function tokenize(text: string): Content {
+  const tokens = marked.lexer(text);
+
+  return tokens.reduce<Content>((acc, curr) => {
+    if (curr.type === "space") {
+      return acc;
+    }
+
+    const link =
+      "tokens" in curr && curr.tokens?.find((token) => token.type === "link");
+
+    if (link && link.type === "link") {
+      return acc.concat({
+        type: "button",
+        href: link.href,
+        value: link.text.trim(),
+      });
+    }
+
+    const image =
+      "tokens" in curr && curr.tokens?.find((token) => token.type === "image");
+
+    if (image && image.type === "image") {
+      return acc.concat({
+        type: "image",
+        src: image.href,
+      });
+    }
+
+    if (!("text" in curr)) {
+      return acc;
+    }
+
+    return acc.concat({
+      type: "text",
+      value: marked.parse(curr.text.trim()),
+    });
+  }, []);
+}
+
+export function renderEmail(title: string, content: string) {
+  return render(
+    <Email.Base heading={title || undefined}>
+      {tokenize(content).map((item, index) =>
+        item.type === "text" ? (
+          <Email.Text
+            dangerouslySetInnerHTML={{ __html: item.value }}
+            key={index}
+          />
+        ) : item.type === "button" ? (
+          <Email.Button href={item.href} key={index}>
+            {item.value}
+          </Email.Button>
+        ) : item.type === "image" ? (
+          <Email.Image src={item.src} />
+        ) : null,
+      )}
+    </Email.Base>,
+  );
 }

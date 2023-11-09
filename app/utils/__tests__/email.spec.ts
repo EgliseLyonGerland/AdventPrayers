@@ -1,7 +1,7 @@
 import { type Draw } from "~/models/draw.server";
 import { type PersonWithExclude } from "~/models/person.server";
 
-import { generate } from "../email";
+import { generate, tokenize } from "../email";
 
 const persons = [
   {
@@ -50,4 +50,51 @@ test("generate()", () => {
   expect(generate(text, draw, persons[0], persons[1])).toEqual(
     "Tu t'appelles Jon Snow et elle s'appelle Arya Stark",
   );
+});
+
+test("parse()", () => {
+  const text = `
+
+Sint deserunt **laboris** aliqua pariatur aliqua nulla.
+
+Do nisi laborum do qui incididunt.
+Anim do tempor enim nulla voluptate enim minim aliqua Lorem velit dolore labore fugiat.
+
+ [My button](/foo)
+
+      Sunt culpa laboris irure est.
+  ![My Image](/foo)
+
+Exercitation fugiat pariatur ullamco dolore cupidatat.
+  `;
+
+  expect(tokenize(text)).toEqual([
+    {
+      type: "text",
+      value:
+        "Sint deserunt <strong>laboris</strong> aliqua pariatur aliqua nulla.",
+    },
+    {
+      type: "text",
+      value:
+        "Do nisi laborum do qui incididunt.\nAnim do tempor enim nulla voluptate enim minim aliqua Lorem velit dolore labore fugiat.",
+    },
+    {
+      type: "button",
+      value: "My button",
+      href: "/foo",
+    },
+    {
+      type: "text",
+      value: "Sunt culpa laboris irure est.",
+    },
+    {
+      type: "image",
+      src: "/foo",
+    },
+    {
+      type: "text",
+      value: "Exercitation fugiat pariatur ullamco dolore cupidatat.",
+    },
+  ]);
 });

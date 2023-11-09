@@ -146,13 +146,12 @@ export function trimPath(path: string) {
   return path;
 }
 
-export function toAbsoluteUrl(path: string) {
-  const baseUrl =
-    typeof process !== "undefined" && process.env.BASE_URL
-      ? process.env.BASE_URL
-      : "http://localhost:1234";
+export function getEnv(name: keyof Window["env"]) {
+  return typeof window === "undefined" ? process.env[name] : window.env[name];
+}
 
-  return `${baseUrl}/${trimPath(path)}`;
+export function toAbsoluteUrl(path: string) {
+  return `${getEnv("BASE_URL")}/${trimPath(path)}`;
 }
 
 export function ensureArray<T>(value: T | T[]): T[] {

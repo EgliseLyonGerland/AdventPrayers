@@ -67,7 +67,7 @@ export default function Index() {
   }
 
   return (
-    <div className="flex min-h-full flex-col overflow-x-hidden pb-8">
+    <div className="flex min-h-full flex-col pb-8">
       <div className="navbar sticky top-0 z-30 mb-8 border-b border-b-base-content/10 bg-base-100 px-0 text-neutral-content">
         <div className="w-full space-x-4">
           <Listbox
@@ -134,7 +134,7 @@ export default function Index() {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="relative flex flex-1 flex-col">
         {draw ? (
           <Outlet />
         ) : (

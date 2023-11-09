@@ -25,7 +25,7 @@ export default function Admin() {
             <Bars3Icon className="h-8" />
           </label>
         </div>
-        <div className="flex-1 overflow-x-hidden px-8">
+        <div className="h-screen flex-1 px-8">
           <Outlet />
         </div>
       </div>

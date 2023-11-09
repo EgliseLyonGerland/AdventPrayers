@@ -4,19 +4,19 @@ import {
   type LoaderFunctionArgs,
   json,
 } from "@remix-run/node";
-import { useLoaderData, useParams, useSubmit } from "@remix-run/react";
+import { useLoaderData, useSubmit } from "@remix-run/react";
 import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 import clsx from "clsx";
 import { kebabCase } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
-import { useLocalStorage } from "usehooks-ts";
+import { useDebounce, useLocalStorage } from "usehooks-ts";
 
 import { type GetDrawPlayer, getDraw } from "~/models/draw.server";
 import { type Person } from "~/models/person.server";
 import { type WithRequired } from "~/types";
 import { pluralize, getYearParam } from "~/utils";
-import { generate, toMarkdown, variables } from "~/utils/email";
+import { generate, renderEmail, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
 
 type Player = WithRequired<GetDrawPlayer, "person">;
@@ -38,6 +38,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   switch (formData.get("_action")) {
     case "send": {
       const subject = `${formData.get("subject")}`;
+      const title = `${formData.get("title")}`;
       const body = `${formData.get("body")}`;
       const grouped = formData.get("grouped") === "true";
       const test = formData.get("test") === "true";
@@ -66,12 +67,12 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       if (grouped) {
         await sendEmail({
           subject: generate(subject, draw),
-          body: toMarkdown(generate(body, draw)),
-          test,
+          body: renderEmail(generate(title, draw), generate(body, draw)),
           to: persons.map(({ person }) => ({
             name: `${person.firstName} ${person.lastName}`,
             address: person.email!,
           })),
+          test,
         });
 
         break;
@@ -79,13 +80,16 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
       const emails = persons.map(({ person, assigned }) => ({
         subject: generate(subject, draw, person, assigned),
-        body: toMarkdown(generate(body, draw, person, assigned)),
-        test,
+        body: renderEmail(
+          generate(title, draw, person, assigned),
+          generate(body, draw, person, assigned),
+        ),
         to: {
           name: `${person.firstName} ${person.lastName}`,
           address: person.email!,
         },
         grouped: false,
+        test,
       }));
 
       await emails.reduce<Promise<unknown>>(
@@ -122,26 +126,29 @@ function getCheckerStatus(players: Player[], recipients: Recipient[]) {
 }
 
 const Mails = () => {
-  const year = getYearParam(useParams());
   const { draw } = useLoaderData<typeof loader>();
   const [search, setSearch] = useState("");
   const [recipients, setRecipients] = useLocalStorage<Recipient[]>(
-    `draws.${year}.mails.draft.recipients`,
+    `draws.mails.draft.recipients`,
     [],
   );
   const [subject, setSubject] = useLocalStorage(
-    `draws.${year}.mails.draft.subject`,
+    `draws.mails.draft.subject`,
     "",
   );
+  const [title, setTitle] = useLocalStorage(`draws.mails.draft.title`, "");
   const [grouped, setGrouped] = useLocalStorage(
-    `draws.${year}.mails.draft.groupe`,
+    `draws.mails.draft.grouped`,
     true,
   );
   const modalRef = useRef<HTMLDialogElement>(null);
 
-  const [body, setBody] = useLocalStorage(`draws.${year}.mails.draft.body`, "");
+  const [body, setBody] = useLocalStorage(`draws.mails.draft.body`, "");
   const submit = useSubmit();
   const checker = useRef<HTMLInputElement | null>(null);
+
+  const titleDebounced = useDebounce(title, 300);
+  const bodyDebounced = useDebounce(body, 300);
 
   let players = draw?.players || [];
 
@@ -157,6 +164,7 @@ const Mails = () => {
     const formData = new FormData();
     formData.set("_action", "send");
     formData.set("subject", subject);
+    formData.set("title", title);
     formData.set("body", body);
     formData.set("grouped", `${grouped}`);
     formData.set("test", `${test}`);
@@ -201,6 +209,10 @@ const Mails = () => {
   }
 
   const generatePreview = (text: string) => {
+    if (grouped) {
+      return text;
+    }
+
     let example = draw.players[0];
     if (recipients.length) {
       example =
@@ -212,7 +224,7 @@ const Mails = () => {
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-4">
+    <div className="absolute inset-0 flex flex-col gap-4 overflow-hidden">
       <div className="flex items-center gap-4">
         <input
           className="input input-bordered input-secondary input-sm"
@@ -248,9 +260,9 @@ const Mails = () => {
           Envoyer
         </button>
       </div>
-      <div className="flex-1 overflow-x-auto overflow-y-hidden rounded-xl border border-base-content/10 bg-base-200 text-base-content">
-        <div className="flex h-full w-full min-w-[1400px] divide-x divide-neutral-content overflow-hidden dark:divide-neutral-content/10">
-          <div className="flex flex-col overflow-hidden">
+      <div className="rounded-box flex flex-1 overflow-x-auto overflow-y-hidden border border-base-content/10 bg-base-200">
+        <div className="flex w-full min-w-[1400px] flex-1 divide-x divide-neutral-content overflow-hidden dark:divide-neutral-content/10">
+          <div className="flex flex-col overflow-auto">
             <label className="flex h-14 items-center gap-4 px-4 text-base-content/60">
               <input
                 className="checkbox checkbox-sm"
@@ -310,7 +322,7 @@ const Mails = () => {
               ))}
             </ul>
           </div>
-          <div className="flex flex-1 flex-col">
+          <div className="flex flex-[0.8] flex-col">
             <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/10">
               <div className="flex p-4">
                 <span className="mr-2 whitespace-nowrap font-bold opacity-50">
@@ -358,14 +370,27 @@ const Mails = () => {
                 </div>
               </div>
               <div className="flex items-center p-4">
-                <span className="mr-2 whitespace-nowrap font-bold opacity-50">
-                  Sujet :
+                <span className="mr-2 w-20 whitespace-nowrap font-bold opacity-50">
+                  Objet :
                 </span>
                 <input
                   className="input input-sm w-full"
                   defaultValue={subject}
                   onChange={(event) => {
                     setSubject(event.target.value);
+                  }}
+                  type="text"
+                />
+              </div>
+              <div className="flex items-center p-4">
+                <span className="mr-2 w-20 whitespace-nowrap font-bold opacity-50">
+                  Titre :
+                </span>
+                <input
+                  className="input input-sm w-full"
+                  defaultValue={title}
+                  onChange={(event) => {
+                    setTitle(event.target.value);
                   }}
                   type="text"
                 />
@@ -392,15 +417,14 @@ const Mails = () => {
               value={body}
             />
           </div>
-          <div className="h-full flex-1 overflow-y-auto bg-white/5 px-8">
-            <p className="mb-4 border-b border-white/10 py-6 text-2xl font-bold">
-              {subject ? generatePreview(subject) : "Aucun titre"}
-            </p>
-            <div
-              className="prose"
-              dangerouslySetInnerHTML={{
-                __html: toMarkdown(generatePreview(body)),
-              }}
+          <div className="flex min-h-full flex-1">
+            <iframe
+              className="min-h-full w-full flex-1"
+              srcDoc={renderEmail(
+                generatePreview(titleDebounced),
+                generatePreview(bodyDebounced),
+              )}
+              title="Template"
             />
           </div>
         </div>

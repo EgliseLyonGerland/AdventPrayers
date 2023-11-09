@@ -187,3 +187,5 @@ export default function Email({
     </ReactEmail.Html>
   );
 }
+
+export const Base = Email;

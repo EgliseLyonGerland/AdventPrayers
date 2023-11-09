@@ -1,5 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
-import { type LinksFunction, type MetaFunction } from "@remix-run/node";
+import { json, type LinksFunction, type MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -8,12 +8,21 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 
 import stylesheet from "~/tailwind.css";
 
 import { AppName } from "./config";
+
+declare global {
+  interface Window {
+    env: {
+      BASE_URL: string;
+    };
+  }
+}
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -22,7 +31,17 @@ export const links: LinksFunction = () => [
 
 export const meta: MetaFunction = () => [{ title: AppName }];
 
+export async function loader() {
+  return json({
+    env: {
+      BASE_URL: process.env.BASE_URL,
+    },
+  });
+}
+
 export default function App() {
+  const data = useLoaderData<typeof loader>();
+
   return (
     <html className="min-h-[100svh]" lang="en">
       <head>
@@ -37,6 +56,11 @@ export default function App() {
         <link
           href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500&display=swap"
           rel="stylesheet"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.env = ${JSON.stringify(data.env)}`,
+          }}
         />
         <Meta />
         <Links />
