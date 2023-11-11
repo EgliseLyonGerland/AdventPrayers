@@ -3,17 +3,18 @@ import { get } from "lodash";
 import { Renderer, marked } from "marked";
 
 import * as Email from "~/components/emails/base";
+import { AppName, AppNameQuoted } from "~/config";
 import { type Draw } from "~/models/draw.server";
 import { type PersonWithExclude } from "~/models/person.server";
 import { type Nullable } from "~/types";
 
 type Person = PersonWithExclude;
 
-type VariableGenerator = (
-  draw: Draw,
-  person: Nullable<Person>,
-  assigned: Nullable<Person>,
-) => string | number | undefined | null;
+type VariableGenerator = (data: {
+  draw: Draw;
+  person: Nullable<Person>;
+  assigned: Nullable<Person>;
+}) => string | number | undefined | null;
 
 interface VariableGenerators {
   [n: string]: VariableGenerator | VariableGenerators;
@@ -38,18 +39,46 @@ type Content = (
 Renderer.prototype.paragraph = (text) => text;
 
 const variableGenerators: VariableGenerators = {
-  year: (draw) => draw.year,
-  nextYear: (draw) => (draw.year ? draw.year + 1 : null),
+  appName: () => AppName,
+  appNameQuote: () => AppNameQuoted,
+  year: ({ draw }) => draw.year,
+  nextYear: ({ draw }) => (draw.year ? draw.year + 1 : null),
   src: {
-    firstName: (_, person) => person?.firstName,
-    lastName: (_, person) => person?.lastName,
-    pronoun: (_, person) =>
+    id: ({ person }) => person?.id,
+    firstName: ({ person }) => person?.firstName,
+    lastName: ({ person }) => person?.lastName,
+    bio: ({ person }) => person?.bio,
+    picture: ({ person }) => person?.picture,
+    pronoun: ({ person }) =>
       person ? (person?.gender === "male" ? "lui" : "elle") : null,
+    registerLink: ({ person }) => {
+      if (!person) {
+        return "/";
+      }
+
+      const searchParams = new URLSearchParams();
+      searchParams.set("firstName", person.firstName);
+      searchParams.set("lastName", person.lastName);
+      searchParams.set("gender", person.gender);
+      searchParams.set("age", person.age);
+
+      if (person.email) {
+        searchParams.set("email", person.email);
+      }
+      if (person.bio) {
+        searchParams.set("bio", person.bio);
+      }
+
+      return `/register?${searchParams.toString()}`;
+    },
   },
   dst: {
-    firstName: (_, __, assigned) => assigned?.firstName,
-    lastName: (_, __, assigned) => assigned?.lastName,
-    pronoun: (_, __, assigned) =>
+    id: ({ assigned }) => assigned?.id,
+    firstName: ({ assigned }) => assigned?.firstName,
+    lastName: ({ assigned }) => assigned?.lastName,
+    bio: ({ assigned }) => assigned?.bio,
+    picture: ({ assigned }) => assigned?.picture,
+    pronoun: ({ assigned }) =>
       assigned ? (assigned.gender === "male" ? "lui" : "elle") : null,
   },
 };
@@ -84,7 +113,7 @@ export function generate(
       return match;
     }
 
-    const result = generator(draw, person, assigned);
+    const result = generator({ draw, person, assigned });
 
     if (!result) {
       return match;
