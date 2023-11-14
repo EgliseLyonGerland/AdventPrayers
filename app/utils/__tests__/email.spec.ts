@@ -29,7 +29,7 @@ const persons = [
 ] satisfies PersonWithExclude[];
 
 test("generate()", () => {
-  const text = `Tu t'appelles %src.firstName% %src.lastName% et %dst.pronoun% s'appelle %dst.firstName% %dst.lastName%`;
+  const text = `Tu t'appelles %src.firstName% %src.lastName% et %dst.g(il,elle)% s'appelle %dst.firstName% %dst.lastName%`;
 
   const draw: Draw = {
     year: 2022,
@@ -45,7 +45,7 @@ test("generate()", () => {
   };
 
   expect(generate(text, draw, persons[0])).toEqual(
-    "Tu t'appelles Jon Snow et %dst.pronoun% s'appelle %dst.firstName% %dst.lastName%",
+    "Tu t'appelles Jon Snow et %dst.g(il,elle)% s'appelle %dst.firstName% %dst.lastName%",
   );
   expect(generate(text, draw, persons[0], persons[1])).toEqual(
     "Tu t'appelles Jon Snow et elle s'appelle Arya Stark",

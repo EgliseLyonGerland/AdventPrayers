@@ -51,7 +51,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const routes = [
   { path: "", label: "Tirage" },
   { path: "/registrations", label: "Inscriptions" },
-  { path: "/mails", label: "Messages" },
+  { path: "/messages", label: "Messages" },
 ] as const;
 
 export default function Index() {

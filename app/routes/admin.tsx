@@ -1,7 +1,6 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, NavLink, Outlet } from "@remix-run/react";
-import { type LoaderFunctionArgs } from "react-router";
 
 import Logo from "~/components/logo";
 import { requireUserId } from "~/session.server";

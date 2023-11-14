@@ -1,4 +1,5 @@
 import { Portal } from "@headlessui/react";
+import clsx from "clsx";
 import { motion } from "framer-motion";
 import { type ReactNode, useEffect, useRef } from "react";
 
@@ -6,10 +7,17 @@ interface Props {
   children: ReactNode;
   open?: boolean;
   closable?: boolean;
+  className?: string;
   onClose?: () => void;
 }
 
-function SidePanel({ children, open, closable = true, onClose }: Props) {
+function SidePanel({
+  children,
+  open,
+  closable = true,
+  className,
+  onClose,
+}: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -32,18 +40,21 @@ function SidePanel({ children, open, closable = true, onClose }: Props) {
         <motion.div
           animate={{
             opacity: open ? 1 : 0,
-            x: open ? 0 : "100%",
+            x: open ? "0%" : "100%",
           }}
-          className="fixed inset-y-0 right-0 w-[600px] max-w-[95%] overflow-auto bg-base-100"
+          className={clsx(
+            "fixed inset-y-0 right-0 max-w-[95%] overflow-auto bg-base-100 def:w-[600px]",
+            className,
+          )}
           transition={{
             type: "tween",
             ease: "anticipate",
-            duration: 0.5,
+            duration: 0.3,
           }}
         >
           <motion.div
             animate={{ opacity: open ? 1 : 0 }}
-            transition={{ delay: 1 }}
+            transition={{ delay: 0.6 }}
           >
             {children}
           </motion.div>

@@ -1,22 +1,22 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { QuestionMarkCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
   json,
 } from "@remix-run/node";
 import { useLoaderData, useSubmit } from "@remix-run/react";
-import ReactTextareaAutocomplete from "@webscopeio/react-textarea-autocomplete";
 import clsx from "clsx";
 import { kebabCase } from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import invariant from "tiny-invariant";
 import { useDebounce, useLocalStorage } from "usehooks-ts";
 
+import SidePanel from "~/components/admin/sidePanel";
 import { type GetDrawPlayer, getDraw } from "~/models/draw.server";
 import { type Person } from "~/models/person.server";
 import { type WithRequired } from "~/types";
 import { pluralize, getYearParam } from "~/utils";
-import { generate, renderEmail, variables } from "~/utils/email";
+import { type Variable, generate, renderEmail, variables } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
 
 type Player = WithRequired<GetDrawPlayer, "person">;
@@ -128,6 +128,7 @@ function getCheckerStatus(players: Player[], recipients: Recipient[]) {
 const Mails = () => {
   const { draw } = useLoaderData<typeof loader>();
   const [search, setSearch] = useState("");
+  const [showHelp, setShowHelp] = useState(false);
   const [recipients, setRecipients] = useLocalStorage<Recipient[]>(
     `draws.mails.draft.recipients`,
     [],
@@ -322,7 +323,7 @@ const Mails = () => {
               ))}
             </ul>
           </div>
-          <div className="flex flex-[0.8] flex-col">
+          <div className="relative flex flex-[0.8] flex-col">
             <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/10">
               <div className="flex p-4">
                 <span className="mr-2 whitespace-nowrap font-bold opacity-50">
@@ -396,26 +397,23 @@ const Mails = () => {
                 />
               </div>
             </div>
-            <ReactTextareaAutocomplete
+            <textarea
               className="block h-full w-full resize-none bg-transparent p-4 font-mono outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
-              containerClassName="h-full w-full relative"
-              dropdownClassName="absolute"
-              listClassName="menu menu-compact mt-6"
-              loadingComponent={() => <div>Loading</div>}
-              minChar={0}
               onChange={(event) => {
                 setBody(event.target.value);
               }}
               placeholder="Écris ton message..."
-              trigger={{
-                "%": {
-                  dataProvider: () => variables,
-                  component: ({ entity }) => <span>{`${entity}`}</span>,
-                  output: (item) => `%${item}%`,
-                },
-              }}
               value={body}
             />
+
+            <button
+              className="btn btn-circle btn-ghost absolute bottom-2 right-2"
+              onClick={() => {
+                setShowHelp(true);
+              }}
+            >
+              <QuestionMarkCircleIcon className="h-6" />
+            </button>
           </div>
           <div className="flex min-h-full flex-1">
             <iframe
@@ -465,8 +463,151 @@ const Mails = () => {
           <button>Annuler</button>
         </form>
       </dialog>
+
+      <SidePanel
+        className="w-[800px]"
+        onClose={() => setShowHelp(false)}
+        open={showHelp}
+      >
+        <div className="p-4">
+          <table className="table table-zebra text-sm">
+            <tbody>
+              {variables.map((name) => (
+                <tr key={name}>
+                  <td>
+                    <button
+                      className={clsx(
+                        "code code-outline",
+                        name.startsWith("src.")
+                          ? "code-secondary"
+                          : name.startsWith("dst.")
+                          ? "code-primary"
+                          : "code-accent",
+                      )}
+                      onClick={() => {
+                        setBody((body) => `${body}%${name}%`);
+                      }}
+                    >
+                      <span className="mr-1 opacity-50">%</span>
+                      {variablesDescription[name].alt || name}
+                      <span className="ml-1 opacity-50">%</span>
+                    </button>
+                  </td>
+                  <td className="w-full whitespace-pre-line">
+                    {variablesDescription[name].description}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </SidePanel>
     </div>
   );
+};
+
+const variablesDescription: Record<
+  Variable,
+  {
+    description: ReactNode;
+    alt?: string;
+  }
+> = {
+  appName: {
+    description: "Nom de l’opération",
+  },
+  appNameQuote: {
+    description: "Nom de l’opération entre guillemets",
+  },
+  year: {
+    description: "Année de l’édition",
+  },
+  nextYear: {
+    description: "Année de l’édition prochaine",
+  },
+  "src.id": {
+    description: "Identifiant de la personne source",
+  },
+  "src.firstName": {
+    description: "Prénom de la personne source",
+  },
+  "src.lastName": {
+    description: "Nom de famille de la personne source",
+  },
+  "src.bio": {
+    description: "Desciption de la personne source",
+  },
+  "src.picture": {
+    description: "Photo de la personne source (nom du fichier uniquement)",
+  },
+  "src.g": {
+    alt: "src.g(...)",
+    description: (
+      <div className="flex flex-col gap-2">
+        <div>
+          Permet accorder un mot en fonction du genre de la personne source.
+        </div>
+        <div>
+          Exemple: <span className="code">%src.g(inscrit)%</span>
+        </div>
+        <div>
+          Si la personne source est un homme, alors le “inscrit” apparaitra. En
+          revanche, si la personne source est une femme, un “e” sera ajouté et
+          le mot “inscrite” apparaitra`.
+        </div>
+        <div>
+          Si le mot ne prend pas juste un “e” au fémimin, il est possible de le
+          reseigner de la manière suivante :
+        </div>
+        <div>
+          Exemple: <span className="code">%src.g(lui,elle)%</span>
+        </div>
+      </div>
+    ),
+  },
+  "src.registerLink": {
+    description: "Lien d’inscription de la personne source",
+  },
+  "dst.id": {
+    description: "Identifiant de la personne désignée",
+  },
+  "dst.firstName": {
+    description: "Prénom de la personne désignée",
+  },
+  "dst.lastName": {
+    description: "Nom de famille de la personne désignée",
+  },
+  "dst.bio": {
+    description: "Desciption de la personne désignée",
+  },
+  "dst.picture": {
+    description: "Photo de la personne désignée (nom du fichier uniquement)",
+  },
+  "dst.g": {
+    alt: "dst.g(...)",
+    description: (
+      <div className="flex flex-col gap-2">
+        <div>
+          Permet accorder un mot en fonction du genre de la personne désignée.
+        </div>
+        <div>
+          Exemple: <span className="code">%dst.g(inscrit)%</span>
+        </div>
+        <div>
+          Si la personne désignée est un homme, alors le “inscrit” apparaitra.
+          En revanche, si la personne désignée est une femme, un “e” sera ajouté
+          et le mot “inscrite” apparaitra`.
+        </div>
+        <div>
+          Si le mot ne prend pas juste un “e” au fémimin, il est possible de le
+          reseigner de la manière suivante :
+        </div>
+        <div>
+          Exemple: <span className="code">%dst.g(lui,elle)%</span>
+        </div>
+      </div>
+    ),
+  },
 };
 
 export default Mails;

@@ -20,3 +20,19 @@
 .select-sm {
   @apply px-4 pr-8;
 }
+
+.code {
+  @apply inline-block rounded-md px-1.5 py-0.5 bg-neutral/30 font-mono tracking-wider text-opacity-50;
+}
+.code-outline {
+  @apply border;
+}
+.code-primary {
+  @apply bg-primary/30 border-primary/80;
+}
+.code-secondary {
+  @apply bg-secondary/30 border-secondary/80;
+}
+.code-accent {
+  @apply bg-accent/30 border-accent/80;
+}

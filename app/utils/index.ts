@@ -97,13 +97,9 @@ export function pluralize(
   return total > 1 ? word + suffix : word;
 }
 
-export function genderize(
-  word: string | [string, string],
-  gender: string,
-  feminine = `${word}e`,
-) {
+export function genderize(word: string, gender: string, feminine?: string) {
   if (gender === "female") {
-    return feminine;
+    return feminine ?? `${word}e`;
   }
 
   return word;

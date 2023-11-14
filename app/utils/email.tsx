@@ -8,17 +8,7 @@ import { type Draw } from "~/models/draw.server";
 import { type PersonWithExclude } from "~/models/person.server";
 import { type Nullable } from "~/types";
 
-type Person = PersonWithExclude;
-
-type VariableGenerator = (data: {
-  draw: Draw;
-  person: Nullable<Person>;
-  assigned: Nullable<Person>;
-}) => string | number | undefined | null;
-
-interface VariableGenerators {
-  [n: string]: VariableGenerator | VariableGenerators;
-}
+import { genderize } from ".";
 
 type Content = (
   | {
@@ -36,75 +26,95 @@ type Content = (
     }
 )[];
 
+type VariableGenerator = (
+  data: {
+    draw: Draw;
+    person: Nullable<PersonWithExclude>;
+    assigned: Nullable<PersonWithExclude>;
+  },
+  ...params: string[]
+) => string | number | undefined | null;
+
 Renderer.prototype.paragraph = (text) => text;
 
-const variableGenerators: VariableGenerators = {
+export const variables = [
+  "appName",
+  "appNameQuote",
+  "year",
+  "nextYear",
+  "src.id",
+  "src.firstName",
+  "src.lastName",
+  "src.bio",
+  "src.picture",
+  "src.g",
+  "src.registerLink",
+  "dst.id",
+  "dst.firstName",
+  "dst.lastName",
+  "dst.bio",
+  "dst.picture",
+  "dst.g",
+] as const;
+
+export type Variable = (typeof variables)[number];
+
+export const variableGenerators: Record<Variable, VariableGenerator> = {
   appName: () => AppName,
   appNameQuote: () => AppNameQuoted,
   year: ({ draw }) => draw.year,
-  nextYear: ({ draw }) => (draw.year ? draw.year + 1 : null),
-  src: {
-    id: ({ person }) => person?.id,
-    firstName: ({ person }) => person?.firstName,
-    lastName: ({ person }) => person?.lastName,
-    bio: ({ person }) => person?.bio,
-    picture: ({ person }) => person?.picture,
-    pronoun: ({ person }) =>
-      person ? (person?.gender === "male" ? "lui" : "elle") : null,
-    registerLink: ({ person }) => {
-      if (!person) {
-        return "/";
-      }
+  nextYear: ({ draw }) => draw.year + 1,
 
-      const searchParams = new URLSearchParams();
-      searchParams.set("firstName", person.firstName);
-      searchParams.set("lastName", person.lastName);
-      searchParams.set("gender", person.gender);
-      searchParams.set("age", person.age);
+  "src.id": ({ person }) => person?.id,
+  "src.firstName": ({ person }) => person?.firstName,
+  "src.lastName": ({ person }) => person?.lastName,
+  "src.bio": ({ person }) => person?.bio,
+  "src.picture": ({ person }) => person?.picture,
+  "src.g": ({ person }, mas, fem) =>
+    person && genderize(mas, person.gender, fem),
+  "src.registerLink": ({ person }) => {
+    if (!person) {
+      return "/";
+    }
 
-      if (person.email) {
-        searchParams.set("email", person.email);
-      }
-      if (person.bio) {
-        searchParams.set("bio", person.bio);
-      }
+    const searchParams = new URLSearchParams();
+    searchParams.set("firstName", person.firstName);
+    searchParams.set("lastName", person.lastName);
+    searchParams.set("gender", person.gender);
+    searchParams.set("age", person.age);
 
-      return `/register?${searchParams.toString()}`;
-    },
+    if (person.email) {
+      searchParams.set("email", person.email);
+    }
+    if (person.bio) {
+      searchParams.set("bio", person.bio);
+    }
+
+    return `/register?${searchParams.toString()}`;
   },
-  dst: {
-    id: ({ assigned }) => assigned?.id,
-    firstName: ({ assigned }) => assigned?.firstName,
-    lastName: ({ assigned }) => assigned?.lastName,
-    bio: ({ assigned }) => assigned?.bio,
-    picture: ({ assigned }) => assigned?.picture,
-    pronoun: ({ assigned }) =>
-      assigned ? (assigned.gender === "male" ? "lui" : "elle") : null,
-  },
+
+  "dst.id": ({ assigned }) => assigned?.id,
+  "dst.firstName": ({ assigned }) => assigned?.firstName,
+  "dst.lastName": ({ assigned }) => assigned?.lastName,
+  "dst.bio": ({ assigned }) => assigned?.bio,
+  "dst.picture": ({ assigned }) => assigned?.picture,
+  "dst.g": ({ assigned }, mas, fem) =>
+    assigned && genderize(mas, assigned.gender, fem),
 };
-
-function getVariables(generators: VariableGenerators, prefix = ""): string[] {
-  return Object.entries(generators).reduce<string[]>(
-    (acc, [key, generator]) => {
-      if (typeof generator === "function") {
-        return acc.concat(`${prefix}${key}`);
-      }
-
-      return acc.concat(getVariables(generator, `${prefix}${key}.`));
-    },
-    [],
-  );
-}
-
-export const variables = getVariables(variableGenerators);
 
 export function generate(
   text: string,
   draw: Draw,
-  person?: Person,
-  assigned?: Nullable<Person>,
+  person?: PersonWithExclude,
+  assigned?: Nullable<PersonWithExclude>,
 ): string {
-  return text.replace(/%([\w.]+)%/g, (match, variableName) => {
+  return text.replace(/%(.+?)%/g, (match, expr) => {
+    if (typeof expr !== "string") {
+      return match;
+    }
+
+    const [variableName, args] = expr.trim().split(/[\\(\\)]/);
+
     const generator = get(variableGenerators, variableName) as
       | VariableGenerator
       | undefined;
@@ -113,7 +123,15 @@ export function generate(
       return match;
     }
 
-    const result = generator({ draw, person, assigned });
+    const result = generator(
+      { draw, person, assigned },
+      ...(args
+        ? args
+            .split(",")
+            .map((arg) => arg.trim())
+            .filter(Boolean)
+        : []),
+    );
 
     if (!result) {
       return match;
