@@ -20,15 +20,15 @@ export default function RegistrationRecordedEmail({ registration }: Props) {
         recevras un autre email de confirmation dans lequel tu trouveras un lien
         te permettant d’accéder à ton espace “participant”. Dans cet espace, tu
         auras la possibilité de voir le profil de la personne désignée une fois
-        le tirage lancé. Mais ne t’inquiète pas, je t’en reparlerai un prochaine
-        fois...
+        le tirage lancé. Mais ne t’inquiète pas, je t’en reparlerai une
+        prochaine fois...
       </Text>
       <Text>
         En attendant, tu peux à tout moment annuler ton inscription en cliquant
         sur le bouton ci-dessous.
       </Text>
       <Button href={`/unregister/${registration.id}`}>Me désinscrire</Button>
-      <Text>Je te souhaite un très bonne journée !</Text>
+      <Text>Je te souhaite une très bonne journée !</Text>
     </Email>
   );
 }
