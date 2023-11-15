@@ -36,3 +36,11 @@
 .code-accent {
   @apply bg-accent/30 border-accent/80;
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
