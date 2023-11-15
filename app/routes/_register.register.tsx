@@ -373,7 +373,7 @@ export default function Register() {
                     <motion.div
                       animate={variant}
                       className={clsx(
-                        "z-10 my-auto space-y-8 whitespace-pre-wrap text-center text-[3svh] leading-tight text-base-content/80 wrap-balance md:text-[2.8svh] md:leading-normal",
+                        "z-10 my-auto space-y-8 whitespace-pre-wrap text-center text-[3svh] leading-tight text-base-content/80 wrap-balance md:text-[min(2.8vh,theme(fontSize.3xl))] md:leading-normal",
                         errors[step] && "text-red-400",
                       )}
                       initial="incoming"
