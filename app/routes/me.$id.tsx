@@ -95,7 +95,7 @@ export default function Me() {
 
   return (
     <>
-      <div className="mx-auto flex h-screen max-w-[1200px] flex-col items-center gap-8 overflow-y-hidden px-4 py-8 md:gap-12 md:p-12">
+      <div className="mx-auto flex h-screen max-w-[1400px] flex-col items-center gap-8 overflow-y-hidden px-4 py-8 md:gap-12 md:p-12">
         <Logo className="h-[15vw] md:h-28" />
         <div
           className={clsx(
@@ -122,11 +122,9 @@ export default function Me() {
                     <FemaleIcon className="inline-block h-4 opacity-60" />
                   )}
                 </span>
-              </div>
-              <div className="opacity-60">
-                {person.email}{" "}
                 <span className="badge badge-neutral ml-2">{person.age}</span>
               </div>
+              <div className="opacity-60">{person.email}</div>
               <div className="mt-8">
                 <div className="mb-2 text-lg font-bold">À ton sujet</div>
                 <div className="opacity-60">
@@ -134,12 +132,12 @@ export default function Me() {
                 </div>
               </div>
               <div className="mt-8">
-                <div className="mb-2 text-lg font-bold">Ta photo</div>
+                <div className="mb-4 text-lg font-bold">Ta photo</div>
                 <div>
                   {person.picture ? (
                     <img
                       alt={`${person.firstName} ${person.lastName}`}
-                      className="aspect-square h-28"
+                      className="aspect-square w-full max-w-sm object-cover"
                       src={`/uploads/${person.picture}`}
                     />
                   ) : (
@@ -182,7 +180,7 @@ export default function Me() {
                   <p className="italic">
                     Si tu le souhaites, tu peux toujours te désincrire en
                     cliquant sur le bouton ci-dessous. Sache que ça ne sera plus
-                    possible une fois le tirage lancé.
+                    possible une fois le tirage effectué.
                   </p>
                 </div>
                 <button
