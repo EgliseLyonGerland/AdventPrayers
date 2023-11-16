@@ -1,9 +1,10 @@
 import { ArrowDownIcon, TrashIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useController } from "react-hook-form";
 import { useRemixFormContext } from "remix-hook-form";
 
-export default function PictureField() {
+export default function PictureField({ className }: { className?: string }) {
   const { control, trigger } = useRemixFormContext<{ picture?: File }>();
   const {
     field: { value, onChange, ...field },
@@ -11,12 +12,20 @@ export default function PictureField() {
   const [picture, setPicture] = useState<string>();
 
   useEffect(() => {
+    if (typeof value === "string") {
+      setPicture(`/uploads/${value}`);
+      return;
+    }
+
     setPicture(value ? URL.createObjectURL(value) : undefined);
   }, [value]);
 
   return (
     <label
-      className="group relative mx-auto block aspect-square h-[20svh] cursor-pointer rounded-lg border-2 border-dashed border-base-content/50 p-2 shadow-xl flex-center hover:border-secondary hover:bg-base-200 md:h-[25svh]"
+      className={clsx(
+        "group relative mx-auto block aspect-square h-[20svh] cursor-pointer rounded-lg border-2 border-dashed border-base-content/50 p-2 shadow-xl flex-center hover:border-secondary hover:bg-base-200 md:h-[25svh]",
+        className,
+      )}
       htmlFor="picture"
     >
       {picture ? (

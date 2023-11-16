@@ -7,7 +7,7 @@ export default function AgeField() {
 
   return (
     <div className="flex justify-center">
-      <div className="grid grid-cols-[auto_auto] gap-6 md:gap-20">
+      <div className="grid grid-cols-[auto_auto] gap-6 md:gap-16 md:gap-y-6">
         {ages.map((age) => (
           <div className="form-control" key={age}>
             <label className="label flex cursor-pointer items-center justify-start gap-6">

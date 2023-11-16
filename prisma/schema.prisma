@@ -29,7 +29,7 @@ model Person {
   firstName   String
   lastName    String
   gender      String
-  email       String?
+  email       String
   age         String   @default("18+")
   bio         String?
   picture     String?
@@ -48,7 +48,7 @@ model Registration {
   firstName    String
   lastName     String
   gender       String
-  email        String?
+  email        String
   age          String   @default("18+")
   bio          String?
   picture      String?

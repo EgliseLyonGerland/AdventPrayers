@@ -25,17 +25,7 @@ import {
   getValidatedFormData,
   useRemixForm,
 } from "remix-hook-form";
-import {
-  type Output,
-  any,
-  email,
-  getOutput,
-  getPipeIssues,
-  minLength,
-  object,
-  string,
-  toTrimmed,
-} from "valibot";
+import { type Output } from "valibot";
 
 import AdminRegistationAdded from "~/components/emails/adminRegistationAdded";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
@@ -47,50 +37,12 @@ import GenderField from "~/components/register/fields/genderField";
 import LastNameField from "~/components/register/fields/lastNameField";
 import PictureField from "~/components/register/fields/pictureField";
 import Recap from "~/components/register/recap";
+import schema from "~/components/register/schema";
 import { Wrapper } from "~/components/register/wrapper";
 import { AppName } from "~/config";
 import { getCurrentDraw } from "~/models/draw.server";
 import { register } from "~/models/registrations.server";
 import { sendEmail } from "~/utils/email.server";
-
-const schema = object({
-  firstName: string([
-    toTrimmed(),
-    minLength(1, "Tu dois bien avoir un prénom !"),
-  ]),
-  lastName: string([
-    toTrimmed(),
-    minLength(1, "Non je ne peux pas croire que tu n'aies pas de nom !"),
-  ]),
-  email: string([
-    minLength(1, "J’ai vraiment besoin de ton adresse email 🙏"),
-    toTrimmed(),
-    email("Hmm, ça ressemble pas à une adresse email ça 🤔"),
-  ]),
-  gender: string("Allez un p’tit effort 😌", [minLength(1)]),
-  age: string(
-    "Je voudrais bien essayer de deviner mais j’ai peur de ne pas réussir",
-    [minLength(1)],
-  ),
-  bio: string([toTrimmed()]),
-  picture: any([
-    (input: File | undefined) => {
-      if (input) {
-        if (input.size > 5_000_000) {
-          return getPipeIssues(
-            "custom",
-            `Ta photo est supérieur à ${Math.floor(
-              input.size / 1000000,
-            )} Mo mais ne doit pas dépasser 5 Mo. Il faudrait que tu réduises un peu sa taille.`,
-            input,
-          );
-        }
-      }
-
-      return getOutput(input);
-    },
-  ]),
-});
 
 const steps = [
   "firstName",

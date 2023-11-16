@@ -9,7 +9,7 @@ interface Props {
   email: string;
   gender: string;
   age: string;
-  bio: string;
+  bio: string | null;
   picture?: File;
   visible: boolean;
 }
