@@ -121,6 +121,17 @@ export async function updateDraw({
   });
 }
 
+export async function getPlayer(drawYear: number, personId: string) {
+  return prisma.player.findUnique({
+    where: {
+      drawYear_personId: {
+        drawYear,
+        personId,
+      },
+    },
+  });
+}
+
 export async function addPlayer({
   year,
   id: personId,
