@@ -4,6 +4,7 @@ import weekday from "dayjs/plugin/weekday";
 import { useMemo } from "react";
 import invariant from "tiny-invariant";
 
+import { type Person } from "~/models/person.server";
 import { type User } from "~/models/user.server";
 
 import "dayjs/locale/fr";
@@ -97,7 +98,15 @@ export function pluralize(
   return total > 1 ? word + suffix : word;
 }
 
-export function genderize(word: string, gender: string, feminine?: string) {
+export function genderize(
+  word: string,
+  subject: string | Person,
+  feminine?: string,
+) {
+  let gender = subject;
+  if (typeof subject === "object") {
+    gender = subject.gender;
+  }
   if (gender === "female") {
     return feminine ?? `${word}e`;
   }

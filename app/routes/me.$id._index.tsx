@@ -264,7 +264,7 @@ export default function MeIndex() {
                   <div>
                     <div className="mb-4 font-bold">
                       {assignedPerson.firstName} a fournit une photo{" "}
-                      {genderize("de lui", assignedPerson.gender, "d’elle")} :
+                      {genderize("de lui", assignedPerson, "d’elle")} :
                     </div>
                     <Picture
                       src={`/uploads/${assignedPerson.picture}`}
@@ -287,9 +287,9 @@ export default function MeIndex() {
                   </li>
                   <li className="ml-6 pl-2">
                     🎁{"  "}De te dévoiler auprès d’
-                    {genderize("lui", assignedPerson.gender, "elle")} à partir
-                    du 24 décembre à minuit en lui offrant si possible un petit
-                    cadeau selon tes moyens.
+                    {genderize("lui", assignedPerson, "elle")} à partir du 24
+                    décembre à minuit en lui offrant si possible un petit cadeau
+                    selon tes moyens.
                   </li>
                 </ul>
               </div>

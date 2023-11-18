@@ -12,7 +12,7 @@ export default function AdminRegistationDeleted({ person }: Props) {
     <Email signature={false}>
       <Text>
         {person.firstName} {person.lastName} s’est{" "}
-        {genderize("désincrit", person.gender)}.
+        {genderize("désincrit", person)}.
       </Text>
     </Email>
   );

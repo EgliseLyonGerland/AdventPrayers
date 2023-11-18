@@ -70,8 +70,7 @@ export const variableGenerators: Record<Variable, VariableGenerator> = {
   "src.lastName": ({ person }) => person?.lastName,
   "src.bio": ({ person }) => person?.bio,
   "src.picture": ({ person }) => person?.picture,
-  "src.g": ({ person }, mas, fem) =>
-    person && genderize(mas, person.gender, fem),
+  "src.g": ({ person }, mas, fem) => person && genderize(mas, person, fem),
   "src.registerLink": ({ person }) => {
     if (!person) {
       return "/";
@@ -99,7 +98,7 @@ export const variableGenerators: Record<Variable, VariableGenerator> = {
   "dst.bio": ({ assigned }) => assigned?.bio,
   "dst.picture": ({ assigned }) => assigned?.picture,
   "dst.g": ({ assigned }, mas, fem) =>
-    assigned && genderize(mas, assigned.gender, fem),
+    assigned && genderize(mas, assigned, fem),
 };
 
 export function generate(

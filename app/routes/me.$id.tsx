@@ -32,7 +32,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   if (!isRegistered) {
     throw new Response(null, {
       status: 404,
-      statusText: `Tu n’es pas encore ${genderize("inscrit", person.gender)}`,
+      statusText: `Tu n’es pas encore ${genderize("inscrit", person)}`,
     });
   }
 
