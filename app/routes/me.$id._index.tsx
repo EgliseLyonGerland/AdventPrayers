@@ -30,6 +30,7 @@ import {
   genderize,
   getCurrentYear,
   getFirstAdventSundayDate,
+  quoted,
 } from "~/utils";
 import { sendEmail } from "~/utils/email.server";
 import t from "~/utils/i18n";
@@ -253,9 +254,7 @@ export default function MeIndex() {
                       Ce que {assignedPerson.firstName} a écrit à son sujet :
                     </div>
                     <div className="font-serif opacity-80">
-                      {"« "}
-                      {assignedPerson.bio}
-                      {" »"}
+                      {quoted(assignedPerson.bio)}
                     </div>
                   </div>
                 ) : null}

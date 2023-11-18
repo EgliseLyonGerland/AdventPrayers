@@ -166,3 +166,7 @@ export function ensureArray<T>(value: T | T[]): T[] {
 
   return [value];
 }
+
+export function quoted(text: string) {
+  return `«\u00A0${text}\u00A0»`;
+}
