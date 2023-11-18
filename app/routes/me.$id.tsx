@@ -45,11 +45,13 @@ export default function Me() {
   return (
     <div
       className={clsx(
-        "mx-auto flex h-screen max-w-[1400px] flex-col gap-8 overflow-hidden pb-4 pt-8 md:gap-12 md:py-12",
-        !location.pathname.endsWith("/edit") && "overflow-y-hidden",
+        "mx-auto flex min-h-[100svh] flex-col pb-4 md:pb-12",
+        location.pathname.endsWith("/edit") && "h-[100svh] overflow-hidden",
       )}
     >
-      <Logo className="h-[15vw] shrink-0 md:top-12 md:h-28" />
+      <div className="pointer-events-none sticky top-0 z-10 bg-gradient-to-b from-base-200">
+        <Logo className="mx-auto my-8 h-[15vw] shrink-0 md:my-12 md:h-28" />
+      </div>
       <Outlet />
     </div>
   );

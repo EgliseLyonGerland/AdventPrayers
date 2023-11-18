@@ -53,7 +53,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
     id,
   });
 
-  return redirect("..");
+  return redirect("..?showInfos=true");
 }
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
