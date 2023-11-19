@@ -215,7 +215,7 @@ export default function PersonForm({ person, onSubmit }: Props) {
               </button>
             </div>
 
-            <div className="space-x-2">
+            <div className="space-x-4">
               <NavLink className="btn md:btn-lg" to="..?showInfos=true">
                 Annuler
               </NavLink>

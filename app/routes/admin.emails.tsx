@@ -4,12 +4,13 @@ import {
   json,
   type LoaderFunctionArgs,
 } from "@remix-run/node";
-import { Form } from "@remix-run/react";
-import { useState } from "react";
+import { Form, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import AdminRegistationAdded from "~/components/emails/adminRegistationAdded";
 import AdminRegistationDeleted from "~/components/emails/adminRegistationDeleted";
+import NewAnswerEmail from "~/components/emails/newAnwser";
+import NewMessageEmail from "~/components/emails/newMessage";
 import RegistrationApprovedEmail from "~/components/emails/registationApproved";
 import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
 import UnregisteredEmail from "~/components/emails/unregistered";
@@ -18,13 +19,17 @@ import { type Registration } from "~/models/registrations.server";
 import { getUser } from "~/session.server";
 import { sendEmail } from "~/utils/email.server";
 
-const templates = {
+const templatesComponent = {
   adminRegistrationAdded: AdminRegistationAdded,
   adminRegistrationDeleted: AdminRegistationDeleted,
   registrationRecorded: RegistrationRecordedEmail,
   registrationApproved: RegistrationApprovedEmail,
   unregistered: UnregisteredEmail,
+  newMessage: NewMessageEmail,
+  newAnswer: NewAnswerEmail,
 } as const;
+
+const templates = Object.entries(templatesComponent);
 
 const person: Person = {
   id: "123456",
@@ -39,6 +44,19 @@ Lorem esse occaecat nostrud adipisicing voluptate do nulla. Duis ex elit dolore 
   picture: "clo6yrcoy000a3b6qo3qaw5k7.png",
 };
 
+const assignedPerson: Person = {
+  id: "654321",
+  firstName: "Raymond",
+  lastName: "Laporte",
+  age: "18+",
+  gender: "male",
+  email: "raymond.laporte@example.com",
+  bio: `Amet sunt qui aliquip anim culpa reprehenderit. In nulla magna pariatur culpa labore nulla esse. Duis proident culpa ad pariatur. Tempor culpa sit duis est sit amet incididunt ea. Fugiat veniam et deserunt pariatur Lorem pariatur dolor proident. Sunt adipisicing elit aliquip eu sint veniam ad anim minim ut incididunt labore. Consectetur nisi exercitation incididunt consectetur irure non non irure sint deserunt proident ipsum labore enim.
+
+Commodo elit est id eu. Mollit commodo non incididunt fugiat. Culpa reprehenderit deserunt deserunt non duis est.`,
+  picture: "clo6yrcoy000j3b6q6zezx0np.png",
+};
+
 const registration: Registration = {
   ...person,
   drawYear: 2023,
@@ -47,17 +65,40 @@ const registration: Registration = {
   personId: "",
 };
 
-function isTemplate(name: string): name is keyof typeof templates {
-  return name in templates;
+function isTemplate(name: string): name is keyof typeof templatesComponent {
+  return name in templatesComponent;
 }
 
-function renderTemplate(name: keyof typeof templates) {
+function renderTemplate(name: keyof typeof templatesComponent) {
   if (name == "registrationRecorded") {
-    const Component = templates[name];
+    const Component = templatesComponent[name];
     return render(<Component registration={registration} />);
   }
+  if (name == "newMessage") {
+    const Component = templatesComponent[name];
+    return render(
+      <Component
+        message={`In ad ex ex minim est amet velit. Occaecat sit id amet dolore cillum mollit voluptate nisi deserunt velit nulla id eiusmod cupidatat. Deserunt ullamco labore ipsum proident eu cupidatat ullamco amet voluptate fugiat.
 
-  const Component = templates[name];
+Anim nulla irure incididunt pariatur tempor non reprehenderit tempor dolor sit ea. Amet in sint in cupidatat magna laboris magna elit occaecat tempor id ullamco anim. Dolor non Lorem ad excepteur velit deserunt magna ea anim fugiat deserunt qui culpa sunt. Qui irure elit ut exercitation non ipsum duis enim commodo. Do ea mollit aliquip id laboris reprehenderit in. Nulla proident sit ad proident ea veniam. Lorem incididunt id laborum mollit consectetur ad proident.`}
+        person={person}
+      />,
+    );
+  }
+  if (name == "newAnswer") {
+    const Component = templatesComponent[name];
+    return render(
+      <Component
+        assignedPerson={assignedPerson}
+        message={`In ad ex ex minim est amet velit. Occaecat sit id amet dolore cillum mollit voluptate nisi deserunt velit nulla id eiusmod cupidatat. Deserunt ullamco labore ipsum proident eu cupidatat ullamco amet voluptate fugiat.
+
+Anim nulla irure incididunt pariatur tempor non reprehenderit tempor dolor sit ea. Amet in sint in cupidatat magna laboris magna elit occaecat tempor id ullamco anim. Dolor non Lorem ad excepteur velit deserunt magna ea anim fugiat deserunt qui culpa sunt. Qui irure elit ut exercitation non ipsum duis enim commodo. Do ea mollit aliquip id laboris reprehenderit in. Nulla proident sit ad proident ea veniam. Lorem incididunt id laborum mollit consectetur ad proident.`}
+        person={person}
+      />,
+    );
+  }
+
+  const Component = templatesComponent[name];
   return render(<Component person={person} />);
 }
 
@@ -71,7 +112,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   invariant(isTemplate(template), "Template not found (2)");
   invariant(user);
 
-  const Component = templates[template];
+  const Component = templatesComponent[template];
 
   sendEmail({
     body: renderTemplate(template),
@@ -91,9 +132,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Email() {
-  const [currentTemplate, setCurrentTemplate] = useState<
-    keyof typeof templates
-  >("adminRegistrationAdded");
+  const [searchParams, setSearchParams] = useSearchParams({
+    template: templates[0][0],
+  });
+
+  const currentTemplate = searchParams.get(
+    "template",
+  ) as keyof typeof templatesComponent;
 
   const doc = isTemplate(currentTemplate)
     ? renderTemplate(currentTemplate)
@@ -106,12 +151,12 @@ export default function Email() {
           className="select select-bordered select-sm"
           onChange={(event) => {
             if (isTemplate(event.currentTarget.value)) {
-              setCurrentTemplate(event.currentTarget.value);
+              setSearchParams({ template: event.currentTarget.value });
             }
           }}
           value={currentTemplate}
         >
-          {Object.entries(templates).map(([name, template]) => (
+          {templates.map(([name, template]) => (
             <option key={name} value={name}>
               {template.title}
             </option>

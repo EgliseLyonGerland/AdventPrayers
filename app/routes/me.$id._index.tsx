@@ -98,7 +98,7 @@ export default function MeIndex() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { person, assignedPerson, startsAt } = useLoaderData<typeof loader>();
-  const modalRef = useRef<HTMLDialogElement>(null);
+  const unregisterModalRef = useRef<HTMLDialogElement>(null);
 
   const showInfos = searchParams.get("showInfos") === "true";
 
@@ -228,7 +228,7 @@ export default function MeIndex() {
           showInfos && "hidden",
         )}
       >
-        <div className="flex flex-1 flex-col p-6 md:px-8">
+        <div className="flex flex-1 flex-col p-6 md:p-8">
           {assignedPerson ? (
             <div className="flex gap-8 max-lg:flex-col md:gap-12">
               <div className="flex grow flex-col gap-8 md:gap-12 lg:w-[55%]">
@@ -271,6 +271,17 @@ export default function MeIndex() {
                     />
                   </div>
                 ) : null}
+
+                <div className="mt-4">
+                  <NavLink
+                    className="btn btn-secondary btn-outline w-full"
+                    to="write"
+                  >
+                    <span className="truncate text-ellipsis">
+                      Envoyer un message à {assignedPerson.firstName}
+                    </span>
+                  </NavLink>
+                </div>
               </div>
               <div className="divider" />
               <div className="lg:w-[45%]">
@@ -320,7 +331,7 @@ export default function MeIndex() {
               <button
                 className="btn btn-neutral w-full"
                 onClick={() => {
-                  modalRef.current?.showModal();
+                  unregisterModalRef.current?.showModal();
                 }}
               >
                 Me désinscrire
@@ -330,7 +341,7 @@ export default function MeIndex() {
         </div>
       </div>
 
-      <dialog className="modal" ref={modalRef}>
+      <dialog className="modal" ref={unregisterModalRef}>
         <div className="modal-box">
           <h3 className="mb-4 text-xl font-bold md:text-2xl">
             Tu vas beaucoup me manquer{" "}😭
@@ -342,7 +353,7 @@ export default function MeIndex() {
                 className="btn btn-neutral btn-sm md:btn-md"
                 formMethod="dialog"
               >
-                <Text alt="Je réféchis">Attends je réfléchis...</Text>
+                <Text alt="Je réfléchis">Attends je réfléchis...</Text>
               </button>
               <button className="btn btn-outline btn-sm md:btn-md">
                 Je suis sûr !

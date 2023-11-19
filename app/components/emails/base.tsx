@@ -45,6 +45,7 @@ export function Button({
 }
 
 export const Image = ReactEmail.Img;
+export const Section = ReactEmail.Section;
 
 interface Props {
   heading?: string;
