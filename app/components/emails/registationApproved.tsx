@@ -24,10 +24,13 @@ export default function RegistrationApprovedEmail({ person }: Props) {
         la porter dans tes prières jusqu’à Noël.
       </Text>
       <Text>
-        Sache que tu peux te désinscrire à tout moment avant que l’opération ne
-        démarre. Il te suffit pour cela d’accéder à ton espace participant en
-        cliquant sur le bouton ci-dessous. J’espère quand même que tu n’en auras
-        pas besoin 😇.
+        Tu trouveras ci-dessous un lien qui te donnera accès à ton espace
+        participant. Dans cet espace tu pourras modifier tes informations et tu
+        pourras également te désinscrire de l’opération tant qu’elle n’a pas
+        démarré. Une fois lancée, tu y trouveras les informations de la personne
+        qui fera l’objet de tes prières et tu auras la possibilité de lui
+        envoyer un message de façon anonyme. Mais je t’expliquerai ça le{" "}
+        {formatDate(startsAt)} !
       </Text>
       <Button href={`/me/${person.id}`}>Accéder à mon espace</Button>
       <Text>À très bientôt !</Text>
