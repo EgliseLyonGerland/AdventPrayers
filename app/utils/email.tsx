@@ -205,11 +205,13 @@ export function generateEmailFromString(title: string, content: string) {
 export function generateEmailFromTemplate(
   name: keyof typeof templatesComponent,
   {
+    draw,
     person,
     assignedPerson,
     registration,
     message,
   }: {
+    draw?: Draw;
     person?: Person;
     assignedPerson?: Person;
     registration?: Registration;
@@ -275,6 +277,20 @@ export function generateEmailFromTemplate(
       if (person) {
         const Component = templatesComponent[name];
         return <Component person={person} />;
+      }
+      break;
+    }
+
+    case "start": {
+      if (draw && person && assignedPerson) {
+        const Component = templatesComponent[name];
+        return (
+          <Component
+            assignedPerson={assignedPerson}
+            draw={draw}
+            person={person}
+          />
+        );
       }
       break;
     }
