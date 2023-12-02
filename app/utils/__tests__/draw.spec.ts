@@ -79,22 +79,22 @@ const draw: Draw = {
   ],
 };
 
-const pastDraws: Draw[] = [
-  {
-    year: 2023,
-    ages: "",
-    drawn: true,
-    groups: "6,10,14,18",
-    players: [
-      { personId: "asa", assignedId: "mba", age: "6-9", drawYear: 2023 },
-      { personId: "lba", assignedId: "asa", age: "6-9", drawYear: 2023 },
-      { personId: "mba", assignedId: "vsa", age: "6-9", drawYear: 2023 },
-      { personId: "vsa", assignedId: "lba", age: "6-9", drawYear: 2023 },
-    ],
-  },
-];
-
 test("letsDraw()", () => {
+  const pastDraws: Draw[] = [
+    {
+      year: 2023,
+      ages: "",
+      drawn: true,
+      groups: "6,10,14,18",
+      players: [
+        { personId: "asa", assignedId: "mba", age: "6-9", drawYear: 2023 },
+        { personId: "lba", assignedId: "asa", age: "6-9", drawYear: 2023 },
+        { personId: "mba", assignedId: "vsa", age: "6-9", drawYear: 2023 },
+        { personId: "vsa", assignedId: "lba", age: "6-9", drawYear: 2023 },
+      ],
+    },
+  ];
+
   expect(letsDraw(draw, [], persons)).toEqual({
     asa: "mba",
     lba: "asa",
@@ -102,6 +102,55 @@ test("letsDraw()", () => {
     mba: "lva",
     vsa: "lba",
   });
+
+  expect(letsDraw(draw, pastDraws, persons)).toEqual({
+    asa: "lba",
+    lba: "lva",
+    lva: "vsa",
+    mba: "asa",
+    vsa: "mba",
+  });
+});
+
+test("letsDraw() with conflicts", () => {
+  const pastDraws: Draw[] = [
+    {
+      year: 2023,
+      ages: "",
+      drawn: true,
+      groups: "6,10,14,18",
+      players: [
+        { personId: "asa", assignedId: "mba", age: "6-9", drawYear: 2023 },
+        { personId: "lba", assignedId: "asa", age: "6-9", drawYear: 2023 },
+        { personId: "mba", assignedId: "vsa", age: "6-9", drawYear: 2023 },
+        { personId: "vsa", assignedId: "lba", age: "6-9", drawYear: 2023 },
+      ],
+    },
+    {
+      year: 2022,
+      ages: "",
+      drawn: true,
+      groups: "6,10,14,18",
+      players: [
+        { personId: "asa", assignedId: "lba", age: "6-9", drawYear: 2022 },
+        { personId: "lba", assignedId: "vsa", age: "6-9", drawYear: 2022 },
+        { personId: "mba", assignedId: "asa", age: "6-9", drawYear: 2022 },
+        { personId: "vsa", assignedId: "mba", age: "6-9", drawYear: 2022 },
+      ],
+    },
+    {
+      year: 2021,
+      ages: "",
+      drawn: true,
+      groups: "6,10,14,18",
+      players: [
+        { personId: "asa", assignedId: "vsa", age: "6-9", drawYear: 2021 },
+        { personId: "lba", assignedId: "mba", age: "6-9", drawYear: 2021 },
+        { personId: "mba", assignedId: "lba", age: "6-9", drawYear: 2021 },
+        { personId: "vsa", assignedId: "asa", age: "6-9", drawYear: 2021 },
+      ],
+    },
+  ];
 
   expect(letsDraw(draw, pastDraws, persons)).toEqual({
     asa: "lba",

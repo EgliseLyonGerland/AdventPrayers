@@ -209,7 +209,6 @@ export async function makeDraw({ year }: Pick<Draw, "year">) {
         },
       },
     },
-    take: 2,
   });
 
   const draw = letsDraw(currentDraw, prevDraws, persons);

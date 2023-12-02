@@ -83,6 +83,10 @@ export function letsDraw(
     const ham = new HamiltonianCycle(graph);
     const chain = ham.run().map((index) => players[index].personId);
 
+    if (chain.length === 0 && pastDraws.length > 0) {
+      return letsDraw(draw, pastDraws.slice(0, -1), persons);
+    }
+
     return {
       ...acc,
       ...chain.reduce(
