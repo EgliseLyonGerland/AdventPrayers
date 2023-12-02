@@ -11,9 +11,19 @@
 .btn-xs:not(.btn-circle) {
   @apply px-2;
 }
+
 .input:not(textarea) {
   @apply rounded-full px-4;
 }
+.input-disabled,
+.input:disabled,
+.input[disabled],
+.textarea-disabled,
+.textarea:disabled,
+.textarea[disabled] {
+  @apply opacity-40;
+}
+
 .select {
   @apply rounded-full px-6 pr-10;
 }

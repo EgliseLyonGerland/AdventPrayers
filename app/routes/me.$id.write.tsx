@@ -121,10 +121,9 @@ export default function MeWrite() {
 
       <div className="rounded-box my-auto max-w-2xl border border-warning p-4 text-center text-sm font-bold leading-normal text-warning opacity-60 md:text-base">
         Ce message sera envoyé de façon anonyme à {assignedPerson.firstName}.{" "}
-        {genderize("Il", assignedPerson, "Elle")} ne s’aura donc pas que tu en
-        es l’auteur. Pour préserver le secret, assure-toi de ne transmettre
-        aucun indice qui pemettrait à {assignedPerson.firstName} de te
-        démasquer.
+        {genderize("Il", assignedPerson, "Elle")} ne saura donc pas que tu en es
+        l’auteur. Pour préserver le secret, assure-toi de ne transmettre aucun
+        indice qui pemettrait à {assignedPerson.firstName} de te démasquer.
       </div>
 
       <div className="mt-auto space-x-4">

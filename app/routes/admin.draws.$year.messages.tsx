@@ -1,4 +1,5 @@
 import { QuestionMarkCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { render } from "@react-email/render";
 import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -12,11 +13,19 @@ import invariant from "tiny-invariant";
 import { useDebounce, useLocalStorage } from "usehooks-ts";
 
 import SidePanel from "~/components/admin/sidePanel";
+import { templates } from "~/components/emails";
 import { type GetDrawPlayer, getDraw } from "~/models/draw.server";
 import { type Person } from "~/models/person.server";
 import { type WithRequired } from "~/types";
 import { pluralize, getYearParam } from "~/utils";
-import { type Variable, generate, renderEmail, variables } from "~/utils/email";
+import {
+  type Variable,
+  generate,
+  generateEmailFromString,
+  variables,
+  isTemplate,
+  generateEmailFromTemplate,
+} from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
 
 type Player = WithRequired<GetDrawPlayer, "person">;
@@ -37,6 +46,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
   switch (formData.get("_action")) {
     case "send": {
+      const template = `${formData.get("template")}`;
       const subject = `${formData.get("subject")}`;
       const title = `${formData.get("title")}`;
       const body = `${formData.get("body")}`;
@@ -65,9 +75,18 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       }, []);
 
       if (grouped) {
+        if (template) {
+          break;
+        }
+
         await sendEmail({
           subject: generate(subject, draw),
-          body: renderEmail(generate(title, draw), generate(body, draw)),
+          body: render(
+            generateEmailFromString(
+              generate(title, draw),
+              generate(body, draw),
+            ),
+          ),
           to: persons.map(({ person }) => ({
             name: `${person.firstName} ${person.lastName}`,
             address: person.email!,
@@ -80,13 +99,21 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
       const emails = persons.map(({ person, assigned }) => ({
         subject: generate(subject, draw, person, assigned),
-        body: renderEmail(
-          generate(title, draw, person, assigned),
-          generate(body, draw, person, assigned),
+        body: render(
+          isTemplate(template)
+            ? generateEmailFromTemplate(template, {
+                draw,
+                person,
+                assignedPerson: assigned || undefined,
+              })
+            : generateEmailFromString(
+                generate(title, draw, person, assigned),
+                generate(body, draw, person, assigned),
+              ),
         ),
         to: {
           name: `${person.firstName} ${person.lastName}`,
-          address: person.email!,
+          address: person.email,
         },
         grouped: false,
         test,
@@ -133,6 +160,10 @@ const Mails = () => {
     `draws.mails.draft.recipients`,
     [],
   );
+  const [template, setTemplate] = useLocalStorage(
+    `draws.mails.draft.template`,
+    "",
+  );
   const [subject, setSubject] = useLocalStorage(
     `draws.mails.draft.subject`,
     "",
@@ -164,6 +195,7 @@ const Mails = () => {
   const handleSend = (test = false) => {
     const formData = new FormData();
     formData.set("_action", "send");
+    formData.set("template", template);
     formData.set("subject", subject);
     formData.set("title", title);
     formData.set("body", body);
@@ -209,26 +241,46 @@ const Mails = () => {
     );
   }
 
-  const generatePreview = (text: string) => {
+  let example = draw.players[0];
+  if (recipients.length) {
+    example =
+      draw.players.find((player) => player.personId === recipients[0].id) ||
+      example;
+  }
+
+  const parseText = (text: string) =>
+    generate(text, draw, example.person, example.assigned || undefined);
+
+  const generatePreview = () => {
     if (grouped) {
-      return text;
+      return template
+        ? "Impossible d’utiliser un template en mode groupé"
+        : render(generateEmailFromString(title, body));
     }
 
-    let example = draw.players[0];
-    if (recipients.length) {
-      example =
-        draw.players.find((player) => player.personId === recipients[0].id) ||
-        example;
+    if (isTemplate(template)) {
+      return render(
+        generateEmailFromTemplate(template, {
+          draw,
+          person: example.person,
+          assignedPerson: example.assigned || undefined,
+        }),
+      );
     }
 
-    return generate(text, draw, example.person, example.assigned || undefined);
+    return render(
+      generateEmailFromString(
+        parseText(titleDebounced),
+        parseText(bodyDebounced),
+      ),
+    );
   };
 
   return (
     <div className="absolute inset-0 flex flex-col gap-4 overflow-hidden">
       <div className="flex items-center gap-4">
         <input
-          className="input input-bordered input-secondary input-sm"
+          className="input input-bordered input-secondary input-sm mr-auto"
           onChange={(event) => {
             setSearch(kebabCase(event.target.value));
           }}
@@ -236,7 +288,7 @@ const Mails = () => {
           type="text"
           value={search}
         />
-        <div className="form-control ml-auto">
+        <div className="form-control">
           <label className="label cursor-pointer">
             <input
               checked={grouped}
@@ -324,8 +376,8 @@ const Mails = () => {
             </ul>
           </div>
           <div className="relative flex flex-[0.8] flex-col">
-            <div className="divide-y divide-neutral-content border-b border-white/10 dark:divide-neutral-content/10">
-              <div className="flex p-4">
+            <div className="flex flex-col gap-4 border-b border-neutral-content p-4 dark:border-neutral-content/10">
+              <div className="flex">
                 <span className="mr-2 whitespace-nowrap font-bold opacity-50">
                   À :
                 </span>
@@ -370,35 +422,67 @@ const Mails = () => {
                   ) : null}
                 </div>
               </div>
-              <div className="flex items-center p-4">
-                <span className="mr-2 w-20 whitespace-nowrap font-bold opacity-50">
-                  Objet :
-                </span>
-                <input
-                  className="input input-sm w-full"
-                  defaultValue={subject}
-                  onChange={(event) => {
-                    setSubject(event.target.value);
-                  }}
-                  type="text"
-                />
-              </div>
-              <div className="flex items-center p-4">
-                <span className="mr-2 w-20 whitespace-nowrap font-bold opacity-50">
-                  Titre :
-                </span>
-                <input
-                  className="input input-sm w-full"
-                  defaultValue={title}
-                  onChange={(event) => {
-                    setTitle(event.target.value);
-                  }}
-                  type="text"
-                />
-              </div>
+              <table className="table table-sm">
+                <tbody>
+                  <tr>
+                    <td className="whitespace-nowrap font-bold opacity-50">
+                      Modèle :
+                    </td>
+                    <td className="w-full">
+                      <select
+                        className="select select-bordered select-sm"
+                        onChange={(event) => {
+                          setTemplate(event.currentTarget.value);
+                        }}
+                        value={template}
+                      >
+                        <option value="">Aucun</option>
+                        {templates.map(([name, Component]) => (
+                          <option key={Component.title} value={name}>
+                            {Component.title}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="whitespace-nowrap font-bold opacity-50">
+                      Objet :
+                    </td>
+                    <td className="w-full">
+                      <input
+                        className="input input-sm w-full"
+                        defaultValue={subject}
+                        disabled={Boolean(template)}
+                        onChange={(event) => {
+                          setSubject(event.target.value);
+                        }}
+                        type="text"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="whitespace-nowrap font-bold opacity-50">
+                      Titre :
+                    </td>
+                    <td className="w-full">
+                      <input
+                        className="input input-sm w-full"
+                        defaultValue={title}
+                        disabled={Boolean(template)}
+                        onChange={(event) => {
+                          setTitle(event.target.value);
+                        }}
+                        type="text"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <textarea
-              className="block h-full w-full resize-none bg-transparent p-4 font-mono outline-0 placeholder:font-sans placeholder:italic placeholder:opacity-50"
+              className="textarea block h-full w-full resize-none bg-transparent p-4 font-mono placeholder:font-sans placeholder:italic placeholder:opacity-50 focus:outline-none"
+              disabled={Boolean(template)}
               onChange={(event) => {
                 setBody(event.target.value);
               }}
@@ -418,15 +502,13 @@ const Mails = () => {
           <div className="flex min-h-full flex-1">
             <iframe
               className="min-h-full w-full flex-1"
-              srcDoc={renderEmail(
-                generatePreview(titleDebounced),
-                generatePreview(bodyDebounced),
-              )}
+              srcDoc={generatePreview()}
               title="Template"
             />
           </div>
         </div>
       </div>
+
       <dialog className="modal" ref={modalRef}>
         <div className="modal-box max-w-2xl">
           <h3 className="text-lg font-bold">Confirmation</h3>

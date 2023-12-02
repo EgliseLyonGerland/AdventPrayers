@@ -1,11 +1,12 @@
-import { render } from "@react-email/components";
 import { get } from "lodash";
 import { Renderer, marked } from "marked";
 
+import { templatesComponent } from "~/components/emails";
 import * as Email from "~/components/emails/base";
 import { AppName, AppNameQuoted } from "~/config";
 import { type Draw } from "~/models/draw.server";
-import { type PersonWithExclude } from "~/models/person.server";
+import { type Person, type PersonWithExclude } from "~/models/person.server";
+import { type Registration } from "~/models/registrations.server";
 import { type Nullable } from "~/types";
 
 import { genderize } from ".";
@@ -180,8 +181,8 @@ export function tokenize(text: string): Content {
   }, []);
 }
 
-export function renderEmail(title: string, content: string) {
-  return render(
+export function generateEmailFromString(title: string, content: string) {
+  return (
     <Email.Base heading={title || undefined}>
       {tokenize(content).map((item, index) =>
         item.type === "text" ? (
@@ -197,6 +198,93 @@ export function renderEmail(title: string, content: string) {
           <Email.Image src={item.src} />
         ) : null,
       )}
-    </Email.Base>,
+    </Email.Base>
   );
+}
+
+export function generateEmailFromTemplate(
+  name: keyof typeof templatesComponent,
+  {
+    person,
+    assignedPerson,
+    registration,
+    message,
+  }: {
+    person?: Person;
+    assignedPerson?: Person;
+    registration?: Registration;
+    message?: string;
+  } = {},
+) {
+  switch (name) {
+    case "adminRegistrationAdded": {
+      if (person) {
+        const Component = templatesComponent[name];
+        return <Component person={person} />;
+      }
+      break;
+    }
+
+    case "adminRegistrationDeleted": {
+      if (person) {
+        const Component = templatesComponent[name];
+        return <Component person={person} />;
+      }
+      break;
+    }
+
+    case "newAnswer": {
+      if (person && assignedPerson && message) {
+        const Component = templatesComponent[name];
+        return (
+          <Component
+            assignedPerson={assignedPerson}
+            message={message}
+            person={person}
+          />
+        );
+      }
+      break;
+    }
+
+    case "newMessage": {
+      if (person && message) {
+        const Component = templatesComponent[name];
+        return <Component message={message} person={person} />;
+      }
+      break;
+    }
+
+    case "registrationApproved": {
+      if (person) {
+        const Component = templatesComponent[name];
+        return <Component person={person} />;
+      }
+      break;
+    }
+
+    case "registrationRecorded": {
+      if (registration) {
+        const Component = templatesComponent[name];
+        return <Component registration={registration} />;
+      }
+      break;
+    }
+
+    case "unregistered": {
+      if (person) {
+        const Component = templatesComponent[name];
+        return <Component person={person} />;
+      }
+      break;
+    }
+  }
+
+  return <>Impossible de générer l’email à partir du template</>;
+}
+
+export function isTemplate(
+  name: string,
+): name is keyof typeof templatesComponent {
+  return name in templatesComponent;
 }

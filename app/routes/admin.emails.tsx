@@ -7,29 +7,12 @@ import {
 import { Form, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import AdminRegistationAdded from "~/components/emails/adminRegistationAdded";
-import AdminRegistationDeleted from "~/components/emails/adminRegistationDeleted";
-import NewAnswerEmail from "~/components/emails/newAnwser";
-import NewMessageEmail from "~/components/emails/newMessage";
-import RegistrationApprovedEmail from "~/components/emails/registationApproved";
-import RegistrationRecordedEmail from "~/components/emails/registrationRecorded";
-import UnregisteredEmail from "~/components/emails/unregistered";
+import { templates, templatesComponent } from "~/components/emails";
 import { type Person } from "~/models/person.server";
 import { type Registration } from "~/models/registrations.server";
 import { getUser } from "~/session.server";
+import { generateEmailFromTemplate, isTemplate } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
-
-const templatesComponent = {
-  adminRegistrationAdded: AdminRegistationAdded,
-  adminRegistrationDeleted: AdminRegistationDeleted,
-  registrationRecorded: RegistrationRecordedEmail,
-  registrationApproved: RegistrationApprovedEmail,
-  unregistered: UnregisteredEmail,
-  newMessage: NewMessageEmail,
-  newAnswer: NewAnswerEmail,
-} as const;
-
-const templates = Object.entries(templatesComponent);
 
 const person: Person = {
   id: "123456",
@@ -65,41 +48,17 @@ const registration: Registration = {
   personId: "",
 };
 
-function isTemplate(name: string): name is keyof typeof templatesComponent {
-  return name in templatesComponent;
-}
-
 function renderTemplate(name: keyof typeof templatesComponent) {
-  if (name == "registrationRecorded") {
-    const Component = templatesComponent[name];
-    return render(<Component registration={registration} />);
-  }
-  if (name == "newMessage") {
-    const Component = templatesComponent[name];
-    return render(
-      <Component
-        message={`In ad ex ex minim est amet velit. Occaecat sit id amet dolore cillum mollit voluptate nisi deserunt velit nulla id eiusmod cupidatat. Deserunt ullamco labore ipsum proident eu cupidatat ullamco amet voluptate fugiat.
+  return render(
+    generateEmailFromTemplate(name, {
+      registration,
+      person,
+      assignedPerson,
+      message: `In ad ex ex minim est amet velit. Occaecat sit id amet dolore cillum mollit voluptate nisi deserunt velit nulla id eiusmod cupidatat. Deserunt ullamco labore ipsum proident eu cupidatat ullamco amet voluptate fugiat.
 
-Anim nulla irure incididunt pariatur tempor non reprehenderit tempor dolor sit ea. Amet in sint in cupidatat magna laboris magna elit occaecat tempor id ullamco anim. Dolor non Lorem ad excepteur velit deserunt magna ea anim fugiat deserunt qui culpa sunt. Qui irure elit ut exercitation non ipsum duis enim commodo. Do ea mollit aliquip id laboris reprehenderit in. Nulla proident sit ad proident ea veniam. Lorem incididunt id laborum mollit consectetur ad proident.`}
-        person={person}
-      />,
-    );
-  }
-  if (name == "newAnswer") {
-    const Component = templatesComponent[name];
-    return render(
-      <Component
-        assignedPerson={assignedPerson}
-        message={`In ad ex ex minim est amet velit. Occaecat sit id amet dolore cillum mollit voluptate nisi deserunt velit nulla id eiusmod cupidatat. Deserunt ullamco labore ipsum proident eu cupidatat ullamco amet voluptate fugiat.
-
-Anim nulla irure incididunt pariatur tempor non reprehenderit tempor dolor sit ea. Amet in sint in cupidatat magna laboris magna elit occaecat tempor id ullamco anim. Dolor non Lorem ad excepteur velit deserunt magna ea anim fugiat deserunt qui culpa sunt. Qui irure elit ut exercitation non ipsum duis enim commodo. Do ea mollit aliquip id laboris reprehenderit in. Nulla proident sit ad proident ea veniam. Lorem incididunt id laborum mollit consectetur ad proident.`}
-        person={person}
-      />,
-    );
-  }
-
-  const Component = templatesComponent[name];
-  return render(<Component person={person} />);
+    Anim nulla irure incididunt pariatur tempor non reprehenderit tempor dolor sit ea. Amet in sint in cupidatat magna laboris magna elit occaecat tempor id ullamco anim. Dolor non Lorem ad excepteur velit deserunt magna ea anim fugiat deserunt qui culpa sunt. Qui irure elit ut exercitation non ipsum duis enim commodo. Do ea mollit aliquip id laboris reprehenderit in. Nulla proident sit ad proident ea veniam. Lorem incididunt id laborum mollit consectetur ad proident.`,
+    }),
+  );
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
