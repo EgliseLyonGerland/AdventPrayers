@@ -13,7 +13,7 @@ import invariant from "tiny-invariant";
 import { useDebounce, useLocalStorage } from "usehooks-ts";
 
 import SidePanel from "~/components/admin/sidePanel";
-import { templates } from "~/components/emails";
+import { templates, templatesComponent } from "~/components/emails";
 import { type GetDrawPlayer, getDraw } from "~/models/draw.server";
 import { type Person } from "~/models/person.server";
 import { type WithRequired } from "~/types";
@@ -98,7 +98,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       }
 
       const emails = persons.map(({ person, assigned }) => ({
-        subject: generate(subject, draw, person, assigned),
+        subject: isTemplate(template)
+          ? templatesComponent[template].title
+          : generate(subject, draw, person, assigned),
         body: render(
           isTemplate(template)
             ? generateEmailFromTemplate(template, {
