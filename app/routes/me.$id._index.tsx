@@ -151,7 +151,7 @@ export default function MeIndex() {
                     <div className="opacity-60">{t(person.gender)}</div>
                   </div>
                   <div>
-                    <div className="mb-2 text-lg font-bold">Tranche d’age</div>
+                    <div className="mb-2 text-lg font-bold">Tranche d’âge</div>
                     <div className="opacity-60">{t(person.age)}</div>
                   </div>
                   <div>
@@ -173,7 +173,7 @@ export default function MeIndex() {
                           title={`${person.firstName} ${person.lastName}`}
                         />
                       ) : (
-                        <i>Tu n’as pas fournit de photo</i>
+                        <i>Tu n’as pas fourni de photo</i>
                       )}
                     </div>
                   </div>
@@ -262,7 +262,7 @@ export default function MeIndex() {
                 {assignedPerson.picture ? (
                   <div>
                     <div className="mb-4 font-bold">
-                      {assignedPerson.firstName} a fournit une photo{" "}
+                      {assignedPerson.firstName} a fourni une photo{" "}
                       {genderize("de lui", assignedPerson, "d’elle")} :
                     </div>
                     <Picture

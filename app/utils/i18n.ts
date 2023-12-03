@@ -3,7 +3,7 @@ const translations: Record<string, string> = {
   female: "Femme",
   firstName: "Prénom",
   lastName: "Nom",
-  age: "Tranche d’age",
+  age: "Tranche d’âge",
   gender: "Genre",
   email: "Adresse email",
   bio: "Bio",

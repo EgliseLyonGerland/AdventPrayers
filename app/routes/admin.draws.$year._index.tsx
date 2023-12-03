@@ -64,8 +64,8 @@ const groupByOptions: GroupBy[] = ["player", "age", "group"];
 
 const groupByLabels: Record<GroupBy, string> = {
   player: "Par participant",
-  age: "Par tranche d'age",
-  group: "Par groupe d'age",
+  age: "Par tranche d'âge",
+  group: "Par groupe d'âge",
 };
 
 const searchParamsDefaults: SearchParams = {
@@ -587,7 +587,7 @@ export default function Index() {
           <Form method="post">
             <div className="form-control mb-4">
               <label className="label" htmlFor="ages">
-                <span className="label-text font-bold">Tranches d’age</span>
+                <span className="label-text font-bold">Tranches d’âge</span>
               </label>
               <input
                 className="input input-bordered"
@@ -599,7 +599,7 @@ export default function Index() {
 
             <div className="form-control mb-4">
               <label className="label" htmlFor="groups">
-                <span className="label-text font-bold">Groupes d’age</span>
+                <span className="label-text font-bold">Groupes d’âge</span>
               </label>
               <input
                 className="input input-bordered"
