@@ -132,6 +132,15 @@ export async function getPlayer(drawYear: number, personId: string) {
   });
 }
 
+export async function getPrayerPlayer(drawYear: number, personId: string) {
+  return prisma.player.findFirst({
+    where: {
+      drawYear,
+      assignedId: personId,
+    },
+  });
+}
+
 export async function addPlayer({
   year,
   id: personId,

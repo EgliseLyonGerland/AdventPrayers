@@ -11,7 +11,7 @@ import { type Output, minLength, object, string } from "valibot";
 import NewAnswerEmail from "~/components/emails/newAnwser";
 import TextareaInput from "~/components/register/inputs/textareaInput";
 import Text from "~/components/text";
-import { getPlayer } from "~/models/draw.server";
+import { getPrayerPlayer } from "~/models/draw.server";
 import { getPerson } from "~/models/person.server";
 import { getCurrentYear } from "~/utils";
 import { sendEmail } from "~/utils/email.server";
@@ -40,23 +40,22 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const person = await getPerson(id);
   invariant(person);
 
-  const player = await getPlayer(getCurrentYear(), id);
-  invariant(player);
-  invariant(player.assignedId);
+  const prayerPlayer = await getPrayerPlayer(getCurrentYear(), person.id);
+  invariant(prayerPlayer);
 
-  const assignedPerson = await getPerson(player.assignedId);
-  invariant(assignedPerson);
+  const prayerPerson = await getPerson(prayerPlayer.personId);
+  invariant(prayerPerson);
 
   sendEmail({
     subject: NewAnswerEmail.title,
     body: render(
       <NewAnswerEmail
-        assignedPerson={assignedPerson}
+        assignedPerson={person}
         message={data.message}
-        person={person}
+        person={prayerPerson}
       />,
     ),
-    to: [{ address: person.email, name: person.firstName }],
+    to: [{ address: prayerPerson.email, name: prayerPerson.firstName }],
   });
 
   return redirect("?ok=true");
