@@ -46,7 +46,7 @@ export default function NewAnswerEmail({
       <Text>
         Si tu souhaites lui répondre en retour, tu peux simplement lui écrire un
         nouveau message de la même façon que tu l’as fait la première fois. Je
-        te remet le lien au cas où :
+        te redonne le lien au cas où :
       </Text>
       <Button href={`/me/${person.id}/write`}>Écrire un message</Button>
     </Email>
