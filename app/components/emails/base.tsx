@@ -181,7 +181,7 @@ export default function Email({
                   marginRight: "auto",
                   opacity: 0.5,
                 }}
-                width="200"
+                width="139"
               />
             </ReactEmail.Link>
           </ReactEmail.Section>
