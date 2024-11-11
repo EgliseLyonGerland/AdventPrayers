@@ -1,5 +1,6 @@
 import { AppNameQuoted } from "~/config";
 import { type Person } from "~/models/person.server";
+import { getCurrentYear } from "~/utils";
 
 import Email, { Button, Text } from "./base";
 
@@ -20,8 +21,8 @@ export default function UnregisteredEmail({ person }: Props) {
   return (
     <Email heading={`Hey ${person.firstName} ! 👋`}>
       <Text>
-        J’ai bien pris note de ta désincription à l’édition 2023 de{" "}
-        {AppNameQuoted} !
+        J’ai bien pris note de ta désincription à l’édition {getCurrentYear()}{" "}
+        de {AppNameQuoted} !
       </Text>
       <Text>
         Je suis un peu triste mais tu dois avoir une très bonne raison. Sache en

@@ -11,6 +11,7 @@ import { templates, templatesComponent } from "~/components/emails";
 import { type Person } from "~/models/person.server";
 import { type Registration } from "~/models/registrations.server";
 import { getUser } from "~/session.server";
+import { getCurrentYear } from "~/utils";
 import { generateEmailFromTemplate, isTemplate } from "~/utils/email";
 import { sendEmail } from "~/utils/email.server";
 
@@ -42,7 +43,7 @@ Commodo elit est id eu. Mollit commodo non incididunt fugiat. Culpa reprehenderi
 
 const registration: Registration = {
   ...person,
-  drawYear: 2023,
+  drawYear: getCurrentYear(),
   registeredAt: new Date(),
   approved: false,
   personId: "",

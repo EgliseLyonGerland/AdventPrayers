@@ -1,5 +1,6 @@
 import { AppNameQuoted } from "~/config";
 import { type Registration } from "~/models/registrations.server";
+import { getCurrentYear } from "~/utils";
 
 import Email, { Button, Text } from "./base";
 
@@ -12,7 +13,8 @@ export default function RegistrationRecordedEmail({ registration }: Props) {
     <Email heading={`Hey ${registration.firstName} ! 👋`}>
       <Text>
         Ton inscription est bien enregistrée. Je suis heureux de te compter
-        parmi les participants à l’édition 2023 de {AppNameQuoted} !
+        parmi les participants à l’édition {getCurrentYear()} de {AppNameQuoted}{" "}
+        !
       </Text>
       <Text>
         Je dois cependant encore effectuer une validation manuelle pour

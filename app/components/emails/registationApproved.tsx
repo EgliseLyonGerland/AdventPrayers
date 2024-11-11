@@ -14,7 +14,8 @@ export default function RegistrationApprovedEmail({ person }: Props) {
   return (
     <Email heading={`Hey ${person.firstName} ! 👋`}>
       <Text>
-        J’ai validé ta participation à l’édition 2023 de {AppNameQuoted}
+        J’ai validé ta participation à l’édition {getCurrentYear()} de{" "}
+        {AppNameQuoted}
         {" 🎉"}
       </Text>
       <Text>
