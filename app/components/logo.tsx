@@ -20,6 +20,11 @@ const drawVariants: Variants = {
       opacity: { duration: 0.01 },
     },
   }),
+  done: {
+    pathLength: 1.001,
+    opacity: 1.001,
+    transition: { delay: 0, duration: 0 },
+  },
 };
 
 export default function Logo({
@@ -29,9 +34,9 @@ export default function Logo({
 }: Props) {
   return (
     <motion.svg
-      animate="visible"
+      animate={animate ? "visible" : "done"}
       className={clsx("stroke-base-content", className)}
-      initial={animate ? "hidden" : "visible"}
+      initial={animate ? "hidden" : "done"}
       onAnimationComplete={onAnimationComplete}
       viewBox="0 0 350 92"
       xmlns="http://www.w3.org/2000/svg"
