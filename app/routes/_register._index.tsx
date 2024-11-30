@@ -13,7 +13,8 @@ function RegisterIndex() {
       <div>
         L’opération {AppNameQuoted} est une occasion pour toi de porter dans tes
         prières un frère ou une soeur de l’Église en particulier pendant toute
-        la période de l’Avent.
+        la période de l’Avent et d’être en retour porté dans les prières d’un
+        autre frère ou d’une soeur de l’Église.
       </div>
       <div>
         En t’inscrivant, tu recevras le nom d’un autre participant à l’opération

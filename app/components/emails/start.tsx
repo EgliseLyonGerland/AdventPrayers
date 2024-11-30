@@ -55,7 +55,7 @@ export default function StartEmail({ draw, person, assignedPerson }: Props) {
         Maintenant que tu sais pour qui tu dois prier, n’oublie pas de le faire
         quotidiennement. Si tu ne connais pas bien {assignedPerson.firstName},
         c’est justement l’occasion d’y remédier au gré de discussions le
-        dimanche matin !
+        dimanche !
       </Text>
       <Text>
         Mais attention, ne te dévoile à{" "}
@@ -75,13 +75,12 @@ export default function StartEmail({ draw, person, assignedPerson }: Props) {
         {genderize("il", assignedPerson, "elle")} a renseigné ces informations.
       </Text>
       <Text>
-        Cette année, sache que tu as la possibilité d’envoyer des messages de
-        façon anonyme à {assignedPerson.firstName} directement depuis la
-        plateforme. Il te suffit pour cela d’accéder à ton espace participant et
-        cliquer sur “ENVOYER UN MESSAGE À{" "}
-        {assignedPerson.firstName.toUpperCase()}”. Tu pourras également via la
-        plateforme, répondre aux messages qui te seront envoyés par ton prieur
-        mystère.
+        Sache également que tu as la possibilité d’envoyer des messages de façon
+        anonyme à {assignedPerson.firstName} directement depuis la plateforme.
+        Il te suffit pour cela d’accéder à ton espace participant et cliquer sur
+        “ENVOYER UN MESSAGE À {assignedPerson.firstName.toUpperCase()}”. Tu
+        pourras également via la plateforme, répondre aux messages qui te seront
+        envoyés par ton prieur mystère.
       </Text>
       <Text style={{ fontStyle: "italic" }}>
         ⚠️ N’oublie pas que l’opération {AppNameQuoted} est une mission top
@@ -95,7 +94,7 @@ export default function StartEmail({ draw, person, assignedPerson }: Props) {
       <Text>
         Voilà, si tu as la moindre question, tu peux m’écrire simplement en
         répondant à cet email ou en écrivant à
-        enaventlaprière@egliselyongerland.org.
+        enaventlapriere@egliselyongerland.org.
       </Text>
       <Text>
         Il ne me reste qu’à te souhaiter un très bon premier dimanche de l’Avent
