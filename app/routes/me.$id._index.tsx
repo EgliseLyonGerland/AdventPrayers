@@ -296,10 +296,10 @@ export default function MeIndex() {
                     toute la période de l’Avent.
                   </li>
                   <li className="ml-6 pl-2">
-                    🎁{"  "}De te dévoiler auprès d’
-                    {genderize("lui", assignedPerson, "elle")} à partir du 24
-                    décembre à minuit en lui offrant si possible un petit cadeau
-                    selon tes moyens.
+                    🎁{"  "}De te dévoiler auprès{" "}
+                    {genderize("de lui", assignedPerson, "d’elle")} à partir du
+                    24 décembre à minuit en lui offrant si possible un petit
+                    cadeau selon tes moyens.
                   </li>
                 </ul>
               </div>

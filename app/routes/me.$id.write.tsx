@@ -123,7 +123,7 @@ export default function MeWrite() {
         Ce message sera envoyé de façon anonyme à {assignedPerson.firstName}.{" "}
         {genderize("Il", assignedPerson, "Elle")} ne saura donc pas que tu en es
         l’auteur. Pour préserver le secret, assure-toi de ne transmettre aucun
-        indice qui pemettrait à {assignedPerson.firstName} de te démasquer.
+        indice qui permettrait à {assignedPerson.firstName} de te démasquer.
       </div>
 
       <div className="mt-auto space-x-4">
