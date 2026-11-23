@@ -13,6 +13,7 @@ import {
 } from "@remix-run/react";
 
 import stylesheet from "~/tailwind.css";
+import { toAbsoluteUrl } from "~/utils";
 
 import { AppName } from "./config";
 
@@ -29,7 +30,20 @@ export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
-export const meta: MetaFunction = () => [{ title: AppName }];
+export const meta: MetaFunction = () => {
+  const description =
+    "Porte dans tes prières un frère ou une sœur de l’Église pendant toute la période de l’Avent.";
+
+  return [
+    { title: AppName },
+    { name: "description", content: description },
+    { property: "og:title", content: AppName },
+    { property: "og:description", content: description },
+    { property: "og:image", content: toAbsoluteUrl("/og-image.png") },
+    { property: "og:url", content: toAbsoluteUrl("/") },
+    { property: "og:type", content: "website" },
+  ];
+};
 
 export async function loader() {
   return json({
