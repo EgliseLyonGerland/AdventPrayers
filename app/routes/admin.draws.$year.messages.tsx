@@ -54,8 +54,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       const test = formData.get("test") === "true";
       const recipients = formData.getAll("recipients[]");
 
-      invariant(subject, "You must provide a subject");
-      invariant(body, "You must provide a body");
+      if (!template) {
+        invariant(subject, "You must provide a subject");
+        invariant(body, "You must provide a body");
+      }
+
       invariant(recipients.length, "You must provide at least one recipient");
 
       const draw = await getDraw({ year });
@@ -74,11 +77,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         return acc.concat([player]);
       }, []);
 
-      if (grouped) {
-        if (template) {
-          break;
-        }
-
+      if (!template && grouped) {
         await sendEmail({
           subject: generate(subject, draw),
           body: render(
@@ -233,7 +232,8 @@ const Mails = () => {
     }
   }, [checkerStatus]);
 
-  const ready = recipients.length > 0 && subject.trim() && body.trim();
+  const ready =
+    recipients.length > 0 && (template || (subject.trim() && body.trim()));
 
   if (players.length === 0) {
     return (
@@ -254,10 +254,8 @@ const Mails = () => {
     generate(text, draw, example.person, example.assigned || undefined);
 
   const generatePreview = () => {
-    if (grouped) {
-      return template
-        ? "Impossible d’utiliser un template en mode groupé"
-        : render(generateEmailFromString(title, body));
+    if (!template) {
+      return render(generateEmailFromString(title, body));
     }
 
     if (isTemplate(template)) {
@@ -293,10 +291,13 @@ const Mails = () => {
         <div className="form-control">
           <label className="label cursor-pointer">
             <input
-              checked={grouped}
+              checked={template ? false : grouped}
               className="checkbox checkbox-sm"
+              disabled={!!template}
               onChange={(event) => {
-                setGrouped(event.target.checked);
+                if (!template) {
+                  setGrouped(event.target.checked);
+                }
               }}
               type="checkbox"
             />
@@ -447,38 +448,42 @@ const Mails = () => {
                       </select>
                     </td>
                   </tr>
-                  <tr>
-                    <td className="whitespace-nowrap font-bold opacity-50">
-                      Objet :
-                    </td>
-                    <td className="w-full">
-                      <input
-                        className="input input-sm w-full"
-                        defaultValue={subject}
-                        disabled={Boolean(template)}
-                        onChange={(event) => {
-                          setSubject(event.target.value);
-                        }}
-                        type="text"
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="whitespace-nowrap font-bold opacity-50">
-                      Titre :
-                    </td>
-                    <td className="w-full">
-                      <input
-                        className="input input-sm w-full"
-                        defaultValue={title}
-                        disabled={Boolean(template)}
-                        onChange={(event) => {
-                          setTitle(event.target.value);
-                        }}
-                        type="text"
-                      />
-                    </td>
-                  </tr>
+                  {!template ? (
+                    <tr>
+                      <td className="whitespace-nowrap font-bold opacity-50">
+                        Objet :
+                      </td>
+                      <td className="w-full">
+                        <input
+                          className="input input-sm w-full"
+                          defaultValue={subject}
+                          disabled={Boolean(template)}
+                          onChange={(event) => {
+                            setSubject(event.target.value);
+                          }}
+                          type="text"
+                        />
+                      </td>
+                    </tr>
+                  ) : null}
+                  {!template ? (
+                    <tr>
+                      <td className="whitespace-nowrap font-bold opacity-50">
+                        Titre :
+                      </td>
+                      <td className="w-full">
+                        <input
+                          className="input input-sm w-full"
+                          defaultValue={title}
+                          disabled={Boolean(template)}
+                          onChange={(event) => {
+                            setTitle(event.target.value);
+                          }}
+                          type="text"
+                        />
+                      </td>
+                    </tr>
+                  ) : null}
                 </tbody>
               </table>
             </div>
