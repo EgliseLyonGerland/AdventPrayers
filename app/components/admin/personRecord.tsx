@@ -15,7 +15,11 @@ export default function PersonRecord({ person }: Props) {
       {person.picture ? (
         <div className="avatar">
           <div className="w-10 rounded-full">
-            <img alt={person.picture} src={`/uploads/${person.picture}`} />
+            <img
+              alt={person.picture}
+              loading="lazy"
+              src={`/uploads/${person.picture}`}
+            />
           </div>
         </div>
       ) : (
