@@ -4,7 +4,6 @@ import {
   json,
   redirect,
   unstable_parseMultipartFormData,
-  unstable_createFileUploadHandler,
   type NodeOnDiskFile,
   type ActionFunctionArgs,
 } from "@remix-run/node";
@@ -17,6 +16,7 @@ import schema, { type Schema } from "~/components/register/schema";
 import { updatePlayerAge } from "~/models/draw.server";
 import { getPerson, updatePerson } from "~/models/person.server";
 import { getCurrentYear } from "~/utils";
+import { createPictureUploadHandler } from "~/utils/picture.server";
 
 export async function action({ params, request }: ActionFunctionArgs) {
   const { id } = params;
@@ -24,10 +24,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
 
   const formData = await unstable_parseMultipartFormData(
     request.clone(),
-    unstable_createFileUploadHandler({
-      directory: process.env.UPLOADS_DIR,
-      maxPartSize: 5_000_000,
-    }),
+    createPictureUploadHandler(id),
   );
 
   const {

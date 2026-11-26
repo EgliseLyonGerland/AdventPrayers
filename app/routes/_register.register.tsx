@@ -7,7 +7,6 @@ import {
   type ActionFunctionArgs,
   redirect,
   unstable_parseMultipartFormData,
-  unstable_createFileUploadHandler,
   type NodeOnDiskFile,
 } from "@remix-run/node";
 import {
@@ -43,6 +42,7 @@ import { AppName } from "~/config";
 import { getCurrentDraw } from "~/models/draw.server";
 import { register } from "~/models/registrations.server";
 import { sendEmail } from "~/utils/email.server";
+import { createPictureUploadHandler } from "~/utils/picture.server";
 
 const steps = [
   "firstName",
@@ -102,10 +102,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const formData = await unstable_parseMultipartFormData(
     request.clone(),
-    unstable_createFileUploadHandler({
-      directory: process.env.UPLOADS_DIR,
-      maxPartSize: 5_000_000,
-    }),
+    createPictureUploadHandler(),
   );
 
   const {

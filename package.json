@@ -5,7 +5,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev -c \"npm run dev:serve\"",
-    "dev:serve": "binode --require ./mocks -- @remix-run/serve:remix-serve ./build/index.js",
+    "dev:serve": "node --require ./mocks server.js",
     "format": "prettier --write .",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "setup": "prisma generate && prisma migrate deploy && prisma db seed",
@@ -13,7 +13,7 @@
     "start:mocks": "node --require ./mocks server.js",
     "test": "vitest",
     "pretest:server": "npm run build",
-    "test:server": "node --test test/server-cache.cjs",
+    "test:server": "node --test test/server-cache.cjs && cross-env NODE_ENV=development node --test test/server-cache.cjs",
     "test:e2e:dev": "start-server-and-test dev http://localhost:3000 \"npx cypress open\"",
     "pretest:e2e:run": "npm run build",
     "test:e2e:run": "cross-env PORT=8811 start-server-and-test start:mocks http://localhost:8811 \"npx cypress run\"",
