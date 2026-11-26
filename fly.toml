@@ -6,6 +6,7 @@ processes = []
 
 [env]
 BASE_URL = 'https://avent.egliselyongerland.org'
+UPLOADS_DIR = "/data/uploads"
 
 [experimental]
 allowed_public_ports = []
@@ -16,10 +17,6 @@ entrypoint = "sh"
 [mounts]
 source = "data"
 destination = "/data"
-
-[[statics]]
-guest_path = "/data/uploads"
-url_prefix = "/uploads"
 
 [[services]]
 internal_port = 8_080
